@@ -1,0 +1,124 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Followshows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Class="Followshows.ShowPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    d:DataContext="{d:DesignData /SampleData/SampleDataSource/SampleDataSource.xaml}"
+    >
+    <Grid x:Name="LayoutRoot">
+        <Pivot Name="Pivot">
+            <PivotItem Header="{Binding Name}">
+                <StackPanel Margin="0,-20,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Name="Image" Source="{Binding Show.Image}" Width="112" VerticalAlignment="Top" ImageFailed="Image_ImageFailed"/>
+                        <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                            <TextBlock Text="SUMMARY" Style="{ThemeResource BodyTextBlockStyle}" FontWeight="ExtraBold" />
+                            <TextBlock Name="Summary" TextWrapping="Wrap" Text="{Binding Summary}" Style="{ThemeResource BaseTextBlockStyle}" FontSize="15" Margin="1,0,0,0" Tapped="Tapped_ShowFullText"/>
+                        </StackPanel>
+
+
+                    </Grid>
+                    <StackPanel Grid.Column="1" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="0" FontWeight="ExtraBold" Text="GENRE"/>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="1" TextWrapping="NoWrap" Margin="5,0,0,0" Text="{Binding Genre}"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="0" FontWeight="ExtraBold" Text="AIRS"/>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="1" TextWrapping="NoWrap" Margin="5,0,0,0" Text="{Binding Airs}"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="0" FontWeight="ExtraBold" Text="FOLLOWERS"/>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="1" TextWrapping="NoWrap" Margin="5,0,0,0" Text="{Binding Followers}"/>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="0" FontWeight="ExtraBold" Text="ACTORS"/>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Grid.Column="1" TextWrapping="NoWrap" Margin="5,0,0,0" Text="{Binding Actors}"/>
+                        </Grid>
+                    </StackPanel>
+                    <TextBlock Text="NEXT TO WATCH" Style="{ThemeResource MessageDialogTitleStyle}" Margin="0,10,0,0"/>
+                    <Grid Margin="0,10,0,20" DoubleTapped="Item_Tapped" DataContext="ep" Name="NTW">
+                        <Grid>
+                            <Image Source="{Binding Image}" Opacity="0.7" ImageFailed="Image_ImageFailed"/>
+                            <TextBlock Text="{Binding EpisodeName}"
+								                    Margin="12,10,12,0"
+                                                    FontWeight="ExtraBold"
+							                           >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontWeight" Value="ExtraBold"/>
+                                        <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiBold}" />
+                                        <Setter Property="FontSize" Value="{ThemeResource TextStyleExtraLargePlusFontSize}" />
+                                        <Setter Property="TextWrapping" Value="NoWrap" />
+                                        <Setter Property="LineHeight" Value="33.5" />
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="{Binding SeriesName}" VerticalAlignment="Bottom" Margin="10,0,0,10"/>
+                            <TextBlock Text="{Binding EpisodePos}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10" />
+                        </Grid>
+                        <Grid  Visibility="{Binding redo}">
+                            <Image Source="Assets/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
+                            <TextBlock Text="NOT WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,0,0,0"/>
+                        </Grid>
+                    </Grid>
+                    <!--<TextBlock Text="NONE" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}"/>-->
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+    <Page.Resources>
+        <DataTemplate x:Key="seasy">
+            <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414">
+                <Grid x:Name="ima" Opacity="{Binding Opacity}">
+                    <Image Source="{Binding Image}" Opacity="0.7" ImageFailed="Image_ImageFailed"/>
+                    <TextBlock Text="{Binding EpisodeName}"
+								                    Margin="12,10,12,0"
+                                                    FontWeight="ExtraBold"
+							                           >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="ExtraBold"/>
+                                <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiBold}" />
+                                <Setter Property="FontSize" Value="{ThemeResource TextStyleExtraLargePlusFontSize}" />
+                                <Setter Property="TextWrapping" Value="NoWrap" />
+                                <Setter Property="LineHeight" Value="33.5" />
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="{Binding SeriesName}" VerticalAlignment="Bottom" Margin="10,0,0,10"/>
+                    <TextBlock Text="{Binding EpisodePos}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10" />
+                </Grid>
+                <Grid  Visibility="{Binding redo}">
+                    <Image Source="Assets/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
+                    <TextBlock Text="NOT WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,0,0,0"/>
+                </Grid>
+                <!--Background="#22B5FF"-->
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+</Page>
