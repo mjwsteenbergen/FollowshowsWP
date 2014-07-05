@@ -108,7 +108,6 @@ namespace Followshows
             else
             {
                 api.getNetwork().PropertyChanged += NetworkStatus_Changed;
-                await api.recoverQueue();
             }
             
             //lijst.SelectionMode = ListViewSelectionMode.Multiple;
@@ -135,7 +134,6 @@ namespace Followshows
         /// serializable state.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
-            //api.store();
         }
 
         #region NavigationHelper registration

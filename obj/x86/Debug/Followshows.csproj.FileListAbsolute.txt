@@ -44,3 +44,4 @@ C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows
 C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\obj\x86\Debug\qualifiers.txt.intermediate
 C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\obj\x86\Debug\MultipleQualifiersPerDimensionFound.txt
 C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\obj\x86\Debug\ProjectArchitectures.txt
+C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\obj\x86\Debug\Followshows.csprojResolveAssemblyReference.cache
