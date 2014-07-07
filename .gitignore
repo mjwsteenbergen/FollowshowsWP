@@ -40,4 +40,4 @@ debug/
 ehthumbs.db
 Thumbs.db
 
-obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+*.exe
