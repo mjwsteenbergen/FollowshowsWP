@@ -77,6 +77,8 @@ namespace Followshows
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             //Loading
+            NTW.DataContext = new Episode(false,true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
+
             api = (API)e.NavigationParameter;
             Show = await api.getShow(api.passed as TvShow);
             //Show.Image.UriSource = new Uri(Show.Image.UriSource.ToString().Replace("80", "357").Replace("112", "500"));
@@ -84,7 +86,8 @@ namespace Followshows
             Image.Source = new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri(Show.Image.UriSource.ToString().Replace("80", "357").Replace("112", "500")));
             this.DataContext = Show;
 
-            NTW.DataContext = new Episode() { redo = Windows.UI.Xaml.Visibility.Collapsed };
+            NTWtitle.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
             List<Episode> wl = await api.getWatchList();
             if(wl != null)
             {
@@ -93,6 +96,7 @@ namespace Followshows
                     if(ep.SeriesName == Show.Name)
                     {
                         NTW.DataContext = ep;
+                        NTWtitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
                         break;
                     }
                 }
@@ -184,21 +188,26 @@ namespace Followshows
             item = sender as Grid;
             ep = item.DataContext as Episode;
 
-            Grid ima = item.FindName("ima") as Grid;
+            Image ima = item.FindName("ima") as Image;
             if (ima.Opacity == 1)
             {
-               
+                if (!ep.Aired)
+                {
+                    Helper.message("This episode hasn't aired yet. You cannot mark it as watched", "EPISODE NOT AIRED");
+                    return;
+                }
 
                 DoubleAnimation ani = new DoubleAnimation();
-                Storyboard.SetTarget(ani, item.Children.ToArray<Object>()[0] as Grid);
+                Storyboard.SetTarget(ani, ima);
 
                 Storyboard board = new Storyboard();
                 board.Completed += board_Completed;
                 Storyboard.SetTargetProperty(ani, "Opacity");
                 ani.To = 0.2;
-                ep.Opacity = 0.2;
                 board.Duration = new Duration(TimeSpan.FromSeconds(1));
                 board.Children.Add(ani);
+
+                ep.Seen = true;
 
                 board.Begin();
                 
@@ -207,14 +216,10 @@ namespace Followshows
             {
                 item = sender as Grid;
                 ep = item.DataContext as Episode;
-
-                ep.redo = Visibility.Collapsed;
-
-                item.DataContext = null;
-                item.DataContext = ep;
+                
 
                 DoubleAnimation ani = new DoubleAnimation();
-                Storyboard.SetTarget(ani, item.Children.ToArray<Object>()[0] as Grid);
+                Storyboard.SetTarget(ani, ima);
 
                 Storyboard board = new Storyboard();
                 Storyboard.SetTargetProperty(ani, "Opacity");
@@ -223,6 +228,12 @@ namespace Followshows
                 board.Children.Add(ani);
 
                 board.Begin();
+
+                ep.Seen = false;
+
+                item.DataContext = null;
+                item.DataContext = ep;
+
 
                 api.markNotAsWatched(ep);
             }

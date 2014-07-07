@@ -980,7 +980,3 @@ namespace Followshows.Followshows_XamlTypeInfo
 }
 
 
-
-
-
-

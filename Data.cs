@@ -35,10 +35,34 @@ public class Episode
 
     public double Opacity { get; set; }
 
-    public Episode()
+    public bool Aired { get; set; }
+
+    private bool seen;
+    public bool Seen
     {
-        redo = Visibility.Collapsed;
-        Opacity = 0.9;
+        get
+        { return seen; }
+        set
+        {
+            if (value == true)
+            {
+                seen = true;
+                Opacity = 0.2;
+                redo = Visibility.Visible;
+            }
+            else
+            {
+                seen = false;
+                Opacity = 0.85;
+                redo = Visibility.Collapsed;
+            }
+        }
+    }
+
+    public Episode(bool AiredOnTV, bool SeenSomewhere)
+    {
+        Aired = AiredOnTV;
+        Seen = SeenSomewhere;
     }
 }
 
@@ -62,7 +86,7 @@ public class TvShow
     //Tracker
     public float percentageWatched { get; set; }
     public string stillToWatch { get; set; }
-    
+
     //ShowPage
     public List<Season> Season { get; set; }
     public string Genre { get; set; }
@@ -71,8 +95,9 @@ public class TvShow
     public string Summary { get; set; }
     public string SummaryExtended { get; set; }
     public string Actors { get; set; }
-    
-    public override string ToString(){
+
+    public override string ToString()
+    {
         return Name.ToString();
     }
 

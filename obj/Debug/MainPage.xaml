@@ -23,9 +23,9 @@
                                 >
                         <GridView.ItemTemplate>
                             <DataTemplate>
-                                <Grid x:ConnectionId='3' Margin="0,0,0,20"                            Width="361.66665649414" Height="{Binding Height}">
-                                    <Grid Visibility="{Binding item}" x:Name="image">
-                                        <Image x:ConnectionId='4' Source="{Binding Image}" Opacity="0.7"                                />
+                                <Grid x:ConnectionId='3' Margin="0,0,0,20"                            Width="361.66665649414" Height="209.16665649414">
+                                    <Grid>
+                                        <Image x:ConnectionId='4' x:Name="ima" Source="{Binding Image}" Opacity="{Binding Opacity}"                                 Stretch="UniformToFill"/>
                                         <TextBlock Text="{Binding EpisodeName}"
 								                    Margin="12,10,12,0"
                                                     FontWeight="ExtraBold"
@@ -104,7 +104,7 @@
     </Grid>
     <Page.BottomAppBar>
         <CommandBar ClosedDisplayMode="Minimal">
-            <AppBarButton x:ConnectionId='5' Icon="Cancel"                                Label="Log out"></AppBarButton>
+            <AppBarButton Icon="Cancel" ></AppBarButton>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

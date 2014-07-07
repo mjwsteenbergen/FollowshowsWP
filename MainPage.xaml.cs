@@ -43,14 +43,22 @@ namespace Followshows
         {
             this.InitializeComponent();
 
+            CommandBar bar = new CommandBar();
+            AppBarButton logou = new AppBarButton(){ Icon=  new SymbolIcon(Symbol.Cancel), Label="Log out"};
+            logou.Click += logout;
+            AppBarButton refr= new AppBarButton() { Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:Assets/appbar.refresh.png") }, Label = "Refresh" };
+            refr.Click += refresh;
+            bar.PrimaryCommands.Add(logou);
+            bar.PrimaryCommands.Add(refr);
+            bar.ClosedDisplayMode =  AppBarClosedDisplayMode.Minimal;
+
+            BottomAppBar = bar;
+
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
 
             selectedPivot = 0;
-
-            //AppBar bar = new AppBar();
-            //AppBarButton logout = new AppBarButton() { Icon = );
 
         }
 
@@ -85,7 +93,17 @@ namespace Followshows
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             ////Loading
-            api = (API)e.NavigationParameter;
+            if(e.NavigationParameter != null)
+            {
+                api = (API)e.NavigationParameter;
+            }
+            else
+            {
+                if(api == null)
+                {
+                    throw new Exception("There is no api defined");
+                }
+            }
 
             TvShow show = new TvShow();
             api.passed = show;
@@ -109,7 +127,8 @@ namespace Followshows
             {
                 api.getNetwork().PropertyChanged += NetworkStatus_Changed;
             }
-            
+           
+
             //lijst.SelectionMode = ListViewSelectionMode.Multiple;
 
 
@@ -119,7 +138,7 @@ namespace Followshows
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                this.refresh();
+                this.refresh(null,null);
             });
 
         }
@@ -171,56 +190,66 @@ namespace Followshows
             item = sender as Grid;
             ep = item.DataContext as Episode;
 
-            DoubleAnimation ani = new DoubleAnimation();
-            Storyboard.SetTarget(ani, item.Children.ToArray<Object>()[0] as Grid);
+            Image ima = item.FindName("ima") as Image;
+            if (ima.Opacity > 0.5)
+            {
+                if (!ep.Aired)
+                {
+                    Helper.message("This episode hasn't aired yet. You cannot mark it as watched", "EPISODE NOT AIRED");
+                    return;
+                }
 
-            Storyboard board = new Storyboard();
-            Storyboard.SetTargetProperty(ani, "Opacity");
-            ani.To = 0.2;
-            board.Duration = new Duration(TimeSpan.FromSeconds(1));
-            board.Children.Add(ani);
+                DoubleAnimation ani = new DoubleAnimation();
+                Storyboard.SetTarget(ani, ima);
 
-            board.Begin();
-            board.Completed += board_Completed;
+                Storyboard board = new Storyboard();
+                board.Completed += board_Completed;
+                Storyboard.SetTargetProperty(ani, "Opacity");
+                ani.To = 0.2;
+                ep.Opacity = 0.2;
+                board.Duration = new Duration(TimeSpan.FromSeconds(1));
+                board.Children.Add(ani);
+
+                board.Begin();
+
+            }
+            else
+            {
+                item = sender as Grid;
+                ep = item.DataContext as Episode;
+
+                DoubleAnimation ani = new DoubleAnimation();
+                Storyboard.SetTarget(ani, ima);
+
+                Storyboard board = new Storyboard();
+                Storyboard.SetTargetProperty(ani, "Opacity");
+                ani.To = 0.9;
+                board.Duration = new Duration(TimeSpan.FromSeconds(1));
+                board.Children.Add(ani);
+
+                board.Begin();
+
+                ep.Seen = false;
+
+                item.DataContext = null;
+                item.DataContext = ep;
+
+                api.markNotAsWatched(ep);
+            }
+
+
+
         }
 
         void board_Completed(object sender, object e)
         {
-            ep.redo = Visibility.Visible;
 
             api.markAsWatched(ep);
-            item.DataContext = null;
-            item.DataContext = ep;
-
-            item.DoubleTapped -= Item_Tapped;
-            item.DoubleTapped += reappear;
-        }
-
-        private void reappear(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            item = sender as Grid;
-            ep = item.DataContext as Episode;
-
-            ep.redo = Visibility.Collapsed;
+            
+            ep.Seen = true;
 
             item.DataContext = null;
             item.DataContext = ep;
-
-            DoubleAnimation ani = new DoubleAnimation();
-            Storyboard.SetTarget(ani, item.Children.ToArray<Object>()[0] as Grid);
-
-            Storyboard board = new Storyboard();
-            Storyboard.SetTargetProperty(ani, "Opacity");
-            ani.To = 1;
-            board.Duration = new Duration(TimeSpan.FromSeconds(1));
-            board.Children.Add(ani);
-
-            board.Begin();
-
-            item.DoubleTapped += Item_Tapped;
-            item.DoubleTapped -= reappear;
-
-            api.markNotAsWatched(ep);
         }
 
         #endregion
@@ -251,11 +280,12 @@ namespace Followshows
 
         private void pivotItem_Changed(object sender, SelectionChangedEventArgs e)
         {
-            var page = sender;
+            Pivot page = sender as Pivot;
+            selectedPivot = page.SelectedIndex;
             var hi = e;
         }
 
-        public async void refresh()
+        public async void refresh(object sender, RoutedEventArgs e)
         {
             switch (selectedPivot)
             {

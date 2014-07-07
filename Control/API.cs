@@ -49,7 +49,7 @@ namespace Followshows
             loggedIn = false;
             gotInternet = false;
 
-            debug = true;
+            //debug = true;
 
             network = new NetworkChanged();
 
@@ -104,7 +104,7 @@ namespace Followshows
                 return res;
             }
 
-         }
+        }
 
         private async Task<Response> getResponse(string url, HttpContent cont)
         {
@@ -379,7 +379,7 @@ namespace Followshows
             foreach (HtmlNode Episode in doc.DocumentNode.ChildNodes)
             {
                 if (Episode.Name != "li") { continue; }
-                Episode ep = new Episode();
+                Episode ep = new Episode(true, false);
 
                 //Set Height of the item to standard
                 ep.Height = 209.16665649414;
@@ -441,7 +441,7 @@ namespace Followshows
 
             tracker = new List<TvShow>();
 
-            foreach (HtmlNode tvshow in head.DescendantNodes())
+            foreach (HtmlNode tvshow in head.ChildNodes)
             {
                 try
                 {
@@ -465,7 +465,7 @@ namespace Followshows
                 }
 
                 //if debug enabled break to save time 
-                if(debug)
+                if (debug && tracker.Count == 5)
                     break;
             }
             return tracker;
@@ -517,14 +517,15 @@ namespace Followshows
 
             watchList = new List<Episode>();
 
-            foreach(HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
+            foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
-                Episode res = new Episode();
+                Episode res = new Episode(true, false);
                 res.SeriesName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
+                res.id = getAttribute(episode.ChildNodes, "episodeId");
                 HtmlNode Ename = getChild(episode.DescendantNodes(), "class", "subtitle");
                 res.EpisodeName = getChild(Ename).InnerText;
                 res.Image = new BitmapImage(new Uri(getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
-                string[] build = getChild(episode.DescendantNodes(),"class","description").InnerText.Split(new char[] { ' ' });
+                string[] build = getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
                 res.ISeason = build[1];
                 res.IEpisode = build[3].Replace(".", "");
                 res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
@@ -532,8 +533,9 @@ namespace Followshows
             }
             foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid-home-more clearfix episodes-popover").ChildNodes)
             {
-                Episode res = new Episode();
+                Episode res = new Episode(true, false);
                 res.SeriesName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
+                res.id = getAttribute(episode.ChildNodes, "episodeId");
                 HtmlNode Ename = getChild(episode.DescendantNodes(), "class", "subtitle");
                 res.EpisodeName = getChild(Ename).InnerText;
                 res.Image = new BitmapImage(new Uri(getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
@@ -549,7 +551,7 @@ namespace Followshows
 
         public async Task<TvShow> getShow(TvShow show)
         {
-            Response resp = await getResponse("http://followshows.com/show/" + show.Name.Replace(" ", "_"), null, false);
+            Response resp = await getResponse("http://followshows.com" + show.showUrl, null, false);
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(resp.page);
 
@@ -558,7 +560,7 @@ namespace Followshows
             string extendedPart = getChild(summaryid.DescendantNodes(), "class", "details").InnerText;
             show.SummaryExtended = getChild(summaryid.DescendantNodes(), "class", "summary-text").InnerText.Replace("...&nbsp;(more)", "");
 
-            show.Summary = show.SummaryExtended.Replace(extendedPart, "");
+            show.Summary = show.SummaryExtended.Replace(extendedPart, "") + "...";
 
 
 
@@ -571,7 +573,7 @@ namespace Followshows
             show.Name = getChild(forFollowandName, 0).InnerText;
 
             HtmlNode season = doc.GetElementbyId("season-filter");
-            show.numberOfSeasons = season.DescendantNodes().ToArray<HtmlNode>().Length;
+            show.numberOfSeasons = season.ChildNodes.ToArray<HtmlNode>().Length;
 
             show.Actors = doc.GetElementbyId("actors").InnerText;
 
@@ -580,28 +582,47 @@ namespace Followshows
 
         public async Task<List<Episode>> getSeason(TvShow show, int seasonNr)
         {
-            Response resp = await getResponse("http://followshows.com/api"+ show.showUrl + "/season/" + seasonNr, null, false);
+            Response resp = await getResponse("http://followshows.com/api" + show.showUrl + "/season/" + seasonNr, null, false);
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(resp.page);
 
             List<Episode> season = new List<Episode>();
 
-            foreach(HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "clearfix").ChildNodes)
+            foreach (HtmlNode episode in getChild(doc.DocumentNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
-                Episode ep = new Episode();
-                ep.Image = new BitmapImage(new Uri(getAttribute(getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src")));
-                ep.EpisodeName = getChild(episode.DescendantNodes(), "class", "episode-link").InnerText;
+                Episode ep = new Episode(false, false);
                 ep.SeriesName = show.Name;
-                string[] build = getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
-                ep.ISeason = build[1];
-                ep.IEpisode = build[3].Split(new char[] {','})[0];
-                ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
-                ep.id = getAttribute(episode.DescendantNodes(), "episodeid");
-                if (!episode.InnerText.Contains("Mark as watched"))
+
+                HtmlNode name = getChild(episode.DescendantNodes(), "class", "episode-link");
+                if (name != null)
                 {
-                    ep.redo = Visibility.Visible;
-                    ep.Opacity = 0.2;
+                    ep.Aired = true;
+                    ep.EpisodeName = name.InnerText;
+                    ep.Image = new BitmapImage(new Uri(getAttribute(getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src")));
+
+                    string[] build = getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
+                    ep.ISeason = build[1];
+                    ep.IEpisode = build[3].Split(new char[] { ',' })[0];
+                    ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
+                    ep.id = getAttribute(episode.DescendantNodes(), "episodeid");
+                    if (!episode.InnerText.Contains("Mark as watched"))
+                    {
+                        ep.Seen = true;
+                    }
+                        
                 }
+                else
+                {
+                    ep.Aired = false;
+                    ep.EpisodeName = getChild(episode).InnerText;
+                    ep.Image = new BitmapImage(new Uri("ms-appx:Assets/basicQueueItem.bmp"));
+                    string[] build = episode.InnerText.Replace(ep.EpisodeName, "").Replace(",", " ").Split(new char[] { ' ' });
+                    ep.ISeason = build[2];
+                    ep.IEpisode = build[4];
+                    ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
+                }
+
+
                 season.Add(ep);
             }
 
@@ -612,6 +633,11 @@ namespace Followshows
         public async void markAsWatched(Episode ep)
         {
             if (ep.id == null) return;
+            if (!ep.Aired)
+            {
+                Helper.message("This episode hasn't aired yet. You cannot mark it as watched", "EPISODE NOT AIRED");
+                throw new Exception("IT DID NOT AIR");
+            }
             Response resp = await getResponse("http://followshows.com/api/markEpisodeAsWatched?episodeId=" + ep.id, null);
             if (resp.hasInternet)
             {

@@ -19,8 +19,6 @@
     <RootPropertyPathName Name="stillToWatch" />
     <RootPropertyPathName Name="percentageWatched" />
     <RootPropertyPathName Name="queue" />
-    <RootPropertyPathName Name="Height" />
-    <RootPropertyPathName Name="item" />
   </Roots.PropertyPathNames>
   <Roots.RootTypes>
     <RootType FullName="Windows.UI.Xaml.Application">
@@ -47,7 +45,6 @@
       <RootProperty Name="Visibility" />
       <RootProperty Name="Width" />
       <RootProperty Name="Height" />
-      <RootProperty Name="Opacity" />
       <RootProperty Name="RowDefinitions" />
       <RootProperty Name="Background" />
       <RootProperty Name="VerticalAlignment" />
@@ -73,11 +70,16 @@
       <RootProperty Name="Margin" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Data.Binding" />
+    <RootType FullName="Windows.UI.Xaml.Controls.ScrollViewer">
+      <RootMethod Name="GetVerticalScrollMode" />
+      <RootMethod Name="SetVerticalScrollMode" />
+    </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.StackPanel">
       <RootProperty Name="Margin" />
       <RootProperty Name="Children" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.TextBlock">
+      <RootProperty Name="Name" />
       <RootProperty Name="Text" />
       <RootProperty Name="Style" />
       <RootProperty Name="Margin" />
@@ -88,7 +90,6 @@
       <RootProperty Name="FontSize" />
       <RootProperty Name="TextWrapping" />
       <RootProperty Name="LineHeight" />
-      <RootProperty Name="Name" />
       <RootProperty Name="Width" />
       <RootProperty Name="RenderTransformOrigin" />
       <RootProperty Name="TextAlignment" />
@@ -101,9 +102,9 @@
       <RootProperty Name="Width" />
       <RootProperty Name="Margin" />
       <RootProperty Name="Opacity" />
+      <RootProperty Name="Stretch" />
       <RootProperty Name="Name" />
       <RootProperty Name="VerticalAlignment" />
-      <RootProperty Name="Stretch" />
       <RootEvent Name="ImageFailed" />
     </RootType>
     <RootType FullName="Microsoft.Xaml.Tools.DirectUI.ProxyTypes.StaticResourceExtension" />
@@ -143,9 +144,6 @@
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.AppBarButton">
       <RootProperty Name="Icon" />
-      <RootProperty Name="Label" />
-      <RootEvent Name="Tapped" />
-      <RootEvent Name="Click" />
     </RootType>
     <RootType FullName="Followshows.MainPage" />
     <RootType FullName="Windows.UI.Xaml.Controls.Hub">
