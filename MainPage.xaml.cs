@@ -37,6 +37,10 @@ namespace Followshows
         private Grid item;
         private Episode ep;
 
+        //Items in datatemplate
+        private GridView queue;
+        private ListView tracker;
+
         private int selectedPivot;
 
         public MainPage()
@@ -44,13 +48,13 @@ namespace Followshows
             this.InitializeComponent();
 
             CommandBar bar = new CommandBar();
-            AppBarButton logou = new AppBarButton(){ Icon=  new SymbolIcon(Symbol.Cancel), Label="Log out"};
+            AppBarButton logou = new AppBarButton() { Icon = new SymbolIcon(Symbol.Cancel), Label = "Log out" };
             logou.Click += logout;
-            AppBarButton refr= new AppBarButton() { Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:Assets/appbar.refresh.png") }, Label = "Refresh" };
+            AppBarButton refr = new AppBarButton() { Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:Assets/appbar.refresh.png") }, Label = "Refresh" };
             refr.Click += refresh;
             bar.PrimaryCommands.Add(logou);
             bar.PrimaryCommands.Add(refr);
-            bar.ClosedDisplayMode =  AppBarClosedDisplayMode.Minimal;
+            bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
 
@@ -90,16 +94,16 @@ namespace Followshows
         /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
         /// a dictionary of state preserved by this page during an earlier
         /// session.  The state will be null the first time a page is visited.</param>
-        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             ////Loading
-            if(e.NavigationParameter != null)
+            if (e.NavigationParameter != null)
             {
                 api = (API)e.NavigationParameter;
             }
             else
             {
-                if(api == null)
+                if (api == null)
                 {
                     throw new Exception("There is no api defined");
                 }
@@ -109,36 +113,42 @@ namespace Followshows
             api.passed = show;
             if (api.hasInternet())
             {
-                ////Load Queue
-                List<Episode> queue = await api.getQueue();
-                if (queue != null)
-                {
-                    lijst.ItemsSource = queue;
-                }
-
-                //Load Tracker
-                List<TvShow> track = await api.getTracker();
-                if (track != null)
-                {
-                    tracker.ItemsSource = track;
-                }
+                LoadLists();
             }
             else
             {
                 api.getNetwork().PropertyChanged += NetworkStatus_Changed;
             }
-           
+
+
 
             //lijst.SelectionMode = ListViewSelectionMode.Multiple;
 
 
         }
 
+        private async void LoadLists()
+        {
+            //Load Queue
+            List<Episode> queueList = await api.getQueue();
+            if (queueList != null)
+            {
+                queue.ItemsSource = queueList;
+            }
+
+            //Load Tracker
+            List<TvShow> track = await api.getTracker();
+            if (track != null)
+            {
+                tracker.ItemsSource = track;
+            }
+        }
+
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                this.refresh(null,null);
+                this.refresh(null, null);
             });
 
         }
@@ -245,7 +255,7 @@ namespace Followshows
         {
 
             api.markAsWatched(ep);
-            
+
             ep.Seen = true;
 
             item.DataContext = null;
@@ -280,30 +290,30 @@ namespace Followshows
 
         private void pivotItem_Changed(object sender, SelectionChangedEventArgs e)
         {
-            Pivot page = sender as Pivot;
-            selectedPivot = page.SelectedIndex;
-            var hi = e;
+            //Pivot page = sender as Pivot;
+            //selectedPivot = page.SelectedIndex;
+            //var hi = e;
         }
 
         public async void refresh(object sender, RoutedEventArgs e)
         {
-            switch (selectedPivot)
-            {
-                case 0:
-                    List<Episode> queue = await api.getQueue();
-                    if (queue != null)
-                    {
-                        lijst.ItemsSource = queue;
-                    }
-                    break;
-                case 1:
-                    List<TvShow> track = await api.getTracker();
-                    if (track != null)
-                    {
-                        tracker.ItemsSource = track;
-                    }
-                    break;
-            }
+            //switch (selectedPivot)
+            //{
+            //    case 0:
+            //        List<Episode> queueList = await api.getQueue();
+            //        if (queueList != null)
+            //        {
+            //            queue.ItemsSource = queue;
+            //        }
+            //        break;
+            //    case 1:
+            //        List<TvShow> track = await api.getTracker();
+            //        if (track != null)
+            //        {
+            //            tracker.ItemsSource = track;
+            //        }
+            //        break;
+            //}
 
         }
 
@@ -334,6 +344,21 @@ namespace Followshows
             if (!rootFrame.Navigate(typeof(ShowPage), api))
             {
                 throw new Exception("Failed to create initial page");
+            }
+        }
+
+        private void Register(object sender, RoutedEventArgs e)
+        {
+            Control c = sender as Control;
+
+            switch (c.Name)
+            {
+                case "queue":
+                    queue = sender as GridView;
+                    break;
+                case "tracker":
+                    tracker = sender as ListView;
+                    break;
             }
         }
     }
