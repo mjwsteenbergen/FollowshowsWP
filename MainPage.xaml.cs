@@ -48,8 +48,12 @@ namespace Followshows
             logou.Click += logout;
             AppBarButton refr= new AppBarButton() { Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:Assets/appbar.refresh.png") }, Label = "Refresh" };
             refr.Click += refresh;
-            bar.PrimaryCommands.Add(logou);
+            AppBarButton search = new AppBarButton() { Icon = new SymbolIcon(Symbol.Find), Label = "Search" };
+            search.Click += search_Click;
+            
             bar.PrimaryCommands.Add(refr);
+            bar.PrimaryCommands.Add(search);
+            bar.PrimaryCommands.Add(logou);
             bar.ClosedDisplayMode =  AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
@@ -60,6 +64,15 @@ namespace Followshows
 
             selectedPivot = 0;
 
+        }
+
+        void search_Click(object sender, RoutedEventArgs e)
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (!rootFrame.Navigate(typeof(Search), api))
+            {
+                throw new Exception("Failed to create initial page");
+            }
         }
 
         /// <summary>
@@ -93,7 +106,7 @@ namespace Followshows
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             ////Loading
-            if(e.NavigationParameter != null)
+            if (e.NavigationParameter != null)
             {
                 api = (API)e.NavigationParameter;
             }
@@ -104,6 +117,7 @@ namespace Followshows
                     throw new Exception("There is no api defined");
                 }
             }
+            
 
             TvShow show = new TvShow();
             api.passed = show;

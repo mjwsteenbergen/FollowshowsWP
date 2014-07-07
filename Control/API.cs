@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Net;
 using Facebook;
@@ -21,6 +19,7 @@ using Windows.UI.Xaml;
 using System.ComponentModel;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Newtonsoft.Json;
 
 namespace Followshows
 {
@@ -609,7 +608,7 @@ namespace Followshows
                     {
                         ep.Seen = true;
                     }
-                        
+
                 }
                 else
                 {
@@ -628,6 +627,50 @@ namespace Followshows
 
             season.Reverse();
             return season;
+        }
+
+        public async Task<List<TvShow>> searchTvShow(string searchTerm)
+        {
+            List<TvShow> res = new List<TvShow>();
+            List<TvShow> res2 = new List<TvShow>();
+            if (searchTerm == null)
+            {
+                return res;
+            }
+
+            Response resp = await getResponse("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false);
+            if (resp.page == null)
+            {
+                return res;
+            }
+            List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
+            foreach(SearchResult result in response)
+            {
+                if (result.type == "show")
+                {
+                    TvShow show = new TvShow();
+                    if (result.poster)
+                    {
+                        show.Image = new BitmapImage(new Uri(result.image.Replace("30x42", "357x500")));
+                    }
+                    show.Name = result.value;
+                    show.showUrl = "/show/" + result.id;
+                    res.Add(show);
+                }
+                else
+                {
+                    TvShow show = new TvShow();
+                    if (result.poster)
+                    {
+                        show.Image = new BitmapImage(new Uri(result.image.Replace("30x42", "357x500")));
+                    }
+                    show.Name = result.value;
+                    show.showUrl = "/show/" + result.id;
+                    res2.Add(show);
+                }
+            }
+            passed = res2;
+            return res;
         }
 
         public async void markAsWatched(Episode ep)
@@ -654,6 +697,8 @@ namespace Followshows
                 lastPage = resp.page;
             }
         }
+
+
 
         public NetworkChanged getNetwork()
         {
@@ -685,41 +730,41 @@ namespace Followshows
 
 
 
-        public async void store()
-        {
-            if (queue != null)
-            {
-                StorageFolder temp = ApplicationData.Current.TemporaryFolder;
-                StorageFile fil = await temp.CreateFileAsync("queu", CreationCollisionOption.ReplaceExisting);
+        //public async void store()
+        //{
+        //    if (queue != null)
+        //    {
+        //        StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+        //        StorageFile fil = await temp.CreateFileAsync("queu", CreationCollisionOption.ReplaceExisting);
 
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
-                IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.ReadWrite);
-                ser.WriteObject(str.AsStreamForWrite(), queue);
-            }
+        //        //DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
+        //        //IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.ReadWrite);
+        //        //ser.WriteObject(str.AsStreamForWrite(), queue);
+        //    }
 
-        }
+        //}
 
-        public async Task<List<Episode>> recoverQueue()
-        {
-            StorageFolder temp = ApplicationData.Current.TemporaryFolder;
-            IReadOnlyList<StorageFile> fill = await temp.GetFilesAsync();
-            StorageFile fil = null;
-            if (fill != null)
-            {
-                foreach (StorageFile fold in fill)
-                {
-                    if (fold.Name == "queu")
-                    {
-                        fil = fold;
-                        break;
-                    }
-                }
-            }
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
-            IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.Read);
-            return (List<Episode>)ser.ReadObject(str.AsStreamForRead());
+        //public async Task<List<Episode>> recoverQueue()
+        //{
+        //    StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+        //    IReadOnlyList<StorageFile> fill = await temp.GetFilesAsync();
+        //    StorageFile fil = null;
+        //    if (fill != null)
+        //    {
+        //        foreach (StorageFile fold in fill)
+        //        {
+        //            if (fold.Name == "queu")
+        //            {
+        //                fil = fold;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
+        //    IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.Read);
+        //    return (List<Episode>)ser.ReadObject(str.AsStreamForRead());
 
-        }
+        //}
     }
 
 }
