@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Net;
 using Facebook;
@@ -21,6 +19,7 @@ using Windows.UI.Xaml;
 using System.ComponentModel;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Newtonsoft.Json;
 
 namespace Followshows
 {
@@ -60,7 +59,30 @@ namespace Followshows
         {
             HttpClient http = new HttpClient();
             API web = new API(http, "None");
+            Frame rootFrame = Window.Current.Content as Frame;
+
             return web;
+        }
+
+        public async Task<bool> login()
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            PasswordVault vault = new PasswordVault();
+            PasswordCredential cred = null;
+            try
+            {
+                if (vault.FindAllByResource("email").ToString() != null)
+                {
+                    cred = vault.FindAllByResource("email")[0];
+                    cred.RetrievePassword();
+                }
+            }
+            catch (Exception)
+            { 
+                return false;
+            }
+            return await this.LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString());
         }
 
         public void refresh()
@@ -97,6 +119,25 @@ namespace Followshows
                 response.EnsureSuccessStatusCode();
                 res.page = Regex.Replace(((await response.Content.ReadAsStringAsync()).Replace("\n", "").Replace("\\\"", "").Replace("\t", "")), " {2,}", "");
                 res.content = response.Content;
+                if (res.page.Contains("Forgot your password?"))
+                {
+                    if(! await login())
+                    {
+                        Frame rootFrame = Window.Current.Content as Frame;
+                        if (!rootFrame.Navigate(typeof(LandingPage), this))
+                        {
+                            throw new Exception("Failed to create initial page");
+                        }
+                    }
+                    if (post)
+                    {
+                        response = await client.PostAsync(uri, cont);
+                    }
+                    else
+                    {
+                        response = await client.GetAsync(uri);
+                    }
+                }
                 return res;
             }
             catch (Exception)
@@ -257,7 +298,7 @@ namespace Followshows
 
             //Login
             Response resp = await getResponse("http://followshows.com/login/j_spring_security_check", content);
-            if (resp.hasInternet)
+            if (resp.hasInternet && resp.page != null)
             {
                 lastPage = resp.page;
 
@@ -273,7 +314,6 @@ namespace Followshows
 
         public async Task<string> LoginWithFacebook2(string username, string password)
         {
-            //TODO: Check if followshows is online
             HttpResponseMessage res2 = await client.SendAsync(new HttpRequestMessage(System.Net.Http.HttpMethod.Head, "http://followshows.com/"));
 
             //Login Data    
@@ -370,11 +410,15 @@ namespace Followshows
 
         public async Task<List<Episode>> getQueue()
         {
+            if (!hasInternet() && queue != null)
+                return queue;
+            queue = new List<Episode>();
+
             Response resp = await getResponse("http://followshows.com/api/queue?from=0", null);
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(resp.page);
 
-            queue = new List<Episode>();
+            
 
             foreach (HtmlNode Episode in doc.DocumentNode.ChildNodes)
             {
@@ -426,10 +470,14 @@ namespace Followshows
 
         public async Task<List<TvShow>> getTracker()
         {
+            if (!hasInternet() && tracker != null)
+                return tracker;
+            tracker = new List<TvShow>();
+
             Response resp = await getResponse("http://followshows.com/viewStyleTracker?viewStyle=expanded", null);
-            if (!resp.hasInternet)
+            if (!resp.hasInternet || resp.page == null)
             {
-                return null;
+                return tracker;
             }
 
             HtmlDocument doc = new HtmlDocument();
@@ -438,9 +486,6 @@ namespace Followshows
             HtmlNode tbody = doc.GetElementbyId("tracker");
             HtmlNode head = getChild(tbody);
 
-
-            tracker = new List<TvShow>();
-
             foreach (HtmlNode tvshow in head.ChildNodes)
             {
                 try
@@ -448,12 +493,12 @@ namespace Followshows
                     //bool bol = tvshow.GetAttributeValue("class", true);
                     //tvshow.Element("class");
                     //HtmlNodeCollection col =  tvshow.ChildNodes;
-                    TvShow show = new TvShow();
+                    TvShow show = new TvShow(true);
                     HtmlNode title = getChild(tvshow);
                     show.Name = WebUtility.HtmlDecode(title.InnerText);
                     show.Image = new BitmapImage() { UriSource = new Uri(getAttribute(title.DescendantNodes(), "src")) };
                     //show.ImageUrl = getAttribute(title.DescendantNodes(), "src");
-                    show.showUrl = getAttribute(title.DescendantNodes(), "href");
+                    show.showUrl = getAttribute(title.DescendantNodes(), "href").Replace("/show/","");
                     show.stillToWatch = getChild(tvshow.DescendantNodes(), "class", "towatch").InnerHtml;
                     string perc = getChild(tvshow, "class", "progress").InnerText.Replace("%", "");
                     show.percentageWatched = float.Parse(perc) / 100 * 150;
@@ -511,11 +556,15 @@ namespace Followshows
 
         public async Task<List<Episode>> getWatchList()
         {
+            watchList = new List<Episode>();
+            
             Response resp = await getResponse("http://followshows.com/home/watchlist", null, false);
             HtmlDocument doc = new HtmlDocument();
+            if (resp.page == null)
+                return watchList;
             doc.LoadHtml(resp.page);
 
-            watchList = new List<Episode>();
+            
 
             foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
@@ -551,8 +600,11 @@ namespace Followshows
 
         public async Task<TvShow> getShow(TvShow show)
         {
-            Response resp = await getResponse("http://followshows.com" + show.showUrl, null, false);
+            Response resp = await getResponse("http://followshows.com/show/" + show.showUrl, null, false);
             HtmlDocument doc = new HtmlDocument();
+            if (resp.page == null)
+                return show;
+
             doc.LoadHtml(resp.page);
 
             HtmlNode summaryid = doc.GetElementbyId("summary");
@@ -569,24 +621,37 @@ namespace Followshows
             show.Airs = getChild(showSummary.DescendantNodes(), "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
 
             HtmlNode forFollowandName = getChild(showSummary.DescendantNodes(), "class", "summary");
-            show.Followers = getChild(forFollowandName, 1).InnerText;
+            show.Followers = getChild(forFollowandName, 2).InnerText.Replace(" followers","");
             show.Name = getChild(forFollowandName, 0).InnerText;
 
             HtmlNode season = doc.GetElementbyId("season-filter");
             show.numberOfSeasons = season.ChildNodes.ToArray<HtmlNode>().Length;
 
-            show.Actors = doc.GetElementbyId("actors").InnerText;
+            HtmlNode actors = doc.GetElementbyId("actors");
+            if (actors != null)
+            {
+                show.Actors = actors.InnerText;
+            }
+            else
+            {
+                show.Actors = "None";
+            }
+            
 
             return show;
         }
 
         public async Task<List<Episode>> getSeason(TvShow show, int seasonNr)
         {
-            Response resp = await getResponse("http://followshows.com/api" + show.showUrl + "/season/" + seasonNr, null, false);
+            List<Episode> season = new List<Episode>();
+
+            Response resp = await getResponse("http://followshows.com/api/show/" + show.showUrl + "/season/" + seasonNr, null, false);
             HtmlDocument doc = new HtmlDocument();
+            if (resp.page == null)
+                return season;
             doc.LoadHtml(resp.page);
 
-            List<Episode> season = new List<Episode>();
+            
 
             foreach (HtmlNode episode in getChild(doc.DocumentNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
@@ -598,7 +663,7 @@ namespace Followshows
                 {
                     ep.Aired = true;
                     ep.EpisodeName = name.InnerText;
-                    ep.Image = new BitmapImage(new Uri(getAttribute(getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src")));
+                    ep.Image = new BitmapImage(new Uri(getAttribute(getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src").Replace("130x75", "360x207")));
 
                     string[] build = getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
                     ep.ISeason = build[1];
@@ -609,7 +674,7 @@ namespace Followshows
                     {
                         ep.Seen = true;
                     }
-                        
+
                 }
                 else
                 {
@@ -628,6 +693,92 @@ namespace Followshows
 
             season.Reverse();
             return season;
+        }
+
+        public async Task<List<TvShow>> searchTvShow(string searchTerm)
+        {
+            List<TvShow> res = new List<TvShow>();
+            List<TvShow> res2 = new List<TvShow>();
+           
+            if (searchTerm == null || searchTerm == "")
+            {
+                passed = res2;
+                return res;
+            }
+
+            Response resp = await getResponse("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false);
+            if (resp.page == null)
+                return res;
+            List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
+            foreach(SearchResult result in response)
+            {
+                if (result.type == "show")
+                {
+                    TvShow show = new TvShow(result.followed);
+                    if (result.poster)
+                    {
+                        show.Image = new BitmapImage(new Uri(result.image.Replace("30x42", "357x500")));
+                    }
+                    show.Name = result.value;
+                    show.showUrl = result.id;
+                    res.Add(show);
+                }
+                else
+                {
+                    TvShow show = new TvShow(false);
+                    if (result.poster)
+                    {
+                        show.Image = new BitmapImage(new Uri(result.image.Replace("30x42", "357x500")));
+                    }
+                    show.Name = result.value;
+                    show.showUrl = result.id;
+                    res2.Add(show);
+                }
+            }
+            passed = res2;
+            return res;
+        }
+
+        public async void followShow(string showUrl)
+        {
+            if (showUrl == null) return;
+            Response resp = await getResponse("http://followshows.com/api/followShow?show=" + showUrl, null);
+            if (resp.hasInternet)
+            {
+                lastPage = resp.page;
+            }
+            if (resp.page == null || resp.page.Contains("DMCA Policy"))
+            {
+                Helper.message("Uhm... Something went wrong.", "Sorry");
+            }
+        }
+
+        public async void unfollowShow(string showUrl)
+        {
+            if (showUrl == null) return;
+            Response resp = await getResponse("http://followshows.com/api/unfollowShow?show=" + showUrl, null);
+            if (resp.hasInternet)
+            {
+                lastPage = resp.page;
+            }
+            if (resp.page == null || resp.page.Contains("DMCA Policy"))
+            {
+                Helper.message("Uhm... Something went wrong.", "Sorry");
+            }
+        }
+
+        public async void markSeasonAsWatched(string seasonnr, TvShow show)
+        {
+            if (seasonnr == null|| show.showUrl == null) return;
+            Response resp = await getResponse("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl  + "&season=" + seasonnr, null);
+            if (resp.hasInternet)
+            {
+                lastPage = resp.page;
+            }
+            if (resp.page == null || resp.page.Contains("DMCA Policy"))
+            {
+                Helper.message("Uhm... Something went wrong.","Sorry");
+            }
         }
 
         public async void markAsWatched(Episode ep)
@@ -654,6 +805,8 @@ namespace Followshows
                 lastPage = resp.page;
             }
         }
+
+
 
         public NetworkChanged getNetwork()
         {
@@ -685,41 +838,41 @@ namespace Followshows
 
 
 
-        public async void store()
-        {
-            if (queue != null)
-            {
-                StorageFolder temp = ApplicationData.Current.TemporaryFolder;
-                StorageFile fil = await temp.CreateFileAsync("queu", CreationCollisionOption.ReplaceExisting);
+        //public async void store()
+        //{
+        //    if (queue != null)
+        //    {
+        //        StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+        //        StorageFile fil = await temp.CreateFileAsync("queu", CreationCollisionOption.ReplaceExisting);
 
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
-                IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.ReadWrite);
-                ser.WriteObject(str.AsStreamForWrite(), queue);
-            }
+        //        //DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
+        //        //IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.ReadWrite);
+        //        //ser.WriteObject(str.AsStreamForWrite(), queue);
+        //    }
 
-        }
+        //}
 
-        public async Task<List<Episode>> recoverQueue()
-        {
-            StorageFolder temp = ApplicationData.Current.TemporaryFolder;
-            IReadOnlyList<StorageFile> fill = await temp.GetFilesAsync();
-            StorageFile fil = null;
-            if (fill != null)
-            {
-                foreach (StorageFile fold in fill)
-                {
-                    if (fold.Name == "queu")
-                    {
-                        fil = fold;
-                        break;
-                    }
-                }
-            }
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
-            IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.Read);
-            return (List<Episode>)ser.ReadObject(str.AsStreamForRead());
+        //public async Task<List<Episode>> recoverQueue()
+        //{
+        //    StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+        //    IReadOnlyList<StorageFile> fill = await temp.GetFilesAsync();
+        //    StorageFile fil = null;
+        //    if (fill != null)
+        //    {
+        //        foreach (StorageFile fold in fill)
+        //        {
+        //            if (fold.Name == "queu")
+        //            {
+        //                fil = fold;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
+        //    IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.Read);
+        //    return (List<Episode>)ser.ReadObject(str.AsStreamForRead());
 
-        }
+        //}
     }
 
 }

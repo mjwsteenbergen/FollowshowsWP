@@ -90,30 +90,20 @@ namespace Followshows
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
                 API ap = API.createWebsite();
-                PasswordVault vault = new PasswordVault();
-
-
-                try
+                if(await ap.login())
                 {
-                    if (vault.FindAllByResource("email").ToString() != null)
+                    if (!rootFrame.Navigate(typeof(MainPage), ap))
                     {
-                        PasswordCredential cred = vault.FindAllByResource("email")[0];
-                        cred.RetrievePassword();
-                        await ap.LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString());
-                        if (!rootFrame.Navigate(typeof(MainPage), ap))
-                        {
-                            throw new Exception("Failed to create initial page");
-                        }
+                        throw new Exception("Failed to create initial page");
                     }
                 }
-                catch (System.Exception)
+                else
                 {
                     if (!rootFrame.Navigate(typeof(LandingPage), ap))
                     {
                         throw new Exception("Failed to create initial page");
                     }
                 }
-
             }
 
             // Ensure the current window is active

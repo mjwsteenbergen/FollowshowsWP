@@ -12,7 +12,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
-public class Episode
+public class Episode : INotifyPropertyChanged
 {
     public string SeriesName { get; set; }
     public string date { get; set; }
@@ -64,6 +64,17 @@ public class Episode
         Aired = AiredOnTV;
         Seen = SeenSomewhere;
     }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public void OnPropertyChanged(string name)
+    {
+        PropertyChangedEventHandler handler = PropertyChanged;
+        if (handler != null)
+        {
+            handler(this, new PropertyChangedEventArgs(name));
+        }
+    }
 }
 
 public class Season
@@ -73,8 +84,9 @@ public class Season
 
 public class TvShow
 {
-    public TvShow()
+    public TvShow(bool follow)
     {
+        following = follow;
         numberOfSeasons = 0;
         Followers = "0";
     }
@@ -82,6 +94,7 @@ public class TvShow
     public string Name { get; set; }
     public BitmapImage Image { get; set; }
     public string showUrl { get; set; }
+    public bool following { get; set; }
 
     //Tracker
     public float percentageWatched { get; set; }
@@ -126,4 +139,15 @@ public class NetworkChanged : INotifyPropertyChanged
             handler(this, new PropertyChangedEventArgs(name));
         }
     }
+}
+
+public class SearchResult
+{
+    public string id { get; set; }
+    public string label { get; set; }
+    public string value { get; set; }
+    public string type { get; set; }
+    public string image { get; set; }
+    public bool poster { get; set; }
+    public bool followed { get; set; }
 }

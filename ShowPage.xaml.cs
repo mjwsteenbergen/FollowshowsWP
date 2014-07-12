@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -30,8 +31,12 @@ namespace Followshows
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         public TvShow Show;
         private API api;
+        private int currentPivot = 0;
+        private CommandBar bar;
 
         private bool summaryExtended = false;
+
+        List<Episode>[] season;
 
         //Mark as watched
         private Grid item;
@@ -44,6 +49,8 @@ namespace Followshows
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+
         }
 
         /// <summary>
@@ -76,13 +83,44 @@ namespace Followshows
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            //Loading
+                //Loading
+
+            //Create a fake show, which isn't visible to decrease uglyness
             NTW.DataContext = new Episode(false,true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
 
             api = (API)e.NavigationParameter;
             Show = await api.getShow(api.passed as TvShow);
-            //Show.Image.UriSource = new Uri(Show.Image.UriSource.ToString().Replace("80", "357").Replace("112", "500"));
-            //Show.Image =
+
+                //Create a new commandbar and add buttons
+            bar = new CommandBar();
+            AppBarButton follow = new AppBarButton() { Icon = new SymbolIcon(Symbol.Favorite), Label = "Follow" };
+            follow.Click += follow_Click;
+            follow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            if(!Show.following)
+            {
+                follow.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                amIFollowing.Text = "Not Yet...";
+            }
+            
+            AppBarButton unfollow = new AppBarButton() { Icon = new SymbolIcon(Symbol.UnFavorite), Label = "Unfollow" };
+            unfollow.Click += unfollow_Click;
+            unfollow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            if(Show.following)
+            {
+                unfollow.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                amIFollowing.Text = "Yes you are";
+            }
+
+            AppBarButton seen = new AppBarButton() { Icon = new SymbolIcon(Symbol.Accept), Label = "Mark all as seen" };
+            seen.Click += markAsSeen_Click;
+            seen.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
+            bar.PrimaryCommands.Add(follow);
+            bar.PrimaryCommands.Add(unfollow);
+            bar.PrimaryCommands.Add(seen);
+
+            BottomAppBar = bar;
+
             Image.Source = new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri(Show.Image.UriSource.ToString().Replace("80", "357").Replace("112", "500")));
             this.DataContext = Show;
 
@@ -104,15 +142,18 @@ namespace Followshows
             }
             if(Show.numberOfSeasons > 0)
             {
+                season = new List<Episode>[Show.numberOfSeasons+1];
+                //For every show create a new pivot with a gridview with the episode-itemtemplate;
                 for(int i=Show.numberOfSeasons; i>0; i--)
                 {
                     PivotItem item = new PivotItem();
                     item.Header = "Season " + i;
-                    List<Episode> season = await api.getSeason(Show, i);
-                    //List<Episode> season = await api.getQueue();
+                    List<Episode> episodelist = await api.getSeason(Show, i);
+                    season[i] = episodelist;
                     GridView view = new GridView();
+
                     view.ItemTemplate = Resources["seasy"] as DataTemplate;
-                    view.ItemsSource = season;
+                    view.ItemsSource = episodelist;
                     item.Content = view;
                     item.ApplyTemplate();
                     Pivot.Items.Add(item);
@@ -131,6 +172,97 @@ namespace Followshows
         /// serializable state.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+        }
+
+        private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Pivot pivo = sender as Pivot;
+            currentPivot = pivo.SelectedIndex;
+
+            if (bar == null)
+                return;
+            if (currentPivot > 0)
+            {
+                //If we are on the first pivot, show only the mark all as seen button
+                foreach( AppBarButton button in bar.PrimaryCommands)
+                {
+                    if (button.Label == "Mark all as seen")
+                        button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    else
+                        button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                //If we are following the show, show unfollow button. else show Follow button.
+                foreach (AppBarButton button in bar.PrimaryCommands)
+                {
+                    if (button.Label == "Mark all as seen")
+                        button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                    else
+                    {
+                        if (Show.following && button.Label == "Unfollow")
+                            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                        if (!Show.following && button.Label == "Follow")
+                            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                    }
+                }
+            }
+        }
+
+        private async void markAsSeen_Click(object sender, RoutedEventArgs e)
+        {
+            MessageDialog dia = new MessageDialog("Mark season as watched?","Are you sure?");
+            dia.Commands.Add(new UICommand("Ok"));
+            dia.Commands.Add(new UICommand("Cancel"));
+            IUICommand res = await dia.ShowAsync();
+
+            //if ok pressed
+            if (res.Label == "Ok")
+            {
+                PivotItem pivoi = Pivot.Items[currentPivot] as PivotItem;
+                string seasonnr = pivoi.Header.ToString().Replace("Season ", "");
+                
+                foreach(Episode epi in season[Int32.Parse(seasonnr)])
+                {
+                    if(epi.Aired)
+                    {
+                        epi.Seen = true;
+                        epi.OnPropertyChanged("redo");
+                        epi.OnPropertyChanged("Opacity");
+                    }
+                }
+                api.markSeasonAsWatched(seasonnr, Show);
+            }
+        }
+
+        private void unfollow_Click(object sender, RoutedEventArgs e)
+        {
+            api.unfollowShow(Show.showUrl);
+            if (bar == null)
+                return;
+            foreach (AppBarButton button in bar.PrimaryCommands)
+            {
+                if (button.Label == "Follow")
+                    button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                else
+                    button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+
+        }
+
+        private void follow_Click(object sender, RoutedEventArgs e)
+        {
+            api.followShow(Show.showUrl);
+            if (bar == null)
+                return;
+            foreach (AppBarButton button in bar.PrimaryCommands)
+            {
+                if (button.Label == "Unfollow")
+                    button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                else
+                    button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
         }
 
         #region NavigationHelper registration
@@ -162,7 +294,25 @@ namespace Followshows
 
         private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
+            //If the image failed to load, return load the smaller resolution image.
             Image.Source = Show.Image;
+            
+
+            Image im = sender as Image;
+            ImageSource source = im.Source;
+            Episode twee = im.DataContext as Episode;
+            string Imsource = twee.Image.UriSource.ToString();
+            if (Imsource.Contains("360") || Imsource.Contains("357"))
+            {
+                twee.Image.UriSource = new Uri(Imsource.Replace("360x207", "130x75").Replace("357x500","30x42"));
+            }
+            else
+            {
+                Uri a = new Uri("ms-appx:Assets/basicQueueItem.bmp");
+                im.Source = new Windows.UI.Xaml.Media.Imaging.BitmapImage(a);
+                im.Opacity = 1;
+                im.Stretch = Stretch.Fill;
+            }
         }
 
         private void Tapped_ShowFullText(object sender, TappedRoutedEventArgs e)
@@ -197,6 +347,7 @@ namespace Followshows
                     return;
                 }
 
+                //Show fade-out animation
                 DoubleAnimation ani = new DoubleAnimation();
                 Storyboard.SetTarget(ani, ima);
 
@@ -217,7 +368,7 @@ namespace Followshows
                 item = sender as Grid;
                 ep = item.DataContext as Episode;
                 
-
+                //Show animation
                 DoubleAnimation ani = new DoubleAnimation();
                 Storyboard.SetTarget(ani, ima);
 
@@ -231,6 +382,7 @@ namespace Followshows
 
                 ep.Seen = false;
 
+                //Refresh data-context
                 item.DataContext = null;
                 item.DataContext = ep;
 
@@ -247,6 +399,8 @@ namespace Followshows
             ep.redo = Visibility.Visible;
 
             api.markAsWatched(ep);
+
+            //Refresh datacontext
             item.DataContext = null;
             item.DataContext = ep;
         }

@@ -52,9 +52,13 @@ namespace Followshows
             logou.Click += logout;
             AppBarButton refr = new AppBarButton() { Icon = new BitmapIcon() { UriSource = new Uri("ms-appx:Assets/appbar.refresh.png") }, Label = "Refresh" };
             refr.Click += refresh;
-            bar.PrimaryCommands.Add(logou);
+            AppBarButton search = new AppBarButton() { Icon = new SymbolIcon(Symbol.Find), Label = "Search" };
+            search.Click += search_Click;
+            
             bar.PrimaryCommands.Add(refr);
-            bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
+            bar.PrimaryCommands.Add(search);
+            bar.PrimaryCommands.Add(logou);
+            bar.ClosedDisplayMode =  AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
 
@@ -64,6 +68,17 @@ namespace Followshows
 
             selectedPivot = 0;
 
+           
+
+        }
+
+        void search_Click(object sender, RoutedEventArgs e)
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (!rootFrame.Navigate(typeof(Search), api))
+            {
+                throw new Exception("Failed to create initial page");
+            }
         }
 
         /// <summary>
@@ -94,8 +109,12 @@ namespace Followshows
         /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
         /// a dictionary of state preserved by this page during an earlier
         /// session.  The state will be null the first time a page is visited.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            StatusBar statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
+            // Hide the status bar
+            await statusBar.HideAsync();
+
             ////Loading
             if (e.NavigationParameter != null)
             {
@@ -108,15 +127,18 @@ namespace Followshows
                     throw new Exception("There is no api defined");
                 }
             }
-
-            TvShow show = new TvShow();
+            
+            //As a precaution set a show as the passed object
+            TvShow show = new TvShow(false);
             api.passed = show;
+
             if (api.hasInternet())
             {
                 LoadLists();
             }
             else
             {
+                //Wait for when we do have internet
                 api.getNetwork().PropertyChanged += NetworkStatus_Changed;
             }
 
@@ -146,9 +168,10 @@ namespace Followshows
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            //Run inside of UI thread (otherwise won't work)
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                this.refresh(null, null);
+                LoadLists();
             });
 
         }
@@ -264,18 +287,6 @@ namespace Followshows
 
         #endregion
 
-        private void Logout(object sender, TappedRoutedEventArgs e)
-        {
-            PasswordVault vault = new PasswordVault();
-            vault.Remove(vault.FindAllByResource("email")[0]);
-            api.refresh();
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (!rootFrame.Navigate(typeof(MainPage), api))
-            {
-                throw new Exception("Failed to create initial page");
-            }
-        }
-
         private void logout(object sender, RoutedEventArgs e)
         {
             PasswordVault vault = new PasswordVault();
@@ -288,33 +299,9 @@ namespace Followshows
             }
         }
 
-        private void pivotItem_Changed(object sender, SelectionChangedEventArgs e)
+        public void refresh(object sender, RoutedEventArgs e)
         {
-            //Pivot page = sender as Pivot;
-            //selectedPivot = page.SelectedIndex;
-            //var hi = e;
-        }
-
-        public async void refresh(object sender, RoutedEventArgs e)
-        {
-            //switch (selectedPivot)
-            //{
-            //    case 0:
-            //        List<Episode> queueList = await api.getQueue();
-            //        if (queueList != null)
-            //        {
-            //            queue.ItemsSource = queue;
-            //        }
-            //        break;
-            //    case 1:
-            //        List<TvShow> track = await api.getTracker();
-            //        if (track != null)
-            //        {
-            //            tracker.ItemsSource = track;
-            //        }
-            //        break;
-            //}
-
+            LoadLists();
         }
 
         private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)

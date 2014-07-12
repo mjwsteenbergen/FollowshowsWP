@@ -141,9 +141,10 @@
             </HubSection>
             <HubSection Name="twee">
                 <DataTemplate>
-                    <Grid>
-                        <Button Content="Facebook"/>
-                    </Grid>
+                    <StackPanel>
+                        <TextBlock Text="Logging in with facebook isn't supported yet." HorizontalAlignment="Center" Style="{ThemeResource SubheaderTextBlockStyle}" TextAlignment="Center" Margin="0,200,0,0"/>
+                        <TextBlock Text="We are sorry for the inconvenience." HorizontalAlignment="Center" Style="{ThemeResource BodyTextBlockStyle}" Margin="0,20,0,0"/>
+                    </StackPanel>
                 </DataTemplate>
             </HubSection>
         </Hub>
