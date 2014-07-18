@@ -19,6 +19,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using System.Runtime.Serialization.Json;
+using Windows.ApplicationModel.Contacts;
+using Windows.ApplicationModel.Email;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -54,10 +56,19 @@ namespace Followshows
             refr.Click += refresh;
             AppBarButton search = new AppBarButton() { Icon = new SymbolIcon(Symbol.Find), Label = "Search" };
             search.Click += search_Click;
-            
+
+            AppBarButton contact = new AppBarButton() { Label = "Contact Developer" };
+            contact.Click += sendEmail;
+            AppBarButton ideas = new AppBarButton() { Label = "Vote for new Ideas" };
+            ideas.Click += openForum;
+
             bar.PrimaryCommands.Add(refr);
             bar.PrimaryCommands.Add(search);
             bar.PrimaryCommands.Add(logou);
+
+            bar.SecondaryCommands.Add(contact);
+            bar.SecondaryCommands.Add(ideas);
+
             bar.ClosedDisplayMode =  AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
@@ -68,8 +79,32 @@ namespace Followshows
 
             selectedPivot = 0;
 
+            //http://followshowswp.uservoice.com/forums/255100-general
            
 
+        }
+
+        private async void openForum(object sender, RoutedEventArgs e)
+        {
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("http://followshowswp.uservoice.com/forums/255100-general"));
+        }
+
+        private async void sendEmail(object sender, RoutedEventArgs e)
+        {
+            var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
+
+            Contact c = new Contact();
+            c.Emails.Add(new ContactEmail() { Address = "followshows@nntn.nl" });
+
+            var email = c.Emails.FirstOrDefault<ContactEmail>();
+            if (email != null)
+            {
+                var emailRecipient = new EmailRecipient(email.Address);
+                emailMessage.To.Add(emailRecipient);
+            }
+
+            await EmailManager.ShowComposeNewEmailAsync(emailMessage);
+        
         }
 
         void search_Click(object sender, RoutedEventArgs e)

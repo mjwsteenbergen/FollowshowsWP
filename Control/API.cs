@@ -425,8 +425,6 @@ namespace Followshows
                 if (Episode.Name != "li") { continue; }
                 Episode ep = new Episode(true, false);
 
-                //Set Height of the item to standard
-                ep.Height = 209.16665649414;
                 foreach (HtmlNode item in Episode.DescendantNodes())
                 {
                     if (item.Attributes["class"] != null)
@@ -625,7 +623,10 @@ namespace Followshows
             show.Name = getChild(forFollowandName, 0).InnerText;
 
             HtmlNode season = doc.GetElementbyId("season-filter");
-            show.numberOfSeasons = season.ChildNodes.ToArray<HtmlNode>().Length;
+            if (season != null)
+            {
+                show.numberOfSeasons = season.ChildNodes.ToArray<HtmlNode>().Length;
+            }
 
             HtmlNode actors = doc.GetElementbyId("actors");
             if (actors != null)

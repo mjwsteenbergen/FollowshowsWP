@@ -53,7 +53,7 @@ public class Episode : INotifyPropertyChanged
             else
             {
                 seen = false;
-                Opacity = 0.85;
+                Opacity = 0.9;
                 redo = Visibility.Collapsed;
             }
         }

@@ -34,6 +34,7 @@ namespace Followshows
         private int currentPivot = 0;
         private CommandBar bar;
 
+
         private bool summaryExtended = false;
 
         List<Episode>[] season;
@@ -86,65 +87,70 @@ namespace Followshows
                 //Loading
 
             //Create a fake show, which isn't visible to decrease uglyness
-            NTW.DataContext = new Episode(false,true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
+            //NTW.DataContext = new Episode(false, true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
 
             api = (API)e.NavigationParameter;
             Show = await api.getShow(api.passed as TvShow);
 
-                //Create a new commandbar and add buttons
-            bar = new CommandBar();
-            AppBarButton follow = new AppBarButton() { Icon = new SymbolIcon(Symbol.Favorite), Label = "Follow" };
-            follow.Click += follow_Click;
-            follow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            if(!Show.following)
-            {
-                follow.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                amIFollowing.Text = "Not Yet...";
-            }
-            
-            AppBarButton unfollow = new AppBarButton() { Icon = new SymbolIcon(Symbol.UnFavorite), Label = "Unfollow" };
-            unfollow.Click += unfollow_Click;
-            unfollow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             if(Show.following)
             {
-                unfollow.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                amIFollowing.Text = "Yes you are";
+                followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
             }
+
+            //Create a new commandbar and add buttons
+            bar = new CommandBar();
+        //    AppBarButton follow = new AppBarButton() { Icon = new SymbolIcon(Symbol.Favorite), Label = "Follow" };
+        //    follow.Click += follow_Click;
+        //    follow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //    if(!Show.following)
+        //    {
+        //        follow.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //        amIFollowing.Text = "Not Yet...";
+        //    }
+            
+        //    AppBarButton unfollow = new AppBarButton() { Icon = new SymbolIcon(Symbol.UnFavorite), Label = "Unfollow" };
+        //    unfollow.Click += unfollow_Click;
+        //    unfollow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //    if(Show.following)
+        //    {
+        //        unfollow.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //        amIFollowing.Text = "Yes you are";
+        //    }
 
             AppBarButton seen = new AppBarButton() { Icon = new SymbolIcon(Symbol.Accept), Label = "Mark all as seen" };
             seen.Click += markAsSeen_Click;
-            seen.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
-            bar.PrimaryCommands.Add(follow);
-            bar.PrimaryCommands.Add(unfollow);
+        //    bar.PrimaryCommands.Add(follow);
+        //    bar.PrimaryCommands.Add(unfollow);
             bar.PrimaryCommands.Add(seen);
+            bar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
             BottomAppBar = bar;
 
             Image.Source = new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri(Show.Image.UriSource.ToString().Replace("80", "357").Replace("112", "500")));
             this.DataContext = Show;
 
-            NTWtitle.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //    NTWtitle.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
-            List<Episode> wl = await api.getWatchList();
-            if(wl != null)
-            {
-                foreach(Episode ep in wl)
-                {
-                    if(ep.SeriesName == Show.Name)
-                    {
-                        NTW.DataContext = ep;
-                        NTWtitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                        break;
-                    }
-                }
+        //    List<Episode> wl = await api.getWatchList();
+        //    if(wl != null)
+        //    {
+        //        foreach(Episode ep in wl)
+        //        {
+        //            if(ep.SeriesName == Show.Name)
+        //            {
+        //                NTW.DataContext = ep;
+        //                NTWtitle.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //                break;
+        //            }
+        //        }
             
-            }
-            if(Show.numberOfSeasons > 0)
+        //    }
+            if (Show.numberOfSeasons > 0)
             {
-                season = new List<Episode>[Show.numberOfSeasons+1];
+                season = new List<Episode>[Show.numberOfSeasons + 1];
                 //For every show create a new pivot with a gridview with the episode-itemtemplate;
-                for(int i=Show.numberOfSeasons; i>0; i--)
+                for (int i = Show.numberOfSeasons; i > 0; i--)
                 {
                     PivotItem item = new PivotItem();
                     item.Header = "Season " + i;
@@ -179,40 +185,28 @@ namespace Followshows
             Pivot pivo = sender as Pivot;
             currentPivot = pivo.SelectedIndex;
 
-            if (bar == null)
-                return;
+            //if (bar == null)
+            //    return;
             if (currentPivot > 0)
             {
+                pivo.Margin = new Thickness(0,0,0,0);
                 //If we are on the first pivot, show only the mark all as seen button
-                foreach( AppBarButton button in bar.PrimaryCommands)
-                {
-                    if (button.Label == "Mark all as seen")
-                        button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                    else
-                        button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                }
+                BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                
+                        
             }
             else
             {
-                //If we are following the show, show unfollow button. else show Follow button.
-                foreach (AppBarButton button in bar.PrimaryCommands)
-                {
-                    if (button.Label == "Mark all as seen")
-                        button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                    else
-                    {
-                        if (Show.following && button.Label == "Unfollow")
-                            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                        if (!Show.following && button.Label == "Follow")
-                            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                    }
-                }
+                pivo.Margin = new Thickness(0, -40, 0, 0);
+                if (bar == null)
+                    return;
+                BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
         }
 
         private async void markAsSeen_Click(object sender, RoutedEventArgs e)
         {
-            MessageDialog dia = new MessageDialog("Mark season as watched?","Are you sure?");
+            MessageDialog dia = new MessageDialog("Mark season as watched?", "Are you sure?");
             dia.Commands.Add(new UICommand("Ok"));
             dia.Commands.Add(new UICommand("Cancel"));
             IUICommand res = await dia.ShowAsync();
@@ -222,10 +216,10 @@ namespace Followshows
             {
                 PivotItem pivoi = Pivot.Items[currentPivot] as PivotItem;
                 string seasonnr = pivoi.Header.ToString().Replace("Season ", "");
-                
-                foreach(Episode epi in season[Int32.Parse(seasonnr)])
+
+                foreach (Episode epi in season[Int32.Parse(seasonnr)])
                 {
-                    if(epi.Aired)
+                    if (epi.Aired)
                     {
                         epi.Seen = true;
                         epi.OnPropertyChanged("redo");
@@ -236,34 +230,34 @@ namespace Followshows
             }
         }
 
-        private void unfollow_Click(object sender, RoutedEventArgs e)
-        {
-            api.unfollowShow(Show.showUrl);
-            if (bar == null)
-                return;
-            foreach (AppBarButton button in bar.PrimaryCommands)
-            {
-                if (button.Label == "Follow")
-                    button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                else
-                    button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            }
+        //private void unfollow_Click(object sender, RoutedEventArgs e)
+        //{
+        //    api.unfollowShow(Show.showUrl);
+        //    if (bar == null)
+        //        return;
+        //    foreach (AppBarButton button in bar.PrimaryCommands)
+        //    {
+        //        if (button.Label == "Follow")
+        //            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //        else
+        //            button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //    }
 
-        }
+        //}
 
-        private void follow_Click(object sender, RoutedEventArgs e)
-        {
-            api.followShow(Show.showUrl);
-            if (bar == null)
-                return;
-            foreach (AppBarButton button in bar.PrimaryCommands)
-            {
-                if (button.Label == "Unfollow")
-                    button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                else
-                    button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            }
-        }
+        //private void follow_Click(object sender, RoutedEventArgs e)
+        //{
+        //    
+        //    if (bar == null)
+        //        return;
+        //    foreach (AppBarButton button in bar.PrimaryCommands)
+        //    {
+        //        if (button.Label == "Unfollow")
+        //            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //        else
+        //            button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //    }
+        //}
 
         #region NavigationHelper registration
 
@@ -317,7 +311,7 @@ namespace Followshows
 
         private void Tapped_ShowFullText(object sender, TappedRoutedEventArgs e)
         {
-            if(summaryExtended)
+            if (summaryExtended)
             {
                 Summary.Text = Show.Summary;
                 summaryExtended = false;
@@ -327,7 +321,6 @@ namespace Followshows
                 Summary.Text = Show.SummaryExtended;
                 summaryExtended = true;
             }
-            
         }
 
         #region MarkAsWatched
@@ -374,7 +367,7 @@ namespace Followshows
 
                 Storyboard board = new Storyboard();
                 Storyboard.SetTargetProperty(ani, "Opacity");
-                ani.To = 1;
+                ani.To = 0.9;
                 board.Duration = new Duration(TimeSpan.FromSeconds(1));
                 board.Children.Add(ani);
 
@@ -406,5 +399,23 @@ namespace Followshows
         }
 
         #endregion
+
+        private void Tapped_Favorite(object sender, TappedRoutedEventArgs e)
+        {
+            if (Show.following)
+            {
+                api.unfollowShow(Show.showUrl);
+                Show.following = false;
+                followColor.Fill = ((SolidColorBrush)App.Current.Resources["AppBarBackgroundThemeBrush"]);
+
+            }
+            else
+            {
+                api.followShow(Show.showUrl);
+                Show.following = true;
+                followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
+            }
+            
+        }
     }
 }

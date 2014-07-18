@@ -115,7 +115,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\appbar.arrow.right.png" />
     <Content Include="Assets\appbar.refresh.png" />
+    <Content Include="Assets\appbar.star.png" />
     <Content Include="Assets\appbar.undo.png" />
     <Content Include="Assets\back.png" />
     <Content Include="Assets\basicQueueItem.bmp" />
