@@ -33,7 +33,7 @@ namespace Followshows
 
         private bool loggingin;
 
-        
+
         private TextBox email;
         private TextBox firstName;
         private TextBox lastName;
@@ -55,6 +55,9 @@ namespace Followshows
         private string emailad;
         private string option;
         private string timezone;
+
+        //Facebook
+        WebView webv_facebook;
 
         public LandingPage()
         {
@@ -153,7 +156,7 @@ namespace Followshows
         {
             if (e.Key.ToString() == "Enter")
                 TryLoginOrRegister();
-                
+
         }
 
         private void LoginAndRegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -174,7 +177,7 @@ namespace Followshows
                 if (!(await api.LoginWithEmail(emailad, password.Password)))
                 {
                     await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
- 
+
                 }
                 else
                 {
@@ -199,7 +202,7 @@ namespace Followshows
                     lastName.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
                 }
-                if (emailad == null|| !Regex.IsMatch(emailad, "[^@]+@[^@]+.[a-zA-Z]{2,6}"))
+                if (emailad == null || !Regex.IsMatch(emailad, "[^@]+@[^@]+.[a-zA-Z]{2,6}"))
                 {
                     email.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
@@ -232,9 +235,9 @@ namespace Followshows
                     }
                 }
             }
-            
-                
-            
+
+
+
         }
 
         private void SwitchRegister(object sender, TappedRoutedEventArgs e)
@@ -249,7 +252,7 @@ namespace Followshows
                 noAc.Text = "Got an account?";
                 logreg.Content = "Register";
                 passBlock.Text = "Password (more than 6 characters)";
-                header.Text="Register";
+                header.Text = "Register";
             }
             else
             {
@@ -264,7 +267,7 @@ namespace Followshows
                 header.Text = "Login";
             }
         }
-                    
+
 
         #region register Items
 
@@ -277,17 +280,24 @@ namespace Followshows
 
         private void loaded(object sender, RoutedEventArgs e)
         {
-            TextBox box = sender as TextBox;
-            switch (box.Name)
+
+            Control control = sender as Control;
+            if (control == null)
+            {
+                webv_facebook = sender as WebView;
+                api.LoginWithFacebook(webv_facebook);
+                return;
+            }
+            switch (control.Name)
             {
                 case ("firstname"):
-                    firstName = box;
+                    firstName = sender as TextBox;
                     break;
                 case ("lastname"):
-                    lastName = box;
+                    lastName = sender as TextBox;
                     break;
                 case ("email"):
-                    email = box;
+                    email = sender as TextBox;
                     break;
             }
         }
@@ -379,7 +389,20 @@ namespace Followshows
 
         #endregion
 
+        private void frameNav(WebView sender, WebViewNavigationStartingEventArgs args)
+        {
+
+            //http://followshows.com/choose
+        }
+
+        private void webv_facebook_FrameNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+
+        }
+
         
+
+
 
 
 

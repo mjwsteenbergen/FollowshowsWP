@@ -79,7 +79,7 @@ namespace Followshows
                 }
             }
             catch (Exception)
-            { 
+            {
                 return false;
             }
             return await this.LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString());
@@ -118,10 +118,10 @@ namespace Followshows
                 }
                 response.EnsureSuccessStatusCode();
                 res.page = Regex.Replace(((await response.Content.ReadAsStringAsync()).Replace("\n", "").Replace("\\\"", "").Replace("\t", "")), " {2,}", "");
-                res.content = response.Content;
+                res.content = response;
                 if (res.page.Contains("Forgot your password?"))
                 {
-                    if(! await login())
+                    if (!await login())
                     {
                         Frame rootFrame = Window.Current.Content as Frame;
                         if (!rootFrame.Navigate(typeof(LandingPage), this))
@@ -312,6 +312,55 @@ namespace Followshows
             return false;
         }
 
+        public void LoginWithFacebook(WebView sender)
+        {
+            sender.DOMContentLoaded += DOMload;
+            HttpRequestMessage mes = new HttpRequestMessage();
+            LoginWithFacebook3();
+        }
+
+        private async void DOMload(WebView sender, WebViewDOMContentLoadedEventArgs args)
+        {
+            if (args.Uri.ToString().Contains("http://followshows.com/"))
+            {
+                sender.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+        }
+
+        public async void LoginWithFacebook3()
+        {
+            FacebookClient _fb = new FacebookClient();
+            var loginUrl = _fb.GetLoginUrl(new
+            {
+                client_id = 287824544623545,
+                redirect_uri = Windows.Security.Authentication.Web.WebAuthenticationBroker.GetCurrentApplicationCallbackUri().AbsoluteUri,
+                //scope = _permissions,
+                display = "popup",
+                response_type = "token"
+            });
+
+
+            //WebAuthenticationResult WebAuthenticationResult = 
+            WebAuthenticationBroker.(loginUrl);
+            //if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.Success)
+            //{
+            //    var callbackUri = new Uri(WebAuthenticationResult.ResponseData.ToString());
+            //    var facebookOAuthResult = _fb.ParseOAuthCallbackUrl(callbackUri);
+
+            //    // Retrieve the Access Token. You can now interact with Facebook on behalf of the user
+            //    // using the Access Token.
+            //    var accessToken = facebookOAuthResult.AccessToken;
+            //}
+            //else if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
+            //{
+            //    // handle authentication failure
+            //}
+            //else
+            //{
+            //    // The user canceled the authentication
+            //}
+        }
+
         public async Task<string> LoginWithFacebook2(string username, string password)
         {
             HttpResponseMessage res2 = await client.SendAsync(new HttpRequestMessage(System.Net.Http.HttpMethod.Head, "http://followshows.com/"));
@@ -418,7 +467,7 @@ namespace Followshows
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(resp.page);
 
-            
+
 
             foreach (HtmlNode Episode in doc.DocumentNode.ChildNodes)
             {
@@ -496,7 +545,7 @@ namespace Followshows
                     show.Name = WebUtility.HtmlDecode(title.InnerText);
                     show.Image = new BitmapImage() { UriSource = new Uri(getAttribute(title.DescendantNodes(), "src")) };
                     //show.ImageUrl = getAttribute(title.DescendantNodes(), "src");
-                    show.showUrl = getAttribute(title.DescendantNodes(), "href").Replace("/show/","");
+                    show.showUrl = getAttribute(title.DescendantNodes(), "href").Replace("/show/", "");
                     show.stillToWatch = getChild(tvshow.DescendantNodes(), "class", "towatch").InnerHtml;
                     string perc = getChild(tvshow, "class", "progress").InnerText.Replace("%", "");
                     show.percentageWatched = float.Parse(perc) / 100 * 150;
@@ -555,14 +604,14 @@ namespace Followshows
         public async Task<List<Episode>> getWatchList()
         {
             watchList = new List<Episode>();
-            
+
             Response resp = await getResponse("http://followshows.com/home/watchlist", null, false);
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return watchList;
             doc.LoadHtml(resp.page);
 
-            
+
 
             foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
@@ -619,7 +668,7 @@ namespace Followshows
             show.Airs = getChild(showSummary.DescendantNodes(), "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
 
             HtmlNode forFollowandName = getChild(showSummary.DescendantNodes(), "class", "summary");
-            show.Followers = getChild(forFollowandName, 2).InnerText.Replace(" followers","");
+            show.Followers = getChild(forFollowandName, 2).InnerText.Replace(" followers", "");
             show.Name = getChild(forFollowandName, 0).InnerText;
 
             HtmlNode season = doc.GetElementbyId("season-filter");
@@ -637,7 +686,7 @@ namespace Followshows
             {
                 show.Actors = "None";
             }
-            
+
 
             return show;
         }
@@ -652,7 +701,7 @@ namespace Followshows
                 return season;
             doc.LoadHtml(resp.page);
 
-            
+
 
             foreach (HtmlNode episode in getChild(doc.DocumentNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
@@ -700,7 +749,7 @@ namespace Followshows
         {
             List<TvShow> res = new List<TvShow>();
             List<TvShow> res2 = new List<TvShow>();
-           
+
             if (searchTerm == null || searchTerm == "")
             {
                 passed = res2;
@@ -711,7 +760,7 @@ namespace Followshows
             if (resp.page == null)
                 return res;
             List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
-            foreach(SearchResult result in response)
+            foreach (SearchResult result in response)
             {
                 if (result.type == "show")
                 {
@@ -770,15 +819,15 @@ namespace Followshows
 
         public async void markSeasonAsWatched(string seasonnr, TvShow show)
         {
-            if (seasonnr == null|| show.showUrl == null) return;
-            Response resp = await getResponse("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl  + "&season=" + seasonnr, null);
+            if (seasonnr == null || show.showUrl == null) return;
+            Response resp = await getResponse("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl + "&season=" + seasonnr, null);
             if (resp.hasInternet)
             {
                 lastPage = resp.page;
             }
             if (resp.page == null || resp.page.Contains("DMCA Policy"))
             {
-                Helper.message("Uhm... Something went wrong.","Sorry");
+                Helper.message("Uhm... Something went wrong.", "Sorry");
             }
         }
 
@@ -874,6 +923,7 @@ namespace Followshows
         //    return (List<Episode>)ser.ReadObject(str.AsStreamForRead());
 
         //}
+
     }
 
 }

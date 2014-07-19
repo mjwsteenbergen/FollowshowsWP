@@ -122,7 +122,7 @@ public class Response
 {
     public bool hasInternet { get; set; }
     public string page { get; set; }
-    public HttpContent content { get; set; }
+    public HttpResponseMessage content { get; set; }
 }
 
 public class NetworkChanged : INotifyPropertyChanged

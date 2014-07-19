@@ -204,7 +204,8 @@
     </DesignTimeOnly>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Facebook">
+    <Reference Include="Facebook, Version=6.0.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Facebook.6.6.0\lib\wpa81\Facebook.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=678cda889909cc4a, processorArchitecture=MSIL">
