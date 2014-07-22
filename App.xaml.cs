@@ -90,8 +90,10 @@ namespace Followshows
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
                 API ap = API.createWebsite();
-                if(await ap.login())
+                if(!ap.hasInternet() && ap.hasLoginCreds())
                 {
+                    Helper.message("You don't have internet. Some features won't be enabled");
+
                     if (!rootFrame.Navigate(typeof(MainPage), ap))
                     {
                         throw new Exception("Failed to create initial page");
@@ -99,9 +101,19 @@ namespace Followshows
                 }
                 else
                 {
-                    if (!rootFrame.Navigate(typeof(LandingPage), ap))
+                    if (await ap.login())
                     {
-                        throw new Exception("Failed to create initial page");
+                        if (!rootFrame.Navigate(typeof(MainPage), ap))
+                        {
+                            throw new Exception("Failed to create initial page");
+                        }
+                    }
+                    else
+                    {
+                        if (!rootFrame.Navigate(typeof(LandingPage), ap))
+                        {
+                            throw new Exception("Failed to create initial page");
+                        }
                     }
                 }
             }

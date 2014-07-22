@@ -21,6 +21,8 @@ using Windows.UI.Xaml.Navigation;
 using System.Runtime.Serialization.Json;
 using Windows.ApplicationModel.Contacts;
 using Windows.ApplicationModel.Email;
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -42,6 +44,8 @@ namespace Followshows
         //Items in datatemplate
         private GridView queue;
         private ListView tracker;
+
+        List<Episode> q;
 
         private int selectedPivot;
 
@@ -69,7 +73,7 @@ namespace Followshows
             bar.SecondaryCommands.Add(contact);
             bar.SecondaryCommands.Add(ideas);
 
-            bar.ClosedDisplayMode =  AppBarClosedDisplayMode.Minimal;
+            bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
 
@@ -80,7 +84,7 @@ namespace Followshows
             selectedPivot = 0;
 
             //http://followshowswp.uservoice.com/forums/255100-general
-           
+
 
         }
 
@@ -104,7 +108,7 @@ namespace Followshows
             }
 
             await EmailManager.ShowComposeNewEmailAsync(emailMessage);
-        
+
         }
 
         void search_Click(object sender, RoutedEventArgs e)
@@ -162,7 +166,7 @@ namespace Followshows
                     throw new Exception("There is no api defined");
                 }
             }
-            
+
             //As a precaution set a show as the passed object
             TvShow show = new TvShow(false);
             api.passed = show;
@@ -173,6 +177,26 @@ namespace Followshows
             }
             else
             {
+
+
+                List<Episode> list = await api.recoverQueue();
+                List<TvShow> listTV = await api.recoverTracker();
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    if (list.Count > 0)
+                    {
+                        queue.ItemsSource = list;
+                    }
+
+                    if (listTV.Count > 0)
+                    {
+                        tracker.ItemsSource = listTV;
+                    }
+                    
+                    //q = list;
+                });
+
+
                 //Wait for when we do have internet
                 api.getNetwork().PropertyChanged += NetworkStatus_Changed;
             }
@@ -199,6 +223,7 @@ namespace Followshows
             {
                 tracker.ItemsSource = track;
             }
+            await api.store();
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -302,7 +327,21 @@ namespace Followshows
                 item.DataContext = null;
                 item.DataContext = ep;
 
-                api.markNotAsWatched(ep);
+                if (api.hasInternet())
+                {
+                    api.markNotAsWatched(ep);
+                }
+                else
+                {
+                    Command com = new Command();
+                    com.episode = ep;
+                    com.watched = false;
+
+                    api.addCommand(com);
+
+                }
+
+
             }
 
 
@@ -311,8 +350,15 @@ namespace Followshows
 
         void board_Completed(object sender, object e)
         {
+            if (api.hasInternet())
+            {
+                api.markAsWatched(ep);
+            }
+            else
+            {
+                api.addCommand(new Command() { episode = ep, watched = true });
+            }
 
-            api.markAsWatched(ep);
 
             ep.Seen = true;
 
@@ -336,6 +382,10 @@ namespace Followshows
 
         public void refresh(object sender, RoutedEventArgs e)
         {
+            if (!api.hasInternet())
+            {
+                return;
+            }
             LoadLists();
         }
 
@@ -360,6 +410,12 @@ namespace Followshows
 
         private void trackerItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            if (!api.hasInternet())
+            {
+                Helper.message("This feature is currently unavailable");
+                return;
+            }
+
             Grid gr = sender as Grid;
             api.passed = gr.DataContext;
             Frame rootFrame = Window.Current.Content as Frame;
@@ -377,6 +433,10 @@ namespace Followshows
             {
                 case "queue":
                     queue = sender as GridView;
+                    if (q != null)
+                    {
+                        queue.ItemsSource = q;
+                    }
                     break;
                 case "tracker":
                     tracker = sender as ListView;

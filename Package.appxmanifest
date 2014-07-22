@@ -16,7 +16,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Followshows.App">
-      <m3:VisualElements DisplayName="Followshows" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Followshows" ForegroundText="light" BackgroundColor="transparent">
+      <m3:VisualElements DisplayName="Followshows" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Followshows" ForegroundText="light" BackgroundColor="transparent" ToastCapable="true">
         <m3:DefaultTile Square71x71Logo="Assets\Square71x71Logo.png">
           <m3:ShowNameOnTiles>
             <m3:ShowOn Tile="square150x150Logo" />

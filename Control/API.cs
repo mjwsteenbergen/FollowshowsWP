@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
@@ -20,6 +19,7 @@ using System.ComponentModel;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Newtonsoft.Json;
+using Windows.Web.Http;
 
 namespace Followshows
 {
@@ -57,7 +57,9 @@ namespace Followshows
 
         public static API createWebsite()
         {
-            HttpClient http = new HttpClient();
+            Windows.Web.Http.Filters.HttpBaseProtocolFilter filter = new Windows.Web.Http.Filters.HttpBaseProtocolFilter();
+            filter.AutomaticDecompression = true;
+            HttpClient http = new HttpClient(filter);
             API web = new API(http, "None");
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -91,7 +93,7 @@ namespace Followshows
             loggedIn = false;
         }
 
-        private async Task<Response> getResponse(string url, HttpContent cont, bool post)
+        private async Task<Response> getResponse(string url, IHttpContent cont, bool post)
         {
             Response res = new Response();
             Uri uri = new Uri(url);
@@ -147,7 +149,7 @@ namespace Followshows
 
         }
 
-        private async Task<Response> getResponse(string url, HttpContent cont)
+        private async Task<Response> getResponse(string url, IHttpContent cont)
         {
             return await getResponse(url, cont, true);
         }
@@ -277,7 +279,7 @@ namespace Followshows
             dict.Add("email", email);
             dict.Add("password", password);
             dict.Add("timezone", new Regex("(.)+ - ").Replace(timezone, "").ToString());
-            HttpContent content = new FormUrlEncodedContent(dict);
+            IHttpContent content = new HttpFormUrlEncodedContent(dict);
 
             Response resp = await getResponse("http://followshows.com/signup/save", content);
             if (resp.hasInternet)
@@ -294,7 +296,7 @@ namespace Followshows
             Dictionary<string, string> dict = new Dictionary<string, string>();
             dict.Add("j_username", username);
             dict.Add("j_password", password);
-            HttpContent content = new FormUrlEncodedContent(dict);
+            IHttpContent content = new HttpFormUrlEncodedContent(dict);
 
             //Login
             Response resp = await getResponse("http://followshows.com/login/j_spring_security_check", content);
@@ -312,43 +314,44 @@ namespace Followshows
             return false;
         }
 
-        public async Task<string> LoginWithFacebook2(string username, string password)
+        public Task<string> LoginWithFacebook2(string username, string password)
         {
-            HttpResponseMessage res2 = await client.SendAsync(new HttpRequestMessage(System.Net.Http.HttpMethod.Head, "http://followshows.com/"));
+            //HttpResponseMessage res2 = await client.SendAsync(new HttpRequestMessage(System.Net.Http.HttpMethod.Head, "http://followshows.com/"));
 
-            //Login Data    
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            ////Login Data    
+            //Dictionary<string, string> dict = new Dictionary<string, string>();
 
-            //Stupid data
-            dict.Add("api_key", "287824544623545");
-            dict.Add("display", "page");
-            dict.Add("enable_profile_selector", "");
-            dict.Add("legacy_return", "1");
-            dict.Add("profile_selector_ids", "");
-            dict.Add("skip_api_login", "1");
-            dict.Add("signed_next", "1");
-            dict.Add("trynum", "1");
-            dict.Add("timezone", "-120");
-            dict.Add("lgnrnd", "060437_4CU5");
-            dict.Add("lgnjs", "1402232680");
-            dict.Add("persistent", "1");
-            dict.Add("default_persistent", "1");
-            dict.Add("login", "Aanmelden");
+            ////Stupid data
+            //dict.Add("api_key", "287824544623545");
+            //dict.Add("display", "page");
+            //dict.Add("enable_profile_selector", "");
+            //dict.Add("legacy_return", "1");
+            //dict.Add("profile_selector_ids", "");
+            //dict.Add("skip_api_login", "1");
+            //dict.Add("signed_next", "1");
+            //dict.Add("trynum", "1");
+            //dict.Add("timezone", "-120");
+            //dict.Add("lgnrnd", "060437_4CU5");
+            //dict.Add("lgnjs", "1402232680");
+            //dict.Add("persistent", "1");
+            //dict.Add("default_persistent", "1");
+            //dict.Add("login", "Aanmelden");
 
 
-            dict.Add("email", "martijn.j.w.steenbergen@planet.nl");
-            dict.Add("pass", "w8opmij");
-            HttpContent content = new FormUrlEncodedContent(dict);
+            //dict.Add("email", "martijn.j.w.steenbergen@planet.nl");
+            //dict.Add("pass", "w8opmij");
+            //HttpContent content = new FormUrlEncodedContent(dict);
 
-            //
-            //Login
-            //lastPage = (string)(await getResponse("https://www.facebook.com/login.php?skip_api_login=1&api_key=287824544623545&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv1.0%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Ffollowshows.com%252Ffacebook%252Flogin%26scope%3Demail%252Cpublish_actions%26client_id%3D287824544623545%26ret%3Dlogin&cancel_uri=http%3A%2F%2Ffollowshows.com%2Ffacebook%2Flogin%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page", content))[1];
-            //lastPage = (string)(await getResponse("https://www.facebook.com/dialog/oauth?client_id=287824544623545&redirect_uri=http://followshows.com/facebook/login&scope=email,publish_actions", null))[1];
-            return lastPage;
+            ////
+            ////Login
+            ////lastPage = (string)(await getResponse("https://www.facebook.com/login.php?skip_api_login=1&api_key=287824544623545&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv1.0%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Ffollowshows.com%252Ffacebook%252Flogin%26scope%3Demail%252Cpublish_actions%26client_id%3D287824544623545%26ret%3Dlogin&cancel_uri=http%3A%2F%2Ffollowshows.com%2Ffacebook%2Flogin%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page", content))[1];
+            ////lastPage = (string)(await getResponse("https://www.facebook.com/dialog/oauth?client_id=287824544623545&redirect_uri=http://followshows.com/facebook/login&scope=email,publish_actions", null))[1];
+            return null;
         }
 
         public async void LoginWithFacebook()
         {
+            WebAuthenticationBroker.AuthenticateAndContinue(new Uri("https://www.facebook.com/login.php?skip_api_login=1&api_key=287824544623545&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv1.0%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Ffollowshows.com%252Ffacebook%252Flogin%26scope%3Demail%252Cpublish_actions%26client_id%3D287824544623545%26ret%3Dlogin&cancel_uri=http%3A%2F%2Ffollowshows.com%2Ffacebook%2Flogin%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page"));
             FacebookClient _fb = new FacebookClient();
             var redirectUrl = "https://www.facebook.com/connect/login_success.html";
             try
@@ -369,7 +372,7 @@ namespace Followshows
 
                 await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, loginUrl, endUri);
+                    WebAuthenticationBroker.AuthenticateAndContinue(loginUrl, endUri);
                 });
                 //    WebAuthenticationOptions.None, loginUrl, endUri);
                 //if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.Success)
@@ -448,6 +451,7 @@ namespace Followshows
                                     {
                                         BitmapImage bitmapImage = new BitmapImage();
                                         bitmapImage.UriSource = new Uri(node.Attributes["src"].Value.Replace("180", "360").Replace("104", "207"));
+                                        bitmapImage.CreateOptions = BitmapCreateOptions.None;
                                         //ep.Image = node.Attributes["src"].Value;
                                         ep.Image = bitmapImage;
                                     }
@@ -462,7 +466,6 @@ namespace Followshows
                 }
                 queue.Add(ep);
             }
-            //store();
             return queue;
         }
 
@@ -837,43 +840,157 @@ namespace Followshows
             }
         }
 
+        #region Offline Storage
 
+        public async Task store()
+        {
+            if (queue != null)
+            {
+                StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+                StorageFile fil = await temp.CreateFileAsync("queue.txt", CreationCollisionOption.ReplaceExisting);
 
-        //public async void store()
-        //{
-        //    if (queue != null)
-        //    {
-        //        StorageFolder temp = ApplicationData.Current.TemporaryFolder;
-        //        StorageFile fil = await temp.CreateFileAsync("queu", CreationCollisionOption.ReplaceExisting);
+                await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
+            }
+            if (tracker != null)
+            {
+                StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+                StorageFile fil = await temp.CreateFileAsync("tracker.txt", CreationCollisionOption.ReplaceExisting);
 
-        //        //DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
-        //        //IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.ReadWrite);
-        //        //ser.WriteObject(str.AsStreamForWrite(), queue);
-        //    }
+                await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(tracker));
+                Helper.message("Finished");
+            }
 
-        //}
+        }
 
-        //public async Task<List<Episode>> recoverQueue()
-        //{
-        //    StorageFolder temp = ApplicationData.Current.TemporaryFolder;
-        //    IReadOnlyList<StorageFile> fill = await temp.GetFilesAsync();
-        //    StorageFile fil = null;
-        //    if (fill != null)
-        //    {
-        //        foreach (StorageFile fold in fill)
-        //        {
-        //            if (fold.Name == "queu")
-        //            {
-        //                fil = fold;
-        //                break;
-        //            }
-        //        }
-        //    }
-        //    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<Episode>));
-        //    IRandomAccessStream str = await fil.OpenAsync(FileAccessMode.Read);
-        //    return (List<Episode>)ser.ReadObject(str.AsStreamForRead());
+        public async Task<List<Episode>> recoverQueue()
+        {
+            queue = new List<Episode>();
 
-        //}
+            StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+
+            IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
+            if (tempItems.Count > 0)
+            {
+                StorageFile fil = await temp.GetFileAsync("queue.txt");
+
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+
+                text.ToString();
+
+                queue = JsonConvert.DeserializeObject<List<Episode>>(text.ToString());
+
+                List<Command> comList = await getCommands();
+
+                foreach (Command com in comList)
+                {
+                    foreach (Episode ep in queue)
+                    {
+                        if (com.episode.EpisodePos == ep.EpisodePos && com.episode.SeriesName == ep.SeriesName)
+                        {
+                            ep.Seen = com.watched;
+                        }
+                    }
+                } 
+            }
+            return queue;
+        }
+
+        public async Task<List<TvShow>> recoverTracker()
+        {
+            tracker = new List<TvShow>();
+
+            StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+
+            IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
+            if (tempItems.Count > 0)
+            {
+                StorageFile fil = await temp.GetFileAsync("tracker.txt");
+
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+
+                text.ToString();
+
+                tracker = JsonConvert.DeserializeObject<List<TvShow>>(text.ToString());
+
+            }
+
+            return tracker;
+        }
+
+        public async void addCommand(Command com)
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            IReadOnlyList<IStorageItem> test = await temp.GetItemsAsync();
+            StorageFile fil = null;
+            string text = null;
+            List<Command> comList = new List<Command>();
+
+            if (test.Count > 0)
+            {
+                fil = await temp.GetFileAsync("commands");
+                
+                if (fil != null)
+                {
+                    text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                    comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString()); 
+                }
+            }
+            else
+            {
+                fil = await temp.CreateFileAsync("commands");
+            }
+
+            comList.Add(com);
+            
+            await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(comList));
+            
+
+        }
+
+        public async Task<List<Command>> getCommands()
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            IReadOnlyList<IStorageItem> test = await temp.GetItemsAsync();
+            List<Command> res = new List<Command>();
+            if (test.Count > 0)
+            {
+                StorageFile fil = await temp.GetFileAsync("commands");
+                if (fil == null)
+                {
+                    return null;
+                }
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                //await fil.DeleteAsync();
+                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
+            }
+
+            return res;
+
+        }
+
+        #endregion
+
+        public bool hasLoginCreds()
+        {
+            PasswordVault vault = new PasswordVault();
+            PasswordCredential cred = null;
+            try
+            {
+                if (vault.FindAllByResource("email").ToString() != null)
+                {
+                    cred = vault.FindAllByResource("email")[0];
+                    cred.RetrievePassword();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return false;
+        }
+
+        
     }
 
 }
@@ -904,3 +1021,15 @@ public class Helper
     }
 
 }
+
+//ToastTemplateType toastTemplate = ToastTemplateType.ToastImageAndText01;
+//XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
+
+//XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
+//toastTextElements[0].AppendChild(toastXml.CreateTextNode("You don't have internet. Some features won't be enabled"));
+
+//string paramString = "{\"type\":\"toast\",\"param1\":\"12345\"}";
+//((XmlElement)toastXml.SelectSingleNode("/toast")).SetAttribute("launch", paramString);
+
+//ToastNotification toast = new ToastNotification(toastXml);
+//ToastNotificationManager.CreateToastNotifier().Show(toast);

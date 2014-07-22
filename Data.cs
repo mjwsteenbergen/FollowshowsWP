@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.Web.Http;
 
 public class Episode : INotifyPropertyChanged
 {
@@ -122,7 +122,7 @@ public class Response
 {
     public bool hasInternet { get; set; }
     public string page { get; set; }
-    public HttpContent content { get; set; }
+    public IHttpContent content { get; set; }
 }
 
 public class NetworkChanged : INotifyPropertyChanged
@@ -150,4 +150,10 @@ public class SearchResult
     public string image { get; set; }
     public bool poster { get; set; }
     public bool followed { get; set; }
+}
+
+public class Command
+{
+    public Episode episode { get; set; }
+    public bool watched { get; set; }
 }
