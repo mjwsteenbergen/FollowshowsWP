@@ -141,11 +141,16 @@
             </HubSection>
             <HubSection Name="twee">
                 <DataTemplate>
-                    <WebView Name="webv_facebook" Loaded="loaded" Source="http://followshows.com/facebook/authenticate"/>
-                    <!--<StackPanel>
-                        <TextBlock Text="Logging in with facebook isn't supported yet." HorizontalAlignment="Center" Style="{ThemeResource SubheaderTextBlockStyle}" TextAlignment="Center" Margin="0,200,0,0"/>
-                        <TextBlock Text="We are sorry for the inconvenience." HorizontalAlignment="Center" Style="{ThemeResource BodyTextBlockStyle}" Margin="0,20,0,0"/>
-                    </StackPanel>-->
+                    <Grid>
+                        
+                        
+
+                        <Button Tapped="LoginWithFacebook" Margin="0,0,0,50" HorizontalAlignment="Center" Padding="0,0,0,10">
+                            <TextBlock Text="Login" HorizontalAlignment="Center" Style="{ThemeResource SubheaderTextBlockStyle}" TextAlignment="Center" Margin="0,0,0,0"/>
+                        </Button>
+
+                        <TextBlock Text="Facebook" Style="{StaticResource HeaderTextBlockStyle}" Margin="90,0,0,80" TextAlignment="Center" VerticalAlignment="Bottom"/>
+                    </Grid>
                 </DataTemplate>
             </HubSection>
         </Hub>

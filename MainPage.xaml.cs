@@ -80,40 +80,8 @@ namespace Followshows
             selectedPivot = 0;
 
             //http://followshowswp.uservoice.com/forums/255100-general
-           
 
-        }
-
-        private async void openForum(object sender, RoutedEventArgs e)
-        {
-            await Windows.System.Launcher.LaunchUriAsync(new Uri("http://followshowswp.uservoice.com/forums/255100-general"));
-        }
-
-        private async void sendEmail(object sender, RoutedEventArgs e)
-        {
-            var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
-
-            Contact c = new Contact();
-            c.Emails.Add(new ContactEmail() { Address = "followshows@nntn.nl" });
-
-            var email = c.Emails.FirstOrDefault<ContactEmail>();
-            if (email != null)
-            {
-                var emailRecipient = new EmailRecipient(email.Address);
-                emailMessage.To.Add(emailRecipient);
-            }
-
-            await EmailManager.ShowComposeNewEmailAsync(emailMessage);
-        
-        }
-
-        void search_Click(object sender, RoutedEventArgs e)
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (!rootFrame.Navigate(typeof(Search), api))
-            {
-                throw new Exception("Failed to create initial page");
-            }
+            
         }
 
         /// <summary>
@@ -146,7 +114,7 @@ namespace Followshows
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            StatusBar statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
+            StatusBar statusBar = StatusBar.GetForCurrentView();
             // Hide the status bar
             await statusBar.HideAsync();
 
@@ -186,6 +154,11 @@ namespace Followshows
 
         private async void LoadLists()
         {
+            StatusBar bar = StatusBar.GetForCurrentView();
+            await bar.ProgressIndicator.ShowAsync();
+            bar.ProgressIndicator.Text = "Getting Queue";
+            await bar.ShowAsync();
+
             //Load Queue
             List<Episode> queueList = await api.getQueue();
             if (queueList != null)
@@ -193,12 +166,17 @@ namespace Followshows
                 queue.ItemsSource = queueList;
             }
 
+            bar.ProgressIndicator.Text = "Getting Tracker";
+
             //Load Tracker
             List<TvShow> track = await api.getTracker();
             if (track != null)
             {
                 tracker.ItemsSource = track;
             }
+
+            bar.ProgressIndicator.Text = "Done";
+            await bar.HideAsync();
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -325,7 +303,20 @@ namespace Followshows
         private void logout(object sender, RoutedEventArgs e)
         {
             PasswordVault vault = new PasswordVault();
-            vault.Remove(vault.FindAllByResource("email")[0]);
+            try
+            {
+                vault.Remove(vault.FindAllByResource("email")[0]);
+            }
+            catch (Exception)
+            { }
+
+            try
+            {
+                vault.Remove(vault.FindAllByResource("facebook")[0]);
+            }
+            catch (Exception)
+            { }
+            
             api.refresh();
             Frame rootFrame = Window.Current.Content as Frame;
             if (!rootFrame.Navigate(typeof(LandingPage), api))
@@ -337,6 +328,38 @@ namespace Followshows
         public void refresh(object sender, RoutedEventArgs e)
         {
             LoadLists();
+        }
+
+        private async void openForum(object sender, RoutedEventArgs e)
+        {
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("http://followshowswp.uservoice.com/forums/255100-general"));
+        }
+
+        private async void sendEmail(object sender, RoutedEventArgs e)
+        {
+            var emailMessage = new Windows.ApplicationModel.Email.EmailMessage();
+
+            Contact c = new Contact();
+            c.Emails.Add(new ContactEmail() { Address = "followshows@nntn.nl" });
+
+            var email = c.Emails.FirstOrDefault<ContactEmail>();
+            if (email != null)
+            {
+                var emailRecipient = new EmailRecipient(email.Address);
+                emailMessage.To.Add(emailRecipient);
+            }
+
+            await EmailManager.ShowComposeNewEmailAsync(emailMessage);
+
+        }
+
+        void search_Click(object sender, RoutedEventArgs e)
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (!rootFrame.Navigate(typeof(Search), api))
+            {
+                throw new Exception("Failed to create initial page");
+            }
         }
 
         private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)

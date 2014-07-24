@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
+using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
@@ -156,7 +157,6 @@ namespace Followshows
         {
             if (e.Key.ToString() == "Enter")
                 TryLoginOrRegister();
-
         }
 
         private void LoginAndRegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -164,11 +164,23 @@ namespace Followshows
             TryLoginOrRegister();
         }
 
+        private void LoginWithFacebook(object sender, TappedRoutedEventArgs e)
+        {
+            api.RegisterWithFacebook();
+        }
+
         private async void TryLoginOrRegister()
         {
+            StatusBar bar = StatusBar.GetForCurrentView();
+            await bar.ProgressIndicator.ShowAsync();
+            await bar.ShowAsync();
+
             Frame rootFrame = Window.Current.Content as Frame;
             if (loggingin)
             {
+                bar.ProgressIndicator.Text = "Trying to log in...";
+
+
                 if (emailad == null || password.Password == null)
                 {
                     await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
@@ -188,9 +200,12 @@ namespace Followshows
                         throw new Exception("Failed to create initial page");
                     }
                 }
+                await bar.HideAsync();
             }
             else
             {
+                bar.ProgressIndicator.Text = "Trying to register...";
+
                 bool allok = true;
                 if (firstname == null)
                 {
@@ -237,7 +252,7 @@ namespace Followshows
             }
 
 
-
+            await bar.HideAsync();
         }
 
         private void SwitchRegister(object sender, TappedRoutedEventArgs e)
@@ -285,7 +300,6 @@ namespace Followshows
             if (control == null)
             {
                 webv_facebook = sender as WebView;
-                api.LoginWithFacebook(webv_facebook);
                 return;
             }
             switch (control.Name)
@@ -343,6 +357,7 @@ namespace Followshows
                     break;
                 case "noAc":
                     noAc = block;
+
                     break;
             }
         }
@@ -389,18 +404,9 @@ namespace Followshows
 
         #endregion
 
-        private void frameNav(WebView sender, WebViewNavigationStartingEventArgs args)
-        {
-
-            //http://followshows.com/choose
-        }
-
-        private void webv_facebook_FrameNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-        {
-
-        }
-
         
+
+
 
 
 
