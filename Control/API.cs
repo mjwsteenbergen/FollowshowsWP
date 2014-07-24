@@ -8,7 +8,6 @@ using HtmlAgilityPack;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Net;
-using Facebook;
 using Windows.Security.Authentication.Web;
 using Windows.UI.Xaml.Controls;
 using Windows.Security.Credentials;
@@ -81,7 +80,7 @@ namespace Followshows
                 }
             }
             catch (Exception)
-            { 
+            {
                 return false;
             }
             return await this.LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString());
@@ -123,7 +122,7 @@ namespace Followshows
                 res.content = response.Content;
                 if (res.page.Contains("Forgot your password?"))
                 {
-                    if(! await login())
+                    if (!await login())
                     {
                         Frame rootFrame = Window.Current.Content as Frame;
                         if (!rootFrame.Navigate(typeof(LandingPage), this))
@@ -349,67 +348,67 @@ namespace Followshows
             return null;
         }
 
-        public async void LoginWithFacebook()
-        {
-            WebAuthenticationBroker.AuthenticateAndContinue(new Uri("https://www.facebook.com/login.php?skip_api_login=1&api_key=287824544623545&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv1.0%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Ffollowshows.com%252Ffacebook%252Flogin%26scope%3Demail%252Cpublish_actions%26client_id%3D287824544623545%26ret%3Dlogin&cancel_uri=http%3A%2F%2Ffollowshows.com%2Ffacebook%2Flogin%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page"));
-            FacebookClient _fb = new FacebookClient();
-            var redirectUrl = "https://www.facebook.com/connect/login_success.html";
-            try
-            {
-                //fb.AppId = facebookAppId;
-                var loginUrl = _fb.GetLoginUrl(new
-                {
-                    client_id = "547279985377700",
-                    redirect_uri = redirectUrl,
-                    scope = "user_about_me,read_stream,publish_stream",
-                    display = "popup",
-                    response_type = "token"
-                });
+        //public async void LoginWithFacebook()
+        //{
+        //    WebAuthenticationBroker.AuthenticateAndContinue(new Uri("https://www.facebook.com/login.php?skip_api_login=1&api_key=287824544623545&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv1.0%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Ffollowshows.com%252Ffacebook%252Flogin%26scope%3Demail%252Cpublish_actions%26client_id%3D287824544623545%26ret%3Dlogin&cancel_uri=http%3A%2F%2Ffollowshows.com%2Ffacebook%2Flogin%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page"));
+        //    FacebookClient _fb = new FacebookClient();
+        //    var redirectUrl = "https://www.facebook.com/connect/login_success.html";
+        //    try
+        //    {
+        //        //fb.AppId = facebookAppId;
+        //        var loginUrl = _fb.GetLoginUrl(new
+        //        {
+        //            client_id = "547279985377700",
+        //            redirect_uri = redirectUrl,
+        //            scope = "user_about_me,read_stream,publish_stream",
+        //            display = "popup",
+        //            response_type = "token"
+        //        });
 
-                var endUri = new Uri(redirectUrl);
-                Windows.Foundation.Collections.ValueSet set = new Windows.Foundation.Collections.ValueSet();
-
-
-                await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                {
-                    WebAuthenticationBroker.AuthenticateAndContinue(loginUrl, endUri);
-                });
-                //    WebAuthenticationOptions.None, loginUrl, endUri);
-                //if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.Success)
-                //{
-                //    var callbackUri = new Uri(WebAuthenticationResult.ResponseData.ToString());
-                //    var facebookOAuthResult = _fb.ParseOAuthCallbackUrl(callbackUri);
-                //    var accessToken = facebookOAuthResult.AccessToken;
-                //    if (String.IsNullOrEmpty(accessToken))
-                //    {
-                //        // User is not logged in, they may have canceled the login
-                //    }
-                //    else
-                //    {
-                //        // User is logged in and token was returned
-                //        //LoginSucceded(accessToken);
-                //    }
-
-                //}
-                //else if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
-                //{
-                //    throw new InvalidOperationException("HTTP Error returned by AuthenticateAsync() : " + WebAuthenticationResult.ResponseErrorDetail.ToString());
-                //}
-                //else
-                //{
-                //    // The user canceled the authentication
-                //}
-            }
-            catch (Exception ex)
-            {
-                //
-                // Bad Parameter, SSL/TLS Errors and Network Unavailable errors are to be handled here.
-                //
-                throw ex;
-            }
+        //        var endUri = new Uri(redirectUrl);
+        //        Windows.Foundation.Collections.ValueSet set = new Windows.Foundation.Collections.ValueSet();
 
 
-        }
+        //        await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+        //        {
+        //            WebAuthenticationBroker.AuthenticateAndContinue(loginUrl, endUri);
+        //        });
+        //        //    WebAuthenticationOptions.None, loginUrl, endUri);
+        //        //if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.Success)
+        //        //{
+        //        //    var callbackUri = new Uri(WebAuthenticationResult.ResponseData.ToString());
+        //        //    var facebookOAuthResult = _fb.ParseOAuthCallbackUrl(callbackUri);
+        //        //    var accessToken = facebookOAuthResult.AccessToken;
+        //        //    if (String.IsNullOrEmpty(accessToken))
+        //        //    {
+        //        //        // User is not logged in, they may have canceled the login
+        //        //    }
+        //        //    else
+        //        //    {
+        //        //        // User is logged in and token was returned
+        //        //        //LoginSucceded(accessToken);
+        //        //    }
+
+        //        //}
+        //        //else if (WebAuthenticationResult.ResponseStatus == WebAuthenticationStatus.ErrorHttp)
+        //        //{
+        //        //    throw new InvalidOperationException("HTTP Error returned by AuthenticateAsync() : " + WebAuthenticationResult.ResponseErrorDetail.ToString());
+        //        //}
+        //        //else
+        //        //{
+        //        //    // The user canceled the authentication
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //
+        //        // Bad Parameter, SSL/TLS Errors and Network Unavailable errors are to be handled here.
+        //        //
+        //        throw ex;
+        //    }
+
+
+        //}
 
         public async Task<List<Episode>> getQueue()
         {
@@ -421,7 +420,7 @@ namespace Followshows
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(resp.page);
 
-            
+
 
             foreach (HtmlNode Episode in doc.DocumentNode.ChildNodes)
             {
@@ -499,7 +498,7 @@ namespace Followshows
                     show.Name = WebUtility.HtmlDecode(title.InnerText);
                     show.Image = new BitmapImage() { UriSource = new Uri(getAttribute(title.DescendantNodes(), "src")) };
                     //show.ImageUrl = getAttribute(title.DescendantNodes(), "src");
-                    show.showUrl = getAttribute(title.DescendantNodes(), "href").Replace("/show/","");
+                    show.showUrl = getAttribute(title.DescendantNodes(), "href").Replace("/show/", "");
                     show.stillToWatch = getChild(tvshow.DescendantNodes(), "class", "towatch").InnerHtml;
                     string perc = getChild(tvshow, "class", "progress").InnerText.Replace("%", "");
                     show.percentageWatched = float.Parse(perc) / 100 * 150;
@@ -558,14 +557,14 @@ namespace Followshows
         public async Task<List<Episode>> getWatchList()
         {
             watchList = new List<Episode>();
-            
+
             Response resp = await getResponse("http://followshows.com/home/watchlist", null, false);
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return watchList;
             doc.LoadHtml(resp.page);
 
-            
+
 
             foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
@@ -622,7 +621,7 @@ namespace Followshows
             show.Airs = getChild(showSummary.DescendantNodes(), "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
 
             HtmlNode forFollowandName = getChild(showSummary.DescendantNodes(), "class", "summary");
-            show.Followers = getChild(forFollowandName, 2).InnerText.Replace(" followers","");
+            show.Followers = getChild(forFollowandName, 2).InnerText.Replace(" followers", "");
             show.Name = getChild(forFollowandName, 0).InnerText;
 
             HtmlNode season = doc.GetElementbyId("season-filter");
@@ -640,7 +639,7 @@ namespace Followshows
             {
                 show.Actors = "None";
             }
-            
+
 
             return show;
         }
@@ -655,7 +654,7 @@ namespace Followshows
                 return season;
             doc.LoadHtml(resp.page);
 
-            
+
 
             foreach (HtmlNode episode in getChild(doc.DocumentNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
@@ -703,7 +702,7 @@ namespace Followshows
         {
             List<TvShow> res = new List<TvShow>();
             List<TvShow> res2 = new List<TvShow>();
-           
+
             if (searchTerm == null || searchTerm == "")
             {
                 passed = res2;
@@ -714,7 +713,7 @@ namespace Followshows
             if (resp.page == null)
                 return res;
             List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
-            foreach(SearchResult result in response)
+            foreach (SearchResult result in response)
             {
                 if (result.type == "show")
                 {
@@ -773,15 +772,15 @@ namespace Followshows
 
         public async void markSeasonAsWatched(string seasonnr, TvShow show)
         {
-            if (seasonnr == null|| show.showUrl == null) return;
-            Response resp = await getResponse("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl  + "&season=" + seasonnr, null);
+            if (seasonnr == null || show.showUrl == null) return;
+            Response resp = await getResponse("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl + "&season=" + seasonnr, null);
             if (resp.hasInternet)
             {
                 lastPage = resp.page;
             }
             if (resp.page == null || resp.page.Contains("DMCA Policy"))
             {
-                Helper.message("Uhm... Something went wrong.","Sorry");
+                Helper.message("Uhm... Something went wrong.", "Sorry");
             }
         }
 
@@ -857,7 +856,6 @@ namespace Followshows
                 StorageFile fil = await temp.CreateFileAsync("tracker.txt", CreationCollisionOption.ReplaceExisting);
 
                 await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(tracker));
-                Helper.message("Finished");
             }
 
         }
@@ -890,7 +888,7 @@ namespace Followshows
                             ep.Seen = com.watched;
                         }
                     }
-                } 
+                }
             }
             return queue;
         }
@@ -920,51 +918,76 @@ namespace Followshows
         public async void addCommand(Command com)
         {
             StorageFolder temp = ApplicationData.Current.LocalFolder;
-            IReadOnlyList<IStorageItem> test = await temp.GetItemsAsync();
             StorageFile fil = null;
             string text = null;
             List<Command> comList = new List<Command>();
 
-            if (test.Count > 0)
+            try
             {
                 fil = await temp.GetFileAsync("commands");
-                
-                if (fil != null)
-                {
-                    text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                    comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString()); 
-                }
+                text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
             }
-            else
+            catch { }
+
+            if (fil == null)
             {
                 fil = await temp.CreateFileAsync("commands");
             }
 
+
             comList.Add(com);
-            
+
             await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(comList));
-            
+
 
         }
 
         public async Task<List<Command>> getCommands()
         {
             StorageFolder temp = ApplicationData.Current.LocalFolder;
-            IReadOnlyList<IStorageItem> test = await temp.GetItemsAsync();
             List<Command> res = new List<Command>();
-            if (test.Count > 0)
-            {
-                StorageFile fil = await temp.GetFileAsync("commands");
-                if (fil == null)
-                {
-                    return null;
-                }
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                //await fil.DeleteAsync();
-                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
-            }
+            StorageFile fil;
 
-            return res;
+            try
+            {
+                fil = await temp.GetFileAsync("commands");
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
+
+                return res;
+            }
+            catch
+            {
+                return res;
+            }
+        }
+
+        public async Task executeCommands()
+        {
+            List<Command> commands = await getCommands();
+            if (commands.Count > 0)
+            {
+                foreach (Command com in commands)
+                {
+                    if (com.watched)
+                    {
+                        markAsWatched(com.episode);
+                    }
+                    else
+                    {
+                        markNotAsWatched(com.episode);
+                    }
+                }
+                try
+                {
+                    StorageFolder temp = ApplicationData.Current.LocalFolder;
+                    StorageFile fil = await temp.GetFileAsync("commands");
+                    await fil.DeleteAsync();
+                }
+                catch (Exception)
+                { }
+            }
 
         }
 
@@ -990,7 +1013,7 @@ namespace Followshows
             return false;
         }
 
-        
+
     }
 
 }
@@ -1021,15 +1044,3 @@ public class Helper
     }
 
 }
-
-//ToastTemplateType toastTemplate = ToastTemplateType.ToastImageAndText01;
-//XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
-
-//XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
-//toastTextElements[0].AppendChild(toastXml.CreateTextNode("You don't have internet. Some features won't be enabled"));
-
-//string paramString = "{\"type\":\"toast\",\"param1\":\"12345\"}";
-//((XmlElement)toastXml.SelectSingleNode("/toast")).SetAttribute("launch", paramString);
-
-//ToastNotification toast = new ToastNotification(toastXml);
-//ToastNotificationManager.CreateToastNotifier().Show(toast);

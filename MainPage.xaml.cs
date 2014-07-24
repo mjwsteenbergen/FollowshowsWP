@@ -210,6 +210,9 @@ namespace Followshows
 
         private async void LoadLists()
         {
+            //Execute commands before loading
+            await api.executeCommands();
+
             //Load Queue
             List<Episode> queueList = await api.getQueue();
             if (queueList != null)
