@@ -90,6 +90,7 @@ namespace Followshows
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
                 API ap = API.createWebsite();
+
                 if(!ap.hasInternet() && ap.hasLoginCreds())
                 {
                     Helper.message("You don't have internet. Some features won't be enabled");
@@ -147,6 +148,55 @@ namespace Followshows
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        //This method is called when returning from the authentication broker when logging in with facebook
+        protected override async void OnActivated(IActivatedEventArgs args)
+        {
+            API api = API.createWebsite();
+
+            if (args is WebAuthenticationBrokerContinuationEventArgs)
+            {
+
+                Frame rootFrame = Window.Current.Content as Frame;
+
+                // Do not repeat app initialization when the Window already has content,
+                // just ensure that the window is active
+                if (rootFrame == null)
+                {
+                    // Create a Frame to act as the navigation context and navigate to the first page
+                    rootFrame = new Frame();
+
+                    // TODO: change this value to a cache size that is appropriate for your application
+                    rootFrame.CacheSize = 1;
+
+                    // Place the frame in the current Window
+                    Window.Current.Content = rootFrame;
+                }
+
+                if (rootFrame.Content == null)
+                {
+                    if (!rootFrame.Navigate(typeof(LandingPage), api))
+                    {
+                        throw new Exception("Failed to create initial page");
+                    }
+                }
+
+
+                //Store the cookies
+                await api.RegisterWithFacebook2((WebAuthenticationBrokerContinuationEventArgs)args);
+
+                //Login
+                if (await api.login())
+                {
+                    if (!rootFrame.Navigate(typeof(MainPage), api))
+                    {
+                        throw new Exception("Failed to create initial page");
+                    }
+                }
+
+                Window.Current.Activate();
+            }
         }
     }
 }

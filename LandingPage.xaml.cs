@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
+using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
@@ -33,7 +34,7 @@ namespace Followshows
 
         private bool loggingin;
 
-        
+
         private TextBox email;
         private TextBox firstName;
         private TextBox lastName;
@@ -55,6 +56,9 @@ namespace Followshows
         private string emailad;
         private string option;
         private string timezone;
+
+        //Facebook
+        WebView webv_facebook;
 
         public LandingPage()
         {
@@ -153,7 +157,6 @@ namespace Followshows
         {
             if (e.Key.ToString() == "Enter")
                 TryLoginOrRegister();
-                
         }
 
         private void LoginAndRegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -161,11 +164,23 @@ namespace Followshows
             TryLoginOrRegister();
         }
 
+        private void LoginWithFacebook(object sender, TappedRoutedEventArgs e)
+        {
+            api.RegisterWithFacebook();
+        }
+
         private async void TryLoginOrRegister()
         {
+            StatusBar bar = StatusBar.GetForCurrentView();
+            await bar.ProgressIndicator.ShowAsync();
+            await bar.ShowAsync();
+
             Frame rootFrame = Window.Current.Content as Frame;
             if (loggingin)
             {
+                bar.ProgressIndicator.Text = "Trying to log in...";
+
+
                 if (emailad == null || password.Password == null)
                 {
                     await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
@@ -174,7 +189,7 @@ namespace Followshows
                 if (!(await api.LoginWithEmail(emailad, password.Password)))
                 {
                     await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
- 
+
                 }
                 else
                 {
@@ -185,9 +200,12 @@ namespace Followshows
                         throw new Exception("Failed to create initial page");
                     }
                 }
+                await bar.HideAsync();
             }
             else
             {
+                bar.ProgressIndicator.Text = "Trying to register...";
+
                 bool allok = true;
                 if (firstname == null)
                 {
@@ -199,7 +217,7 @@ namespace Followshows
                     lastName.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
                 }
-                if (emailad == null|| !Regex.IsMatch(emailad, "[^@]+@[^@]+.[a-zA-Z]{2,6}"))
+                if (emailad == null || !Regex.IsMatch(emailad, "[^@]+@[^@]+.[a-zA-Z]{2,6}"))
                 {
                     email.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
@@ -232,9 +250,9 @@ namespace Followshows
                     }
                 }
             }
-            
-                
-            
+
+
+            await bar.HideAsync();
         }
 
         private void SwitchRegister(object sender, TappedRoutedEventArgs e)
@@ -249,7 +267,7 @@ namespace Followshows
                 noAc.Text = "Got an account?";
                 logreg.Content = "Register";
                 passBlock.Text = "Password (more than 6 characters)";
-                header.Text="Register";
+                header.Text = "Register";
             }
             else
             {
@@ -264,7 +282,7 @@ namespace Followshows
                 header.Text = "Login";
             }
         }
-                    
+
 
         #region register Items
 
@@ -277,17 +295,23 @@ namespace Followshows
 
         private void loaded(object sender, RoutedEventArgs e)
         {
-            TextBox box = sender as TextBox;
-            switch (box.Name)
+
+            Control control = sender as Control;
+            if (control == null)
+            {
+                webv_facebook = sender as WebView;
+                return;
+            }
+            switch (control.Name)
             {
                 case ("firstname"):
-                    firstName = box;
+                    firstName = sender as TextBox;
                     break;
                 case ("lastname"):
-                    lastName = box;
+                    lastName = sender as TextBox;
                     break;
                 case ("email"):
-                    email = box;
+                    email = sender as TextBox;
                     break;
             }
         }
@@ -333,6 +357,7 @@ namespace Followshows
                     break;
                 case "noAc":
                     noAc = block;
+
                     break;
             }
         }
@@ -380,6 +405,10 @@ namespace Followshows
         #endregion
 
         
+
+
+
+
 
 
 
