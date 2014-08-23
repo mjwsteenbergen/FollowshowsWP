@@ -120,11 +120,59 @@
     <Content Include="Assets\appbar.star.png" />
     <Content Include="Assets\appbar.undo.png" />
     <Content Include="Assets\back.png" />
-    <Content Include="Assets\basicQueueItem.bmp" />
-    <Content Include="Assets\Followshows-Logo-Vector.svg" />
+    <Content Include="Assets\basicQueueItem.png" />
+    <Content Include="Assets\Followshows-Logo-Vector.png" />
+    <Content Include="Assets\Followshows\largelogo.scale-100.png" />
+    <Content Include="Assets\Followshows\largelogo.scale-140.png" />
+    <Content Include="Assets\Followshows\largelogo.scale-180.png" />
+    <Content Include="Assets\Followshows\largelogo.scale-80.png" />
+    <Content Include="Assets\Followshows\logo.scale-100.png" />
+    <Content Include="Assets\Followshows\logo.scale-140.png" />
+    <Content Include="Assets\Followshows\logo.scale-180.png" />
+    <Content Include="Assets\Followshows\logo.scale-240.png" />
+    <Content Include="Assets\Followshows\logo.scale-80.png" />
+    <Content Include="Assets\Followshows\phonesplashscreen.scale-100.png" />
+    <Content Include="Assets\Followshows\phonesplashscreen.scale-140.png" />
+    <Content Include="Assets\Followshows\phonesplashscreen.scale-240.png" />
+    <Content Include="Assets\Followshows\smalllogo.scale-100.png" />
+    <Content Include="Assets\Followshows\smalllogo.scale-140.png" />
+    <Content Include="Assets\Followshows\smalllogo.scale-180.png" />
+    <Content Include="Assets\Followshows\smalllogo.scale-240.png" />
+    <Content Include="Assets\Followshows\smalllogo.scale-80.png" />
+    <Content Include="Assets\Followshows\smalltilelogo.scale-100.png" />
+    <Content Include="Assets\Followshows\smalltilelogo.scale-140.png" />
+    <Content Include="Assets\Followshows\smalltilelogo.scale-180.png" />
+    <Content Include="Assets\Followshows\smalltilelogo.scale-80.png" />
+    <Content Include="Assets\Followshows\splashscreen.scale-100.png" />
+    <Content Include="Assets\Followshows\splashscreen.scale-140.png" />
+    <Content Include="Assets\Followshows\splashscreen.scale-180.png" />
+    <Content Include="Assets\Followshows\square44x44logo.scale-100.png" />
+    <Content Include="Assets\Followshows\square44x44logo.scale-140.png" />
+    <Content Include="Assets\Followshows\square44x44logo.scale-240.png" />
+    <Content Include="Assets\Followshows\square71x71logo.scale-100.png" />
+    <Content Include="Assets\Followshows\square71x71logo.scale-140.png" />
+    <Content Include="Assets\Followshows\square71x71logo.scale-240.png" />
+    <Content Include="Assets\Followshows\storelogo.scale-100.png" />
+    <Content Include="Assets\Followshows\storelogo.scale-140.png" />
+    <Content Include="Assets\Followshows\storelogo.scale-180.png" />
+    <Content Include="Assets\Followshows\storelogo.scale-240.png" />
+    <Content Include="Assets\Followshows\widelogo.scale-100.png" />
+    <Content Include="Assets\Followshows\widelogo.scale-140.png" />
+    <Content Include="Assets\Followshows\widelogo.scale-180.png" />
+    <Content Include="Assets\Followshows\widelogo.scale-240.png" />
+    <Content Include="Assets\Followshows\widelogo.scale-80.png" />
     <Content Include="Assets\forward.png" />
+    <Content Include="Assets\largelogo.scale-100.png" />
+    <Content Include="Assets\largelogo.scale-140.png" />
+    <Content Include="Assets\largelogo.scale-180.png" />
+    <Content Include="Assets\largelogo.scale-80.png" />
     <Content Include="Assets\Logo.scale-100.png" />
+    <Content Include="Assets\logo.scale-140.png" />
+    <Content Include="Assets\logo.scale-180.png" />
     <Content Include="Assets\Logo.scale-240.png" />
+    <Content Include="Assets\logo.scale-80.png" />
+    <Content Include="Assets\Picture1.png" />
+    <Content Include="Assets\refresh.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\Square71x71Logo.scale-140.png" />
@@ -217,6 +265,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Followshows\Thumbs.db" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

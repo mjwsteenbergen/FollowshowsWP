@@ -40,31 +40,183 @@
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\back.png">
       <PackagePath>Assets\back.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\basicQueueItem.png">
+      <PackagePath>Assets\basicQueueItem.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows-Logo-Vector.png">
+      <PackagePath>Assets\Followshows-Logo-Vector.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\largelogo.scale-100.png">
+      <PackagePath>Assets\Followshows\largelogo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\largelogo.scale-140.png">
+      <PackagePath>Assets\Followshows\largelogo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\largelogo.scale-180.png">
+      <PackagePath>Assets\Followshows\largelogo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\largelogo.scale-80.png">
+      <PackagePath>Assets\Followshows\largelogo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\logo.scale-100.png">
+      <PackagePath>Assets\Followshows\logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\logo.scale-140.png">
+      <PackagePath>Assets\Followshows\logo.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\logo.scale-180.png">
+      <PackagePath>Assets\Followshows\logo.scale-180.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\logo.scale-240.png">
+      <PackagePath>Assets\Followshows\logo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\logo.scale-80.png">
+      <PackagePath>Assets\Followshows\logo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\phonesplashscreen.scale-100.png">
+      <PackagePath>Assets\Followshows\phonesplashscreen.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\phonesplashscreen.scale-140.png">
+      <PackagePath>Assets\Followshows\phonesplashscreen.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\phonesplashscreen.scale-240.png">
+      <PackagePath>Assets\Followshows\phonesplashscreen.scale-240.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalllogo.scale-100.png">
+      <PackagePath>Assets\Followshows\smalllogo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalllogo.scale-140.png">
+      <PackagePath>Assets\Followshows\smalllogo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalllogo.scale-180.png">
+      <PackagePath>Assets\Followshows\smalllogo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalllogo.scale-240.png">
+      <PackagePath>Assets\Followshows\smalllogo.scale-240.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalllogo.scale-80.png">
+      <PackagePath>Assets\Followshows\smalllogo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalltilelogo.scale-100.png">
+      <PackagePath>Assets\Followshows\smalltilelogo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalltilelogo.scale-140.png">
+      <PackagePath>Assets\Followshows\smalltilelogo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalltilelogo.scale-180.png">
+      <PackagePath>Assets\Followshows\smalltilelogo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\smalltilelogo.scale-80.png">
+      <PackagePath>Assets\Followshows\smalltilelogo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\splashscreen.scale-100.png">
+      <PackagePath>Assets\Followshows\splashscreen.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\splashscreen.scale-140.png">
+      <PackagePath>Assets\Followshows\splashscreen.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\splashscreen.scale-180.png">
+      <PackagePath>Assets\Followshows\splashscreen.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\square44x44logo.scale-100.png">
+      <PackagePath>Assets\Followshows\square44x44logo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\square44x44logo.scale-140.png">
+      <PackagePath>Assets\Followshows\square44x44logo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\square44x44logo.scale-240.png">
+      <PackagePath>Assets\Followshows\square44x44logo.scale-240.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\square71x71logo.scale-100.png">
+      <PackagePath>Assets\Followshows\square71x71logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\square71x71logo.scale-140.png">
+      <PackagePath>Assets\Followshows\square71x71logo.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\square71x71logo.scale-240.png">
+      <PackagePath>Assets\Followshows\square71x71logo.scale-240.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\storelogo.scale-100.png">
+      <PackagePath>Assets\Followshows\storelogo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\storelogo.scale-140.png">
+      <PackagePath>Assets\Followshows\storelogo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\storelogo.scale-180.png">
+      <PackagePath>Assets\Followshows\storelogo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\storelogo.scale-240.png">
+      <PackagePath>Assets\Followshows\storelogo.scale-240.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\widelogo.scale-100.png">
+      <PackagePath>Assets\Followshows\widelogo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\widelogo.scale-140.png">
+      <PackagePath>Assets\Followshows\widelogo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\widelogo.scale-180.png">
+      <PackagePath>Assets\Followshows\widelogo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\widelogo.scale-240.png">
+      <PackagePath>Assets\Followshows\widelogo.scale-240.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows\widelogo.scale-80.png">
+      <PackagePath>Assets\Followshows\widelogo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\forward.png">
       <PackagePath>Assets\forward.png</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\largelogo.scale-100.png">
+      <PackagePath>Assets\largelogo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\largelogo.scale-140.png">
+      <PackagePath>Assets\largelogo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\largelogo.scale-180.png">
+      <PackagePath>Assets\largelogo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\largelogo.scale-80.png">
+      <PackagePath>Assets\largelogo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Logo.scale-100.png">
       <PackagePath>Assets\Logo.scale-100.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\logo.scale-140.png">
+      <PackagePath>Assets\logo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\logo.scale-180.png">
+      <PackagePath>Assets\logo.scale-180.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Logo.scale-240.png">
       <PackagePath>Assets\Logo.scale-240.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\logo.scale-80.png">
+      <PackagePath>Assets\logo.scale-80.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Picture1.png">
+      <PackagePath>Assets\Picture1.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\refresh.png">
+      <PackagePath>Assets\refresh.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\SmallLogo.scale-240.png">
       <PackagePath>Assets\SmallLogo.scale-240.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\SplashScreen.scale-240.png">
       <PackagePath>Assets\SplashScreen.scale-240.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Square71x71Logo.scale-140.png">
       <PackagePath>Assets\Square71x71Logo.scale-140.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Square71x71Logo.scale-240.png">
       <PackagePath>Assets\Square71x71Logo.scale-240.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\StoreLogo.scale-240.png">
       <PackagePath>Assets\StoreLogo.scale-240.png</PackagePath>
@@ -72,13 +224,6 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\WideLogo.scale-240.png">
       <PackagePath>Assets\WideLogo.scale-240.png</PackagePath>
-      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\basicQueueItem.bmp">
-      <PackagePath>Assets\basicQueueItem.bmp</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\Assets\Followshows-Logo-Vector.svg">
-      <PackagePath>Assets\Followshows-Logo-Vector.svg</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Martijn\Documents\Voor\VoorPDMW\Visual Studio 2013\Projects\Followshows\Followshows\bin\Debug\App.xbf">
       <PackagePath>App.xbf</PackagePath>

@@ -867,16 +867,16 @@ namespace Followshows
 
         public async Task store()
         {
-            if (queue != null)
+            if (queue != null && queue.Count != 0)
             {
-                StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
                 StorageFile fil = await temp.CreateFileAsync("queue.txt", CreationCollisionOption.ReplaceExisting);
 
                 await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
             }
-            if (tracker != null)
+            if (tracker != null && tracker.Count != 0)
             {
-                StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
                 StorageFile fil = await temp.CreateFileAsync("tracker.txt", CreationCollisionOption.ReplaceExisting);
 
                 await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(tracker));
@@ -888,7 +888,7 @@ namespace Followshows
         {
             queue = new List<Episode>();
 
-            StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
 
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)

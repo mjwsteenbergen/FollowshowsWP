@@ -259,35 +259,6 @@ namespace Followshows
             }
         }
 
-        //private void unfollow_Click(object sender, RoutedEventArgs e)
-        //{
-        //    api.unfollowShow(Show.showUrl);
-        //    if (bar == null)
-        //        return;
-        //    foreach (AppBarButton button in bar.PrimaryCommands)
-        //    {
-        //        if (button.Label == "Follow")
-        //            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        //        else
-        //            button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-        //    }
-
-        //}
-
-        //private void follow_Click(object sender, RoutedEventArgs e)
-        //{
-        //    
-        //    if (bar == null)
-        //        return;
-        //    foreach (AppBarButton button in bar.PrimaryCommands)
-        //    {
-        //        if (button.Label == "Unfollow")
-        //            button.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        //        else
-        //            button.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-        //    }
-        //}
-
         #region NavigationHelper registration
 
         /// <summary>
