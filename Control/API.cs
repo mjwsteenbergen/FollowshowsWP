@@ -555,7 +555,7 @@ namespace Followshows
                             string[] build = titleofzo.DescendantNodes().ToArray<HtmlNode>()[0].InnerHtml.Split(new char[] { ' ' });
                             ep.ISeason = build[1];
                             ep.IEpisode = build[3].Replace(":", "");
-                            ep.EpisodePos = "Season " + build[1] + " Episode " + build[3].Replace(":", "");
+                            ep.EpisodePos = "S" + build[1] + "E" + build[3].Replace(":", "");
                             string name = "";
                             for (int i = 4; i < build.Length; i++)
                             {

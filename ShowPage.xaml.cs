@@ -31,8 +31,8 @@ namespace Followshows
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         public TvShow Show;
         private API api;
-        private int currentPivot = 0;
         private CommandBar bar;
+        private int currentPivot = 0;
 
 
         private bool summaryExtended = false;
@@ -92,37 +92,32 @@ namespace Followshows
             api = (API)e.NavigationParameter;
             Show = await api.getShow(api.passed as TvShow);
 
-            if(Show.following)
-            {
-                followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
-            }
+            //if(Show.following)
+            //{
+            //    followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
+            //}
 
             //Create a new commandbar and add buttons
             bar = new CommandBar();
-        //    AppBarButton follow = new AppBarButton() { Icon = new SymbolIcon(Symbol.Favorite), Label = "Follow" };
-        //    follow.Click += follow_Click;
-        //    follow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-        //    if(!Show.following)
-        //    {
-        //        follow.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        //        amIFollowing.Text = "Not Yet...";
-        //    }
+            AppBarButton follow = new AppBarButton() { Icon = new SymbolIcon(Symbol.Favorite), Label = "Follow" };
+            follow.Click += Tapped_Favorite;
             
-        //    AppBarButton unfollow = new AppBarButton() { Icon = new SymbolIcon(Symbol.UnFavorite), Label = "Unfollow" };
-        //    unfollow.Click += unfollow_Click;
-        //    unfollow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-        //    if(Show.following)
-        //    {
-        //        unfollow.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        //        amIFollowing.Text = "Yes you are";
-        //    }
+
+            AppBarButton unfollow = new AppBarButton() { Icon = new SymbolIcon(Symbol.UnFavorite), Label = "Unfollow" };
+            unfollow.Click += Tapped_Favorite;
+            unfollow.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            
 
             AppBarButton seen = new AppBarButton() { Icon = new SymbolIcon(Symbol.Accept), Label = "Mark all as seen" };
             seen.Click += markAsSeen_Click;
+            seen.Visibility = Windows.UI.Xaml.Visibility.Collapsed;            
 
-        //    bar.PrimaryCommands.Add(follow);
-        //    bar.PrimaryCommands.Add(unfollow);
             bar.PrimaryCommands.Add(seen);
+            bar.PrimaryCommands.Add(follow);
+            bar.PrimaryCommands.Add(unfollow);
+
+            setFollowingAppButton();
+
             bar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
             BottomAppBar = bar;
@@ -187,19 +182,53 @@ namespace Followshows
 
             //if (bar == null)
             //    return;
-            if (currentPivot > 0)
+            if (currentPivot == 0)
             {
-                pivo.Margin = new Thickness(0,0,0,0);
-                //If we are on the first pivot, show only the mark all as seen button
-                BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                pivo.Margin = new Thickness(0, -40, 0, 0);
+                if (BottomAppBar == null)
+                    return;
                 
-                        
+                //If we are on the first pivot, show only the mark all as seen button
+                (bar.PrimaryCommands[0] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                setFollowingAppButton();
+                BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
             }
             else
             {
-                pivo.Margin = new Thickness(0, -40, 0, 0);
-                if (bar == null)
-                    return;
+                pivo.Margin = new Thickness(0, 0, 0, 0);
+                (bar.PrimaryCommands[0] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Visible;
+                (bar.PrimaryCommands[1] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                (bar.PrimaryCommands[2] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+        }
+
+        private void setFollowingAppButton()
+        {
+            (bar.PrimaryCommands[1] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            if (!Show.following)
+            {
+                (bar.PrimaryCommands[1] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Visible;
+                //amIFollowing.Text = "Not Yet...";
+            }
+
+            (bar.PrimaryCommands[2] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            if (Show.following)
+            {
+                (bar.PrimaryCommands[2] as AppBarButton).Visibility = Windows.UI.Xaml.Visibility.Visible;
+                //amIFollowing.Text = "Yes you are";
+            }
+        }
+
+        private void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            if (e.FinalView.VerticalOffset > 10)
+            {
+                BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            }
+            else
+            {
                 BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
         }
@@ -400,22 +429,24 @@ namespace Followshows
 
         #endregion
 
-        private void Tapped_Favorite(object sender, TappedRoutedEventArgs e)
+        private void Tapped_Favorite(object sender, RoutedEventArgs e)
         {
             if (Show.following)
             {
                 api.unfollowShow(Show.showUrl);
                 Show.following = false;
-                followColor.Fill = ((SolidColorBrush)App.Current.Resources["AppBarBackgroundThemeBrush"]);
+                //followColor.Fill = ((SolidColorBrush)App.Current.Resources["AppBarBackgroundThemeBrush"]);
 
             }
             else
             {
                 api.followShow(Show.showUrl);
                 Show.following = true;
-                followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
+                //followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
             }
-            
+            setFollowingAppButton();
         }
+
+        
     }
 }

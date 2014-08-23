@@ -31,7 +31,7 @@
                                     <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414" Background="{ThemeResource PhoneAccentBrush}">
                                         <Grid>
                                             <Image x:Name="ima" Source="{Binding Image}" Opacity="{Binding Opacity}" ImageFailed="Image_ImageFailed" Stretch="UniformToFill"/>
-                                            <TextBlock Text="{Binding EpisodeName}"
+                                            <TextBlock Text="{Binding SeriesName}"
 								                    Margin="12,10,12,0"
                                                     FontWeight="ExtraBold"
 							                           >
@@ -45,8 +45,8 @@
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
-                                            <TextBlock Text="{Binding SeriesName}" VerticalAlignment="Bottom" Margin="10,0,0,10"/>
-                                            <TextBlock Text="{Binding EpisodePos}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,10" />
+                                            <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11"/>
+                                            <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,30,10" FontSize="11" HorizontalAlignment="Right"  />
                                         </Grid>
                                         <Grid  Visibility="{Binding redo}">
                                             <Image Source="Assets/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
