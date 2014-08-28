@@ -213,9 +213,9 @@ namespace Followshows
         {
             if (node != null && i != null)
             {
-                HtmlNode[] res = node.DescendantNodes().ToArray<HtmlNode>();
+                HtmlNode[] res = node.ChildNodes.ToArray<HtmlNode>();
                 if (res.Length > i - 1)
-                    return node.DescendantNodes().ToArray<HtmlNode>()[i];
+                    return node.ChildNodes.ToArray<HtmlNode>()[i];
             }
             return null;
         }
@@ -285,6 +285,15 @@ namespace Followshows
                 string node = getAttribute(child.DescendantNodes(), attribute);
                 if (node != null)
                     return node;
+            }
+            return null;
+        }
+
+        private string getAttribute(HtmlNode node, string attribute)
+        {
+            if (node.Attributes[attribute] != null)
+            {
+                return node.Attributes[attribute].Value;
             }
             return null;
         }
@@ -456,7 +465,11 @@ namespace Followshows
                                 foreach (HtmlNode item2 in item.DescendantNodes())
                                 {
                                     if (item2.Attributes["title"] != null)
-                                        ep.date = item2.Attributes["title"].Value;
+                                    {
+                                        ep.airtime = DateTime.Parse(item2.Attributes["title"].Value);
+                                    }
+                                       
+                                        
                                     if (item2.Attributes["class"] != null)//&& item2.Attributes["class"].Value == "network")
                                         ep.network = item2.InnerHtml;
                                 }
@@ -542,19 +555,19 @@ namespace Followshows
 
         public void helpItem(HtmlNode item, Episode ep)
         {
-            ep.SeriesName = item.DescendantNodes().ToArray<HtmlNode>()[0].InnerText;
+            ep.ShowName = item.DescendantNodes().ToArray<HtmlNode>()[0].InnerText;
             foreach (HtmlNode titleofzo in item.DescendantNodes())
                 if (titleofzo.Attributes["class"] != null)
                 {
                     switch (titleofzo.Attributes["class"].Value)
                     {
                         case "title":
-                            ep.SeriesName = titleofzo.DescendantNodes().ToArray<HtmlNode>()[0].InnerHtml;
+                            ep.ShowName = titleofzo.DescendantNodes().ToArray<HtmlNode>()[0].InnerText;
                             break;
                         case "infos":
                             string[] build = titleofzo.DescendantNodes().ToArray<HtmlNode>()[0].InnerHtml.Split(new char[] { ' ' });
-                            ep.ISeason = build[1];
-                            ep.IEpisode = build[3].Replace(":", "");
+                            ep.ISeason = int.Parse(build[1]);
+                            ep.IEpisode = int.Parse(build[3].Replace(":", ""));
                             ep.EpisodePos = "S" + build[1] + "E" + build[3].Replace(":", "");
                             string name = "";
                             for (int i = 4; i < build.Length; i++)
@@ -593,33 +606,105 @@ namespace Followshows
             foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
                 Episode res = new Episode(true, false);
-                res.SeriesName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
+                res.ShowName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
                 res.id = getAttribute(episode.ChildNodes, "episodeId");
                 HtmlNode Ename = getChild(episode.DescendantNodes(), "class", "subtitle");
                 res.EpisodeName = getChild(Ename).InnerText;
                 res.Image = new BitmapImage(new Uri(getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
                 string[] build = getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
-                res.ISeason = build[1];
-                res.IEpisode = build[3].Replace(".", "");
+                res.ISeason = int.Parse(build[1]);
+                res.IEpisode = int.Parse(build[3].Replace(".", ""));
                 res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
                 watchList.Add(res);
             }
             foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid-home-more clearfix episodes-popover").ChildNodes)
             {
                 Episode res = new Episode(true, false);
-                res.SeriesName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
+                res.ShowName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
                 res.id = getAttribute(episode.ChildNodes, "episodeId");
                 HtmlNode Ename = getChild(episode.DescendantNodes(), "class", "subtitle");
                 res.EpisodeName = getChild(Ename).InnerText;
                 res.Image = new BitmapImage(new Uri(getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
                 string[] build = getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
-                res.ISeason = build[1];
-                res.IEpisode = build[3].Replace(".", "");
+                res.ISeason = int.Parse(build[1]);
+                res.IEpisode = int.Parse(build[3].Replace(".", ""));
                 res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
                 watchList.Add(res);
             }
 
             return watchList;
+        }
+
+        public async Task<List<Episode>> getCalendar()
+        {
+            List<Episode> calendar = new List<Episode>();
+
+
+            Response resp = await getResponse("http://followshows.com/api/calendar?date=1409175059240&days=14", null);
+            HtmlDocument doc = new HtmlDocument();
+            if (resp.page == null)
+                return calendar;
+            doc.LoadHtml(resp.page);
+
+            HtmlNode table = getChild(doc.DocumentNode, "class", "calendar");
+            HtmlNode tableRow = getChild(table, 1);
+
+            bool check = false;
+            foreach(HtmlNode day in tableRow.ChildNodes)
+            {
+                if (check == false)
+                {
+                    try{
+                        if (!day.Attributes["class"].Value.Contains("today"))
+                            continue;
+                        
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    
+                }
+                check = true;
+
+                //List<Episode> epis = new List<Episode>();
+
+                HtmlNode ul = getChild(day);
+                if(ul != null)
+                {
+                    foreach(HtmlNode li in ul.ChildNodes)
+                    {
+                        Episode ep = new Episode(false,false);
+                        HtmlNode a = getChild(li);
+
+                        ep.ShowName = getAttribute(a, "data-show");
+                        ep.network = getChild(a, "class", "network").InnerText;
+                        ep.Image = new BitmapImage(new Uri(Regex.Match(getAttribute(getChild(a, "class", "poster"), "style"), @"(?<=\().+(?!\))").ToString().Replace(@");","")));
+
+
+                        //Season Position and episode url
+                        HtmlDocument data = new HtmlDocument();
+                        data.LoadHtml(getAttribute(a, "data-content"));
+                        ep.EpisodeName = getChild(getChild(data.DocumentNode)).InnerText;
+                        string air = getChild(data.DocumentNode, 1).InnerText.Replace("Airs on ", "").Replace(", on " + ep.network + " at "," ");
+                        ep.airtime = DateTime.Parse(air);
+                        ep.airdate = DateTime.Parse(air).Date;
+                        ep.url = getAttribute(getChild(getChild(data.DocumentNode, 2)), "href");
+
+                        string[] build = getChild(getChild(data.DocumentNode, 2)).InnerText.Split(new char[] { ' ' });
+                        ep.ISeason = int.Parse(build[1]);
+                        ep.IEpisode = int.Parse(build[3]);
+                        ep.EpisodePos = "S" + build[1] + "E" + build[3].Replace(":", "");
+
+                        calendar.Add(ep);
+                    }
+                }
+
+                //calendar.Add(epis);
+
+            }
+
+            return calendar;
         }
 
         public async Task<TvShow> getShow(TvShow show)
@@ -683,7 +768,7 @@ namespace Followshows
             foreach (HtmlNode episode in getChild(doc.DocumentNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
                 Episode ep = new Episode(false, false);
-                ep.SeriesName = show.Name;
+                ep.ShowName = show.Name;
 
                 HtmlNode name = getChild(episode.DescendantNodes(), "class", "episode-link");
                 if (name != null)
@@ -693,8 +778,8 @@ namespace Followshows
                     ep.Image = new BitmapImage(new Uri(getAttribute(getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src").Replace("130x75", "360x207")));
 
                     string[] build = getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
-                    ep.ISeason = build[1];
-                    ep.IEpisode = build[3].Split(new char[] { ',' })[0];
+                    ep.ISeason = int.Parse(build[1]);
+                    ep.IEpisode = int.Parse(build[3].Split(new char[] { ',' })[0]);
                     ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
                     ep.id = getAttribute(episode.DescendantNodes(), "episodeid");
                     if (!episode.InnerText.Contains("Mark as watched"))
@@ -709,8 +794,8 @@ namespace Followshows
                     ep.EpisodeName = getChild(episode).InnerText;
                     ep.Image = new BitmapImage(new Uri("ms-appx:Assets/basicQueueItem.bmp"));
                     string[] build = episode.InnerText.Replace(ep.EpisodeName, "").Replace(",", " ").Split(new char[] { ' ' });
-                    ep.ISeason = build[2];
-                    ep.IEpisode = build[4];
+                    ep.ISeason = int.Parse(build[2]);
+                    ep.IEpisode = int.Parse(build[4]);
                     ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
                 }
 
@@ -907,7 +992,7 @@ namespace Followshows
                 {
                     foreach (Episode ep in queue)
                     {
-                        if (com.episode.EpisodePos == ep.EpisodePos && com.episode.SeriesName == ep.SeriesName)
+                        if (com.episode.EpisodePos == ep.EpisodePos && com.episode.ShowName == ep.ShowName)
                         {
                             ep.Seen = com.watched;
                         }

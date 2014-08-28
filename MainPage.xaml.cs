@@ -139,7 +139,7 @@ namespace Followshows
 
             if (api.hasInternet())
             {
-                LoadLists();
+                    LoadLists();
             }
             else
             {
@@ -158,7 +158,8 @@ namespace Followshows
                     {
                         tracker.ItemsSource = listTV;
                     }
-                    
+
+
                     //q = list;
                 });
 
@@ -199,6 +200,18 @@ namespace Followshows
             if (track != null)
             {
                 tracker.ItemsSource = track;
+            }
+
+            List<Episode> cal = await api.getCalendar();
+            if (cal != null)
+            {
+                var result =
+                    from ep in cal
+                    group ep by ep.airdate
+                        into grp
+                        orderby grp.Key
+                        select grp;
+                calendar.Source = result;
             }
 
             bar.ProgressIndicator.Text = "Done";

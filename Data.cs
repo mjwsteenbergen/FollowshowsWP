@@ -14,25 +14,32 @@ using Windows.Web.Http;
 
 public class Episode : INotifyPropertyChanged
 {
-    public string SeriesName { get; set; }
-    public string date { get; set; }
+    public string EpisodeName { get; set; }
+    public DateTime airtime { get; set; }
+    public DateTime airdate { get; set; }
+
+    public string summary { get; set; }
     public string network { get; set; }
+
+    public string ShowName { get; set; }
+    
+    
     public BitmapImage Image { get; set; }
 
     public string EpisodePos { get; set; }
-    public string ISeason { get; set; }
 
-    public string IEpisode { get; set; }
+    public int ISeason { get; set; }
+    public int IEpisode { get; set; }
 
-    public string EpisodeName { get; set; }
+    
 
-    public string summary { get; set; }
+    
 
     public string id { get; set; }
+    public string url { get; set; }
 
     public Visibility redo { get; set; }
     public double Height { get; set; }
-
     public double Opacity { get; set; }
 
     public bool Aired { get; set; }

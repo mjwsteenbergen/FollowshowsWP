@@ -11,6 +11,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" d:DataContext="{d:DesignData /SampleData/SampleDataSource/SampleDataSource.xaml}">
 
     <Grid x:Name="LayoutRoot">
+        <Grid.Resources>
+            <CollectionViewSource x:Name="calendar" IsSourceGrouped="True"/>
+        </Grid.Resources>
         <Hub Name="hub" Margin="0" Grid.RowSpan="2">
             <Hub.HeaderTemplate>
                 <DataTemplate>
@@ -31,7 +34,7 @@
                                     <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414" Background="{ThemeResource PhoneAccentBrush}">
                                         <Grid>
                                             <Image x:Name="ima" Source="{Binding Image}" Opacity="{Binding Opacity}" ImageFailed="Image_ImageFailed" Stretch="UniformToFill"/>
-                                            <TextBlock Text="{Binding SeriesName}"
+                                            <TextBlock Text="{Binding ShowName}"
 								                    Margin="12,10,12,0"
                                                     FontWeight="ExtraBold"
 							                           >
@@ -45,8 +48,8 @@
                                                     </Style>
                                                 </TextBlock.Style>
                                             </TextBlock>
-                                            <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11"/>
-                                            <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,30,10" FontSize="11" HorizontalAlignment="Right"  />
+                                            <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,30,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
                                         </Grid>
                                         <Grid  Visibility="{Binding redo}">
                                             <Image Source="Assets/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
@@ -65,6 +68,39 @@
                     </Grid>
                 </DataTemplate>
             </HubSection>
+            <HubSection Margin="0,-40,0,0">
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Calendar" Style="{ThemeResource HeaderTextBlockStyle}" Grid.Row="0"/>
+                        <GridView ItemsSource="{Binding Source={StaticResource calendar}}" Grid.Row="1" Margin="0,-5,0,0" Padding="0,0,0,15">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Image Source="{Binding Image}" Width="100" Margin="1" HorizontalAlignment="Left"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                            <GridView.GroupStyle>
+                                <GroupStyle HidesIfEmpty="True">
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,10,0,3">
+                                                <!--<TextBlock Text="{Binding Key}" Style="{ThemeResource GroupHeaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}"/>-->
+                                                <TextBlock Text="{Binding Key.DayOfWeek}" Style="{ThemeResource SubheaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}" Margin="3,0,0,0"/>
+                                                <Rectangle Width="310" Height="3" Fill="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Left" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </GridView.GroupStyle>
+                        </GridView>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
             <HubSection Name="middle" Margin="0,-40,0,0" >
                 <DataTemplate>
                     <Grid>
@@ -72,8 +108,6 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <!--<TextBlock Text="Tracker" Style="{ThemeResource HeaderTextBlockStyle}" Margin="10,0,0,0"/>
-                        <Grid>-->
                         <TextBlock Text="Tracker" Style="{ThemeResource HeaderTextBlockStyle}" Margin="10,0,0,0" Grid.Row="0"/>
                         <ListView Name="tracker" ItemsSource="{Binding shows}" Loaded="Register" Margin="10,20,0,0" Grid.Row="1">
                             <ListView.ItemTemplate>
@@ -98,16 +132,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <!--</Grid>-->
                     </Grid>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Margin="0,-40,0,0">
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="Calendar" Style="{ThemeResource HeaderTextBlockStyle}"/>
-                        <TextBlock Text="Coming Soon" Style="{ThemeResource SubheaderTextBlockStyle}"/>
-                    </StackPanel>
                 </DataTemplate>
             </HubSection>
         </Hub>

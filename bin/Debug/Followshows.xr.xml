@@ -18,7 +18,10 @@
     <RootPropertyPathName Name="SeriesName" />
     <RootPropertyPathName Name="EpisodeName" />
     <RootPropertyPathName Name="Opacity" />
+    <RootPropertyPathName Name="Key" />
+    <RootPropertyPathName Name="DayOfWeek" />
     <RootPropertyPathName Name="queue" />
+    <RootPropertyPathName Name="ShowName" />
   </Roots.PropertyPathNames>
   <Roots.RootTypes>
     <RootType FullName="Windows.UI.Xaml.Application">
@@ -46,6 +49,7 @@
       <RootProperty Name="Width" />
       <RootProperty Name="Background" />
       <RootProperty Name="Visibility" />
+      <RootProperty Name="Resources" />
       <RootProperty Name="Name" />
       <RootEvent Name="Tapped" />
       <RootEvent Name="DoubleTapped" />
@@ -91,7 +95,9 @@
       <RootProperty Name="ItemContainerTransitions" />
       <RootEvent Name="Loaded" />
     </RootType>
-    <RootType FullName="Windows.UI.Xaml.Data.Binding" />
+    <RootType FullName="Windows.UI.Xaml.Data.Binding">
+      <RootProperty Name="Source" />
+    </RootType>
     <RootType FullName="Windows.UI.Xaml.DataTemplate">
       <RootProperty Name="Template" />
     </RootType>
@@ -103,6 +109,8 @@
       <RootProperty Name="Height" />
       <RootProperty Name="VerticalAlignment" />
       <RootProperty Name="Margin" />
+      <RootProperty Name="Width" />
+      <RootProperty Name="HorizontalAlignment" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.Image">
       <RootProperty Name="Source" />
@@ -113,6 +121,7 @@
       <RootProperty Name="Height" />
       <RootProperty Name="Width" />
       <RootProperty Name="Opacity" />
+      <RootProperty Name="HorizontalAlignment" />
       <RootEvent Name="ImageFailed" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.RowDefinition">
@@ -130,6 +139,7 @@
       <RootProperty Name="HorizontalAlignment" />
       <RootProperty Name="FontFamily" />
       <RootProperty Name="LineHeight" />
+      <RootProperty Name="Foreground" />
       <RootProperty Name="TextAlignment" />
       <RootProperty Name="Width" />
       <RootProperty Name="RenderTransformOrigin" />
@@ -184,13 +194,19 @@
       <RootProperty Name="ContentTemplate" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.GridView">
-      <RootProperty Name="Name" />
-      <RootProperty Name="Margin" />
       <RootProperty Name="ItemsSource" />
-      <RootProperty Name="IsEnabled" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Padding" />
       <RootProperty Name="ItemTemplate" />
+      <RootProperty Name="GroupStyle" />
+      <RootProperty Name="Name" />
+      <RootProperty Name="IsEnabled" />
       <RootProperty Name="ItemContainerTransitions" />
       <RootEvent Name="Loaded" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.GroupStyle">
+      <RootProperty Name="HidesIfEmpty" />
+      <RootProperty Name="HeaderTemplate" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.CommandBar">
       <RootProperty Name="ClosedDisplayMode" />
