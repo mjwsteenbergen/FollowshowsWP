@@ -260,7 +260,7 @@ namespace Followshows
                     if (child.Attributes[attribute].Value == value)
                         return child;
                 }
-                HtmlNode node = getChild(child.DescendantNodes(), attribute, value);
+                HtmlNode node = getChild(child.ChildNodes, attribute, value);
                 if (node != null)
                     return node;
             }
@@ -726,11 +726,11 @@ namespace Followshows
 
 
             HtmlNode showSummary = doc.GetElementbyId("content-about");
-            show.Genre = getChild(showSummary.DescendantNodes(), "class", "genres").InnerText.Replace("GENRES:", "");
+            show.Genre = getChild(showSummary.ChildNodes, "class", "genres").InnerText.Replace("GENRES:", "");
             show.Airs = getChild(showSummary.DescendantNodes(), "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
 
-            HtmlNode forFollowandName = getChild(showSummary.DescendantNodes(), "class", "summary");
-            show.Followers = getChild(forFollowandName, 2).InnerText.Replace(" followers", "");
+            HtmlNode forFollowandName = getChild(showSummary.ChildNodes, "class", "summary");
+            show.Followers = getChild(forFollowandName.ChildNodes, "class", "followers").InnerText.Replace(" followers)", "").Replace("( ","");
             show.Name = getChild(forFollowandName, 0).InnerText;
 
             HtmlNode season = doc.GetElementbyId("season-filter");
@@ -780,8 +780,8 @@ namespace Followshows
                     string[] build = getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
                     ep.ISeason = int.Parse(build[1]);
                     ep.IEpisode = int.Parse(build[3].Split(new char[] { ',' })[0]);
-                    ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
-                    ep.id = getAttribute(episode.DescendantNodes(), "episodeid");
+                    ep.EpisodePos = "S" + ep.ISeason + "E" + ep.IEpisode;
+                    ep.id = getAttribute(episode.ChildNodes, "episodeid");
                     if (!episode.InnerText.Contains("Mark as watched"))
                     {
                         ep.Seen = true;
@@ -791,19 +791,20 @@ namespace Followshows
                 else
                 {
                     ep.Aired = false;
-                    ep.EpisodeName = getChild(episode).InnerText;
-                    ep.Image = new BitmapImage(new Uri("ms-appx:Assets/basicQueueItem.bmp"));
-                    string[] build = episode.InnerText.Replace(ep.EpisodeName, "").Replace(",", " ").Split(new char[] { ' ' });
-                    ep.ISeason = int.Parse(build[2]);
-                    ep.IEpisode = int.Parse(build[4]);
-                    ep.EpisodePos = "Season " + ep.ISeason + " Episode " + ep.IEpisode;
+                    ep.Image = new BitmapImage(new Uri("ms-appx:Assets/basicQueueItem.png"));
+                    string[] build = episode.InnerText.Split(new char[] { ',' });
+                    ep.EpisodeName = build[0];
+                    string[] seasonThing = build[1].Split(new char[] { ' ' });
+                    ep.ISeason = int.Parse(seasonThing[1]);
+                    ep.IEpisode = int.Parse(seasonThing[3]);
+                    ep.EpisodePos = "S" + ep.ISeason + "E" + ep.IEpisode;
                 }
 
 
                 season.Add(ep);
             }
 
-            season.Reverse();
+            //season.Reverse();
             return season;
         }
 

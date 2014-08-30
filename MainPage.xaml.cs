@@ -193,14 +193,7 @@ namespace Followshows
                 queue.ItemsSource = queueList;
             }
 
-            bar.ProgressIndicator.Text = "Getting Tracker";
-
-            //Load Tracker
-            List<TvShow> track = await api.getTracker();
-            if (track != null)
-            {
-                tracker.ItemsSource = track;
-            }
+            bar.ProgressIndicator.Text = "Getting Calendar";
 
             List<Episode> cal = await api.getCalendar();
             if (cal != null)
@@ -213,6 +206,18 @@ namespace Followshows
                         select grp;
                 calendar.Source = result;
             }
+
+
+            bar.ProgressIndicator.Text = "Getting Tracker";
+
+            //Load Tracker
+            List<TvShow> track = await api.getTracker();
+            if (track != null)
+            {
+                tracker.ItemsSource = track;
+            }
+
+            
 
             bar.ProgressIndicator.Text = "Done";
             await bar.HideAsync();
@@ -458,6 +463,7 @@ namespace Followshows
             Grid gr = sender as Grid;
             api.passed = gr.DataContext;
             Frame rootFrame = Window.Current.Content as Frame;
+            
             if (!rootFrame.Navigate(typeof(ShowPage), api))
             {
                 throw new Exception("Failed to create initial page");

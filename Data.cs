@@ -97,6 +97,7 @@ public class TvShow
         numberOfSeasons = 0;
         Followers = "0";
     }
+
     //Basic Stuff
     public string Name { get; set; }
     public BitmapImage Image { get; set; }
@@ -121,8 +122,32 @@ public class TvShow
         return Name.ToString();
     }
 
+    public string NameCaps
+    {
+        get
+        {
+            return Name.ToUpper();
+        }
+
+    }
 
     public int numberOfSeasons { get; set; }
+}
+
+public class ShowTvShow : TvShow
+{
+    public ShowTvShow(bool follow)
+        : base(follow)
+    { }
+
+    public string NameCaps
+    {
+        get
+        {
+            return Name.ToUpper();
+        }
+       
+    }
 }
 
 public class Response

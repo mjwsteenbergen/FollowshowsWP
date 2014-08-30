@@ -28,7 +28,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="Queue" Style="{ThemeResource HeaderTextBlockStyle}" Grid.Row="0"/>
-                        <GridView Name="queue" Grid.Row="1" Margin="0,20,0,0" ItemsSource="{Binding queue}" Loaded="Register" IsEnabled="True">
+                        <GridView Name="queue" Grid.Row="1" Margin="0,20,0,0" ItemsSource="{Binding queue}" Loaded="Register">
                             <GridView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414" Background="{ThemeResource PhoneAccentBrush}">
@@ -49,7 +49,7 @@
                                                 </TextBlock.Style>
                                             </TextBlock>
                                             <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,30,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
+                                            <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,35,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
                                         </Grid>
                                         <Grid  Visibility="{Binding redo}">
                                             <Image Source="Assets/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
@@ -109,7 +109,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="Tracker" Style="{ThemeResource HeaderTextBlockStyle}" Margin="10,0,0,0" Grid.Row="0"/>
-                        <ListView Name="tracker" ItemsSource="{Binding shows}" Loaded="Register" Margin="10,20,0,0" Grid.Row="1">
+                        <ListView Name="tracker" ItemsSource="{Binding shows}" Loaded="Register" Margin="10,20,0,0" Grid.Row="1" ContinuumNavigationTransitionInfo.ExitElementContainer="True">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Height="150" Margin="0,0,0,20" Tapped="trackerItem_Tapped">

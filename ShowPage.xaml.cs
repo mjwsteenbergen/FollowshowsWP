@@ -90,6 +90,7 @@ namespace Followshows
             //NTW.DataContext = new Episode(false, true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
 
             api = (API)e.NavigationParameter;
+            //Show = (api.passed as ShowTVShow);
             Show = await api.getShow(api.passed as TvShow);
 
             //if(Show.following)
@@ -223,12 +224,15 @@ namespace Followshows
 
         private void ScrollViewer_ViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            if (e.FinalView.VerticalOffset > 10)
+            ScrollViewer view = sender as ScrollViewer;
+            if (e.FinalView.VerticalOffset > 20)
             {
+                view.Padding = new Thickness(0,0,0,0.5);
                 BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             else
             {
+                view.Padding = new Thickness(0, 0, 0, 0);
                 BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
         }
@@ -332,7 +336,7 @@ namespace Followshows
             ep = item.DataContext as Episode;
 
             Image ima = item.FindName("ima") as Image;
-            if (ima.Opacity == 1)
+            if (ima.Opacity > 0.5)
             {
                 if (!ep.Aired)
                 {
@@ -340,7 +344,6 @@ namespace Followshows
                     return;
                 }
 
-                //Show fade-out animation
                 DoubleAnimation ani = new DoubleAnimation();
                 Storyboard.SetTarget(ani, ima);
 
@@ -348,20 +351,18 @@ namespace Followshows
                 board.Completed += board_Completed;
                 Storyboard.SetTargetProperty(ani, "Opacity");
                 ani.To = 0.2;
+                ep.Opacity = 0.2;
                 board.Duration = new Duration(TimeSpan.FromSeconds(1));
                 board.Children.Add(ani);
 
-                ep.Seen = true;
-
                 board.Begin();
-                
+
             }
             else
             {
                 item = sender as Grid;
                 ep = item.DataContext as Episode;
-                
-                //Show animation
+
                 DoubleAnimation ani = new DoubleAnimation();
                 Storyboard.SetTarget(ani, ima);
 
@@ -375,25 +376,44 @@ namespace Followshows
 
                 ep.Seen = false;
 
-                //Refresh data-context
                 item.DataContext = null;
                 item.DataContext = ep;
 
+                if (api.hasInternet())
+                {
+                    api.markNotAsWatched(ep);
+                }
+                else
+                {
+                    Command com = new Command();
+                    com.episode = ep;
+                    com.watched = false;
 
-                api.markNotAsWatched(ep);
+                    api.addCommand(com);
+
+                }
+
+
             }
-            
 
-            
+
+
         }
 
         void board_Completed(object sender, object e)
         {
-            ep.redo = Visibility.Visible;
+            if (api.hasInternet())
+            {
+                api.markAsWatched(ep);
+            }
+            else
+            {
+                api.addCommand(new Command() { episode = ep, watched = true });
+            }
 
-            api.markAsWatched(ep);
 
-            //Refresh datacontext
+            ep.Seen = true;
+
             item.DataContext = null;
             item.DataContext = ep;
         }
