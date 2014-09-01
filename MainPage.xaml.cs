@@ -61,17 +61,20 @@ namespace Followshows
             AppBarButton search = new AppBarButton() { Icon = new SymbolIcon(Symbol.Find), Label = "Search" };
             search.Click += search_Click;
 
+            AppBarButton ideas = new AppBarButton() { Label = "Suggest a feature" };
+            ideas.Click += openForum;
+            AppBarButton bugs = new AppBarButton() { Label = "Report a bug" };
+            ideas.Click += openForum;
             AppBarButton contact = new AppBarButton() { Label = "Contact Developer" };
             contact.Click += sendEmail;
-            AppBarButton ideas = new AppBarButton() { Label = "Vote for new Ideas" };
-            ideas.Click += openForum;
 
             bar.PrimaryCommands.Add(refr);
             bar.PrimaryCommands.Add(search);
             bar.PrimaryCommands.Add(logou);
 
-            bar.SecondaryCommands.Add(contact);
             bar.SecondaryCommands.Add(ideas);
+            bar.SecondaryCommands.Add(bugs);
+            bar.SecondaryCommands.Add(contact);
 
             bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
 

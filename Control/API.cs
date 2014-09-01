@@ -639,8 +639,8 @@ namespace Followshows
         {
             List<Episode> calendar = new List<Episode>();
 
-
-            Response resp = await getResponse("http://followshows.com/api/calendar?date=1409175059240&days=14", null);
+            Response resp = await getResponse("http://followshows.com/api/calendar?date=" + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() + "&days=14", null);
+            
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return calendar;

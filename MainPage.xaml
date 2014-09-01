@@ -37,17 +37,10 @@
                                             <TextBlock Text="{Binding ShowName}"
 								                    Margin="12,10,12,0"
                                                     FontWeight="ExtraBold"
-							                           >
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="FontWeight" Value="ExtraBold"/>
-                                                        <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiBold}" />
-                                                        <Setter Property="FontSize" Value="{ThemeResource TextStyleExtraLargePlusFontSize}" />
-                                                        <Setter Property="TextWrapping" Value="NoWrap" />
-                                                        <Setter Property="LineHeight" Value="33.5" />
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
+                                                    FontFamily="{ThemeResource PhoneFontFamilySemiBold}"
+                                                    FontSize="{ThemeResource TextStyleExtraLargePlusFontSize}"
+                                                    TextWrapping="NoWrap"
+							                           />
                                             <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11" FontWeight="SemiBold"/>
                                             <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,35,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
                                         </Grid>
@@ -89,9 +82,10 @@
                                     <GroupStyle.HeaderTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="0,10,0,3">
-                                                <!--<TextBlock Text="{Binding Key}" Style="{ThemeResource GroupHeaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}"/>-->
-                                                <TextBlock Text="{Binding Key.DayOfWeek}" Style="{ThemeResource SubheaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}" Margin="3,0,0,0"/>
-                                                <Rectangle Width="310" Height="3" Fill="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Left" Margin="0,2,0,0"/>
+                                                <!--<TextBlock Text="{Binding Key}" Style="{ThemeResource GroupHeaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}"/> Style="{ThemeResource SubheaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}" -->
+                                                <TextBlock Text="{Binding Key.DayOfWeek}"  Margin="3,0,0,0"
+                                                    Style="{ThemeResource GroupHeaderTextBlockStyle}" Foreground="{ThemeResource PhoneForegroundBrush}" FontSize="{ThemeResource TextStyleExtraLargePlusFontSize}"/>
+                                                <Rectangle Width="310" Height="3" Fill="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Left" Margin="0,5,0,0"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </GroupStyle.HeaderTemplate>
@@ -120,14 +114,16 @@
                                         </Grid.ColumnDefinitions>
                                         <Rectangle Fill="{ThemeResource PhoneAccentBrush}" Height="{Binding percentageWatched}" VerticalAlignment="Bottom" Margin="0,0,0,0"/>
                                         <Image Source="{Binding Image}" Stretch="UniformToFill" Grid.Column="1"/>
-                                        <Grid Grid.Column="2">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="1.3*"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Text="{Binding Name}" Grid.Row="0" Margin="20,20,0,0" Style="{ThemeResource MessageDialogTitleStyle}" VerticalAlignment="Bottom"/>
-                                            <TextBlock Text="{Binding stillToWatch}" Grid.Row="1" Margin="20,0,0,0" Style="{ThemeResource BaseTextBlockStyle}"/>
-                                        </Grid>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <!--Style="{ThemeResource MessageDialogTitleStyle}"-->
+                                            <TextBlock Text="{Binding Name}" Grid.Row="0" Margin="20,20,0,0"  
+                                                       FontWeight="ExtraBold"
+                                                    FontFamily="{ThemeResource PhoneFontFamilySemiBold}"
+                                                    FontSize="{ThemeResource TextStyleExtraLargeFontSize}"
+                                                    TextWrapping="WrapWholeWords"
+                                                       VerticalAlignment="Bottom"/>
+                                            <TextBlock Text="{Binding stillToWatch}" Grid.Row="1" Margin="20,-5,0,0" Style="{ThemeResource BaseTextBlockStyle}"/>
+                                        </StackPanel>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
