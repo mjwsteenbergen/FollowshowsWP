@@ -44,6 +44,7 @@ namespace Followshows
         //Items in datatemplate
         private GridView queue;
         private ListView tracker;
+        private GridView cale;
 
         List<Episode> q;
 
@@ -150,6 +151,7 @@ namespace Followshows
 
                 List<Episode> list = await api.recoverQueue();
                 List<TvShow> listTV = await api.recoverTracker();
+                List<Episode> cal = await api.recoverCalendar();
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     if (list.Count > 0)
@@ -160,6 +162,20 @@ namespace Followshows
                     if (listTV.Count > 0)
                     {
                         tracker.ItemsSource = listTV;
+                    }
+
+                    if (cal.Count > 0)
+                    {
+                        if (cal != null)
+                        {
+                            var result =
+                                from ep in cal
+                                group ep by ep.airdate
+                                    into grp
+                                    orderby grp.Key
+                                    select grp;
+                            calendar.Source = result;
+                        }
                     }
 
 
@@ -225,7 +241,7 @@ namespace Followshows
             bar.ProgressIndicator.Text = "Done";
             await bar.HideAsync();
 
-            await api.store();
+            api.store();
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -488,6 +504,9 @@ namespace Followshows
                     break;
                 case "tracker":
                     tracker = sender as ListView;
+                    break;
+                case "cale":
+                    cale = sender as GridView;
                     break;
             }
         }

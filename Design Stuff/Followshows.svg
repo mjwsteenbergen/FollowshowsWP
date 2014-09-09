@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.2"
+   width="500"
+   height="500"
+   id="svg2"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="Followshows.svg">
+  <sodipodi:namedview
+     pagecolor="#684478"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0.90196078"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1003"
+     id="namedview3826"
+     showgrid="false"
+     inkscape:zoom="0.944"
+     inkscape:cx="287.33677"
+     inkscape:cy="201.6849"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-552.36218)"
+     id="layer1">
+    <path
+       style="fill:#fcfcff;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 382.63007,673.7336 c -86.30948,2.055 -162.7918,3.89766 -257.43572,6.15108 -33.544701,0.0318 -60.899897,23.75772 -61.291233,61.29123 l 0,128.70216 c -0.525475,29.21265 17.972613,49.02044 49.020423,49.02044 l 26.29907,0 -11.86282,92.89399 95.185,-92.89399 160.08528,0 c 41.31438,0 49.02043,-17.57781 49.02043,-49.02044 l 0,-147.09266 c 0,-36.61199 -24.47205,-49.05181 -49.02043,-49.05181 z m -182.52421,34.96079 c 9.5769,1.8e-4 18.97263,1.42655 28.15065,4.29948 l -4.55055,23.47458 c -5.34722,-1.27678 -10.49248,-1.91422 -15.4405,-1.91438 -4.86836,1.6e-4 -8.3671,1.14638 -10.48196,3.42076 -2.11495,2.27469 -3.16974,6.62245 -3.16969,13.08677 l 0,9.00695 25.13787,0 0,26.45597 -25.13787,0 0,100.67704 -33.6427,0 0,-100.67704 -18.67295,0 0,-26.45597 18.67295,0 0,-9.60323 c -3e-5,-10.69414 1.14619,-18.67783 3.42076,-23.94532 2.2745,-5.26718 6.44789,-9.55487 12.55324,-12.86708 6.10529,-3.31186 13.82314,-4.95835 23.16075,-4.95853 z m 85.11101,48.48692 c 17.39812,1.1e-4 30.32977,2.83857 38.78953,8.50482 8.45956,5.66649 14.28796,14.04466 17.4804,25.13787 l -31.72832,5.86865 c -1.35684,-4.94801 -3.92946,-8.7583 -7.72026,-11.39208 -3.79096,-2.63356 -9.20203,-3.92279 -16.22506,-3.92288 -8.85878,9e-5 -15.18744,1.22926 -19.01818,3.70321 -2.55391,1.75588 -3.82878,4.01694 -3.82874,6.81013 -4e-5,2.39433 1.12331,4.44381 3.358,6.11971 3.03265,2.23471 13.49753,5.3762 31.4145,9.44631 17.91684,4.0703 30.43117,9.06403 37.53421,14.96975 7.02298,5.98566 10.54459,14.3181 10.54473,25.01235 -1.4e-4,11.65202 -4.88807,21.68518 -14.62455,30.06503 -9.73667,8.37985 -24.14049,12.55324 -43.21454,12.55324 -17.31842,0 -31.01621,-3.5216 -41.11188,-10.54473 -10.09575,-7.02309 -16.69025,-16.53895 -19.80275,-28.59001 l 33.73685,-5.14684 c 1.4365,6.54431 4.3664,11.51517 8.75589,14.90698 4.38939,3.39188 10.52082,5.08408 18.42189,5.08406 8.699,2e-5 15.25632,-1.60926 19.64583,-4.80162 2.95281,-2.23459 4.42493,-5.22455 4.42502,-8.97555 -9e-5,-2.55384 -0.78904,-4.66339 -2.38512,-6.33941 -1.67606,-1.59611 -5.44062,-3.06822 -11.26654,-4.42501 -27.13482,-5.98556 -44.33134,-11.4652 -51.59385,-16.41337 -10.05584,-6.86344 -15.09529,-16.37929 -15.09527,-28.59001 -2e-5,-11.01342 4.35627,-20.27199 13.05538,-27.77408 8.69905,-7.50183 22.17672,-11.26641 40.45283,-11.26652 z"
+       id="path3001"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 326.88607,634.8781 a 8.4015781,8.4015781 0 1 1 -16.80314,0 8.4015781,8.4015781 0 1 1 16.80314,0 z"
+       id="path3777"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:18.3877964;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 428.66546,602.72837 a 16.633015,16.633015 0 0 1 -33.26602,0 16.633015,16.633015 0 1 1 33.26602,0 z"
+       id="path3779"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:18.3877964;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 347.1637,677.57691 c -23.28621,-26.61282 -22.45456,-26.61282 -22.45456,-26.61282 l 6.86111,-4.78198 29.52359,34.30557 c -7.25629,2.08629 -7.0818,-4.91732 -13.93014,-2.91077 z"
+       id="path3783"
+       style="fill:#f9f9f9;stroke:#f9f9f9;stroke-width:1.2258532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 361.09386,677.57691 35.13723,-60.08675 8.91889,4.93571 -34.59101,59.49347 z"
+       id="path3785"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:1.2258532px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:connector-curvature="0" />
+    <g
+       transform="matrix(1.2258531,0,0,1.2258531,-58.681828,-175.01625)"
+       id="text3813"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:0%;letter-spacing:0px;word-spacing:0px;fill:#fcfcff;fill-opacity:0.58736064;stroke:none;font-family:Sans" />
+    <flowRoot
+       transform="matrix(1.2258531,0,0,1.2258531,-58.681828,-175.01625)"
+       id="flowRoot3011"
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion3013"><rect
+           width="270.11478"
+           height="171.82695"
+           x="-410.82904"
+           y="116.04103"
+           id="rect3015" /></flowRegion><flowPara
+         id="flowPara3017" /></flowRoot>  </g>
+</svg>

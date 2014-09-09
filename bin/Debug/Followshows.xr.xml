@@ -205,12 +205,12 @@
       <RootProperty Name="ContentTemplate" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.GridView">
+      <RootProperty Name="Name" />
       <RootProperty Name="ItemsSource" />
       <RootProperty Name="Margin" />
       <RootProperty Name="Padding" />
       <RootProperty Name="ItemTemplate" />
       <RootProperty Name="GroupStyle" />
-      <RootProperty Name="Name" />
       <RootProperty Name="ItemContainerTransitions" />
       <RootEvent Name="Loaded" />
     </RootType>

@@ -39,6 +39,7 @@ namespace Followshows
         private List<Episode> queue;
         private List<TvShow> tracker;
         private List<Episode> watchList;
+        private List<Episode> calendar;
 
         #region BASIC
 
@@ -637,7 +638,7 @@ namespace Followshows
 
         public async Task<List<Episode>> getCalendar()
         {
-            List<Episode> calendar = new List<Episode>();
+            calendar = new List<Episode>();
 
             Response resp = await getResponse("http://followshows.com/api/calendar?date=" + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() + "&days=14", null);
             
@@ -960,6 +961,15 @@ namespace Followshows
 
                 await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
             }
+
+            if (calendar != null && calendar.Count != 0)
+            {
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
+                StorageFile fil = await temp.CreateFileAsync("calendar.txt", CreationCollisionOption.ReplaceExisting);
+
+                await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(calendar));
+            }
+
             if (tracker != null && tracker.Count != 0)
             {
                 StorageFolder temp = ApplicationData.Current.LocalFolder;
@@ -1005,9 +1015,7 @@ namespace Followshows
 
         public async Task<List<TvShow>> recoverTracker()
         {
-            tracker = new List<TvShow>();
-
-            StorageFolder temp = ApplicationData.Current.TemporaryFolder;
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
 
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
@@ -1015,14 +1023,31 @@ namespace Followshows
                 StorageFile fil = await temp.GetFileAsync("tracker.txt");
 
                 string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-
-                text.ToString();
+                tracker = new List<TvShow>();
 
                 tracker = JsonConvert.DeserializeObject<List<TvShow>>(text.ToString());
-
             }
 
             return tracker;
+        }
+
+        public async Task<List<Episode>> recoverCalendar()
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+
+            IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
+            if (tempItems.Count > 0)
+            {
+                StorageFile fil = await temp.GetFileAsync("calendar.txt");
+                calendar = new List<Episode>();
+
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+
+                calendar = JsonConvert.DeserializeObject<List<Episode>>(text.ToString());
+
+            }
+
+            return calendar;
         }
 
         public async void addCommand(Command com)
