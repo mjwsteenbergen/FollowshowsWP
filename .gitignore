@@ -1,5 +1,6 @@
 # Extra
-obj/
+Followshows/bin/*
+Followshows/obj/*
 debug/
 
 # Compiled source #
