@@ -102,7 +102,7 @@ namespace Followshows
             StatusBar statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
             // Hide the status bar
             await statusBar.HideAsync();
-            api = e.NavigationParameter as API;
+            api = API.getAPI();
 
             loggingin = true;
 

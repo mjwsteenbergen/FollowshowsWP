@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Security.Credentials;
@@ -16,6 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using BackGroundTask;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -52,6 +54,14 @@ namespace Followshows
                 //this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+            try
+            {
+                registerBackgroundTask();
+            }
+            catch
+            {
+
+            }
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -89,13 +99,13 @@ namespace Followshows
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
-                API ap = API.createWebsite();
+                API ap = API.getAPI();
 
                 if(!ap.hasInternet() && ap.hasLoginCreds())
                 {
                     Helper.message("You don't have internet. Some features won't be enabled");
 
-                    if (!rootFrame.Navigate(typeof(MainPage), ap))
+                    if (!rootFrame.Navigate(typeof(MainPage)))
                     {
                         throw new Exception("Failed to create initial page");
                     }
@@ -104,14 +114,14 @@ namespace Followshows
                 {
                     if (await ap.login())
                     {
-                        if (!rootFrame.Navigate(typeof(MainPage), ap))
+                        if (!rootFrame.Navigate(typeof(MainPage)))
                         {
                             throw new Exception("Failed to create initial page");
                         }
                     }
                     else
                     {
-                        if (!rootFrame.Navigate(typeof(LandingPage), ap))
+                        if (!rootFrame.Navigate(typeof(LandingPage)))
                         {
                             throw new Exception("Failed to create initial page");
                         }
@@ -153,7 +163,7 @@ namespace Followshows
         //This method is called when returning from the authentication broker when logging in with facebook
         protected override async void OnActivated(IActivatedEventArgs args)
         {
-            API api = API.createWebsite();
+            API api = API.getAPI();
 
             if (args is WebAuthenticationBrokerContinuationEventArgs)
             {
@@ -197,6 +207,21 @@ namespace Followshows
 
                 Window.Current.Activate();
             }
+        }
+
+        public void registerBackgroundTask()
+        {
+            BackgroundTaskBuilder builder = new BackgroundTaskBuilder();
+            builder.Name = "Background";
+
+            SystemTrigger trig = new SystemTrigger(SystemTriggerType.InternetAvailable, false);
+            builder.SetTrigger(trig);
+            builder.AddCondition(new SystemCondition(SystemConditionType.FreeNetworkAvailable));
+
+            builder.TaskEntryPoint = typeof(BackGroundTask.Backgroud).FullName;
+
+            BackgroundTaskRegistration register = builder.Register();
+
         }
     }
 }

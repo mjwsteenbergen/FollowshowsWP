@@ -70,17 +70,7 @@ namespace Followshows
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             ////Loading
-            if (e.NavigationParameter != null)
-            {
-                api = (API)e.NavigationParameter;
-            }
-            else
-            {
-                if (api == null)
-                {
-                    throw new Exception("There is no api defined");
-                }
-            }
+            api = API.getAPI();
             
         }
 

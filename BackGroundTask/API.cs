@@ -21,7 +21,7 @@ using Newtonsoft.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 
-namespace Followshows
+namespace BackGroundTask
 {
     public class API
     {
@@ -167,11 +167,7 @@ namespace Followshows
                 {
                     if (!await login())
                     {
-                        Frame rootFrame = Window.Current.Content as Frame;
-                        if (!rootFrame.Navigate(typeof(LandingPage), this))
-                        {
-                            throw new Exception("Failed to create initial page");
-                        }
+
                     }
                     if (post)
                     {
@@ -959,11 +955,7 @@ namespace Followshows
                     cred.RetrievePassword();
                     if ((await LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString())) != true)
                     {
-                        Frame rootFrame = Window.Current.Content as Frame;
-                        if (!rootFrame.Navigate(typeof(LandingPage), this))
-                        {
-                            throw new Exception("Failed to create initial page");
-                        }
+
                     }
 
                     network.OnPropertyChanged("network");
@@ -1176,31 +1168,32 @@ namespace Followshows
         }
     }
 
-}
-
-public class FalseLoginException : Exception
-{
-    public FalseLoginException() { }
-}
-
-public class Helper
-{
-    public async static void message(string message, string title)
+    public sealed class FalseLoginException : Exception
     {
-        try
-        {
-            await new MessageDialog(message, title).ShowAsync();
-        }
-        catch
-        {
+        public FalseLoginException() { }
+    }
 
+    public sealed class Helper
+    {
+        public async static void message(string message, string title)
+        {
+            try
+            {
+                await new MessageDialog(message, title).ShowAsync();
+            }
+            catch
+            {
+
+            }
+
+        }
+
+        public async static void message(string message)
+        {
+            await new MessageDialog(message).ShowAsync();
         }
 
     }
 
-    public async static void message(string message)
-    {
-        await new MessageDialog(message).ShowAsync();
-    }
-
 }
+

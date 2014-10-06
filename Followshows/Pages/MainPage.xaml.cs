@@ -125,17 +125,7 @@ namespace Followshows
             await statusBar.HideAsync();
 
             ////Loading
-            if (e.NavigationParameter != null)
-            {
-                api = (API)e.NavigationParameter;
-            }
-            else
-            {
-                if (api == null)
-                {
-                    throw new Exception("There is no api defined");
-                }
-            }
+            api = API.getAPI();
 
             //As a precaution set a show as the passed object
             TvShow show = new TvShow(false);
