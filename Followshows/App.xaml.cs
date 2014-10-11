@@ -89,7 +89,7 @@ namespace Followshows
                 rootFrame.ContentTransitions = null;
                 rootFrame.Navigated += this.RootFrame_FirstNavigated;
 
-                API ap = API.createWebsite();
+                API ap = new API();
 
                 if(!ap.hasInternet() && ap.hasLoginCreds())
                 {
@@ -153,7 +153,7 @@ namespace Followshows
         //This method is called when returning from the authentication broker when logging in with facebook
         protected override async void OnActivated(IActivatedEventArgs args)
         {
-            API api = API.createWebsite();
+            API api = new API();
 
             if (args is WebAuthenticationBrokerContinuationEventArgs)
             {

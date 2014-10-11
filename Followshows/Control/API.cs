@@ -43,14 +43,25 @@ namespace Followshows
 
         #region BASIC
 
-        public API(HttpClient http, string lastVis)
+        private static API api;
+        public static API getAPI()
         {
-            if (http == null)
+            if (api == null)
             {
-                throw new Exception("No client is provided");
+                api = new API();
             }
+            return api;
+        }
 
-            lastPage = lastVis;
+        public API()
+        {
+            HttpBaseProtocolFilter filter = new HttpBaseProtocolFilter();
+            filter.AutomaticDecompression = true;
+            HttpClient http = new HttpClient(filter);
+            cookieMonster = filter.CookieManager;
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            lastPage = "None";
             client = http;
             loggedIn = false;
             gotInternet = false;
@@ -60,18 +71,6 @@ namespace Followshows
             network = new NetworkChanged();
 
             Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += NetworkStatusChanged;
-        }
-
-        public static API createWebsite()
-        {
-            HttpBaseProtocolFilter filter = new HttpBaseProtocolFilter();
-            filter.AutomaticDecompression = true;
-            HttpClient http = new HttpClient(filter);
-            API web = new API(http, "None");
-            web.cookieMonster = filter.CookieManager;
-            Frame rootFrame = Window.Current.Content as Frame;
-
-            return web;
         }
 
         public async Task<bool> login()

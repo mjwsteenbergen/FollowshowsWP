@@ -54,6 +54,22 @@ namespace Followshows
         {
             this.InitializeComponent();
 
+            initiateCommandBar();
+            
+            
+            
+
+            this.navigationHelper = new NavigationHelper(this);
+            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
+            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            selectedPivot = 0;
+
+            //http://followshowswp.uservoice.com/forums/255100-general
+        }
+
+        private void initiateCommandBar()
+        {
             CommandBar bar = new CommandBar();
             AppBarButton logou = new AppBarButton() { Icon = new SymbolIcon(Symbol.Cancel), Label = "Log out" };
             logou.Click += logout;
@@ -80,14 +96,6 @@ namespace Followshows
             bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
-
-            this.navigationHelper = new NavigationHelper(this);
-            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
-            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
-            selectedPivot = 0;
-
-            //http://followshowswp.uservoice.com/forums/255100-general
         }
 
         /// <summary>
