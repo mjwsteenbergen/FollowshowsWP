@@ -6,11 +6,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{871B1B67-4576-41F6-BA89-D26E9D861B3B}</ProjectGuid>
-    <OutputType>winmdobj</OutputType>
+    <ProjectGuid>{23272C59-EA46-45A2-A6B1-F3252B8DE952}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BackGroundTask</RootNamespace>
-    <AssemblyName>BackGroundTask</AssemblyName>
+    <RootNamespace>SharedCode</RootNamespace>
+    <AssemblyName>SharedCode</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
@@ -79,14 +79,21 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Backgroud.cs" />
+    <Compile Include="Control\API.cs" />
+    <Compile Include="Control\Tile.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharedCode\SharedCode.csproj">
-      <Project>{23272c59-ea46-45a2-a6b1-f3252b8de952}</Project>
-      <Name>SharedCode</Name>
-    </ProjectReference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\..\..\Visual Studio 2013\Projects\Libraries\HtmlAgilityPack.1.4.6\2\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

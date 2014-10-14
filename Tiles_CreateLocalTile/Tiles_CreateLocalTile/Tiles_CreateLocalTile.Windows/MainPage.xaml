@@ -1,0 +1,182 @@
+﻿<Page
+    x:Class="Tiles_CreateLocalTile.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Tiles_CreateLocalTile"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Storyboard x:Name="ShowDrawingSpace">
+            <DoubleAnimationUsingKeyFrames 
+                        Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" 
+                        Storyboard.TargetName="DrawingSpace">
+                <EasingDoubleKeyFrame KeyTime="0" Value="800"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut" Exponent="3"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames 
+                    Storyboard.TargetProperty="(UIElement.Opacity)" 
+                    Storyboard.TargetName="DrawingSpace">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut" Exponent="3"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames 
+                    Storyboard.TargetProperty="(UIElement.Visibility)" 
+                    Storyboard.TargetName="DrawingSpace">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <Visibility>Visible</Visibility>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+
+        </Storyboard>
+
+        <Storyboard x:Name="HideDrawingSpace">
+            <DoubleAnimation Duration="0:0:0.3" To="800" 
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" 
+                             Storyboard.TargetName="DrawingSpace" d:IsOptimized="True">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseOut" Exponent="3"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Duration="0:0:0.3" To="0" 
+                             Storyboard.TargetProperty="(UIElement.Opacity)" 
+                             Storyboard.TargetName="DrawingSpace" 
+                             d:IsOptimized="True">
+                <DoubleAnimation.EasingFunction>
+                    <ExponentialEase EasingMode="EaseOut" Exponent="3"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames 
+                       Storyboard.TargetProperty="(UIElement.Visibility)" 
+                    Storyboard.TargetName="DrawingSpace">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4">
+                    <DiscreteObjectKeyFrame.Value>
+                        <Visibility>Collapsed</Visibility>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+    </Page.Resources>
+
+    <Page.BottomAppBar>
+        <CommandBar x:Name="cmdBar" IsOpen="True"  Visibility="Collapsed">
+            <AppBarButton Icon="Accept" Click="AppBarButton_Click"/>
+            <AppBarButton Icon="Cancel" Click="AppBarButton_Click_1"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+        </Grid>
+        <ScrollViewer Margin="20,30,20,0" HorizontalAlignment="Left">
+            <StackPanel Margin="0,0,30,20">
+                <TextBlock TextWrapping="Wrap" Text="live tile creator" Margin="0,0,30,20" FontSize="48"/>
+
+                <Button x:Name="MediumBtn" Content="Create Medium Image" 
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                        Click="MediumBtn_Click"
+                        />
+                <Grid x:Name="medImageGrid" Margin="0" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="medium tile image" VerticalAlignment="Top" FontSize="36"/>
+                    <Button Grid.Row="1" Padding="0" Click="MediumBtn_Click">
+                        <Image x:Name="medImage" Height="100" Width="100" Grid.Row="1"/>
+                    </Button>
+                </Grid>
+                <Button x:Name="WideBtn" Content="Create Wide Image" 
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Stretch"
+                        Click="WideBtn_Click"/>
+                <Grid x:Name="wideImageGrid" Margin="0" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="wide tile image" VerticalAlignment="Top" FontSize="36"/>
+                    <Button Grid.Row="1" Padding="0,0,0,0" Click="WideBtn_Click">
+                        <Image x:Name="wideImage" Height="100" Width="206" Grid.Row="1"/>
+                    </Button>
+                </Grid>
+                <TextBlock TextWrapping="Wrap" Text="tile text" Margin="0,0,0,5" FontSize="36" />
+                <TextBox x:Name="tileText" Margin="0" TextWrapping="Wrap" Text="" 
+                         VerticalAlignment="Stretch" 
+                         PlaceholderText="text for tile display"
+                         LostFocus="tileText_LostFocus"
+                         />
+                <Button x:Name="UpdateBtn" Content="Update Tile" HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Stretch" IsEnabled="False" 
+                        Margin="0,20,0,0"
+                        Click="UpdateBtn_Click" />
+
+            </StackPanel>
+        </ScrollViewer>
+        <Grid x:Name="DrawingSpace" RenderTransformOrigin="0.5,0.5" 
+              Background="{ThemeResource AppBarBackgroundThemeBrush}"
+              Visibility="Collapsed" >
+            <Grid.RenderTransform>
+                <CompositeTransform/>
+            </Grid.RenderTransform>
+            <Grid HorizontalAlignment="Center" Margin="40,20,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="iconDrawText" Margin="20,30,0,0" Text="draw a medium icon below" FontSize="24" />
+                <Border x:Name="medCanvasHolder" BorderBrush="#FFAEAEAE" Grid.Row="1" BorderThickness="3" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <Canvas x:Name="medCanvas" Width="350" Height="350" 
+				PointerPressed="StartDrawing"
+                PointerMoved="Drawing" Background="#FF242424"/>
+
+                </Border>
+                <Border x:Name="wideCanvasHolder" Visibility="Collapsed" BorderBrush="#FFAEAEAE" Grid.Row="1" BorderThickness="3" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <Canvas x:Name="wideCanvas" Width="350" Height="170" 
+				PointerPressed="StartDrawing"
+                PointerMoved="Drawing" Background="#FF242424"/>
+
+                </Border>
+                <Grid VerticalAlignment="Top" Grid.Row="2" Height="80" Margin="20,0,20,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="25*" />
+                        <ColumnDefinition Width="25*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="redBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+					Background="#FFB80000" 
+					BorderBrush="#FFFFFFFF"
+                        Click="ChangeToRed" />
+                    <Button x:Name="greenBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+					Background="#FF00B800" 
+					BorderBrush="#FFFFFFFF" Grid.Column="1"
+                    BorderThickness="0" Click="ChangeToGreen" />
+                    <Button x:Name="blueBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+				Background="#FF0000B8" 
+					BorderBrush="#FFFFFFFF" Grid.Column="2" 
+                    BorderThickness="0"
+                    Click="changeToBlue" />
+                </Grid>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Page>

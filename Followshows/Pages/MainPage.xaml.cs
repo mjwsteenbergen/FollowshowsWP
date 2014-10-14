@@ -23,6 +23,7 @@ using Windows.ApplicationModel.Contacts;
 using Windows.ApplicationModel.Email;
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
+using SharedCode;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 

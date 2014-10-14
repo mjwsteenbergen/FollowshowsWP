@@ -21,7 +21,7 @@ using Newtonsoft.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 
-namespace BackGroundTask
+namespace SharedCode
 {
     public class API
     {
@@ -167,7 +167,7 @@ namespace BackGroundTask
                 {
                     if (!await login())
                     {
-
+                        await new MessageDialog("We are having trouble logging in. Probably this is because you have slow internet or we are down. If the problems persist try logging out and in again. Our apologies","Something went wrong").ShowAsync();
                     }
                     if (post)
                     {
@@ -955,7 +955,7 @@ namespace BackGroundTask
                     cred.RetrievePassword();
                     if ((await LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString())) != true)
                     {
-
+                        await new MessageDialog("We are having trouble logging in. Probably this is because you have slow internet or we are down. If the problems persist try logging out and in again. Our apologies", "Something went wrong").ShowAsync();
                     }
 
                     network.OnPropertyChanged("network");
@@ -1166,34 +1166,38 @@ namespace BackGroundTask
             }
             return false;
         }
-    }
 
-    public sealed class FalseLoginException : Exception
-    {
-        public FalseLoginException() { }
-    }
-
-    public sealed class Helper
-    {
-        public async static void message(string message, string title)
+        public void setTile()
         {
-            try
-            {
-                await new MessageDialog(message, title).ShowAsync();
-            }
-            catch
-            {
-
-            }
-
+            
         }
-
-        public async static void message(string message)
-        {
-            await new MessageDialog(message).ShowAsync();
-        }
-
     }
 
 }
 
+public class FalseLoginException : Exception
+{
+    public FalseLoginException() { }
+}
+
+public class Helper
+{
+    public async static void message(string message, string title)
+    {
+        try
+        {
+            await new MessageDialog(message, title).ShowAsync();
+        }
+        catch
+        {
+
+        }
+
+    }
+
+    public async static void message(string message)
+    {
+        await new MessageDialog(message).ShowAsync();
+    }
+
+}
