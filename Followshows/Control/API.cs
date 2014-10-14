@@ -20,6 +20,7 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
+using Followshows.Control;
 
 namespace Followshows
 {
@@ -43,6 +44,26 @@ namespace Followshows
 
         #region BASIC
 
+        public async void temp()
+        {
+            if (!await login())
+            {
+                Frame rootFrame = Window.Current.Content as Frame;
+                if (!rootFrame.Navigate(typeof(LandingPage), this))
+                {
+                    throw new Exception("Failed to create initial page");
+                }
+            }
+            if (post)
+            {
+                response = await client.PostAsync(uri, cont);
+            }
+            else
+            {
+                response = await client.GetAsync(uri);
+            }
+        }
+
         private static API api;
         public static API getAPI()
         {
@@ -51,6 +72,11 @@ namespace Followshows
                 api = new API();
             }
             return api;
+        }
+
+        public HttpClient getClient()
+        {
+            return client;
         }
 
         public API()
@@ -126,66 +152,9 @@ namespace Followshows
             { }
         }
 
-        private async Task<Response> getResponse(string url, IHttpContent cont, bool post)
-        {
-            Response res = new Response();
-            Uri uri = new Uri(url);
+        
 
-            var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
-            if (connectionP == null)
-            {
-                res.hasInternet = false;
-                Helper.message("I am sorry to tell you, but I cannot connect to the internet :(", "No Internet");
-                return res;
-            }
-            res.hasInternet = true;
-
-            try
-            {
-                HttpResponseMessage response;
-                if (post)
-                {
-                    response = await client.PostAsync(uri, cont);
-                }
-                else
-                {
-                    response = await client.GetAsync(uri);
-                }
-                response.EnsureSuccessStatusCode();
-                res.page = Regex.Replace(((await response.Content.ReadAsStringAsync()).Replace("\n", "").Replace("\\\"", "").Replace("\t", "")), " {2,}", "");
-                res.content = response;
-                if (res.page.Contains("Forgot your password?"))
-                {
-                    if (!await login())
-                    {
-                        Frame rootFrame = Window.Current.Content as Frame;
-                        if (!rootFrame.Navigate(typeof(LandingPage), this))
-                        {
-                            throw new Exception("Failed to create initial page");
-                        }
-                    }
-                    if (post)
-                    {
-                        response = await client.PostAsync(uri, cont);
-                    }
-                    else
-                    {
-                        response = await client.GetAsync(uri);
-                    }
-                }
-                return res;
-            }
-            catch (Exception)
-            {
-                return res;
-            }
-
-        }
-
-        private async Task<Response> getResponse(string url, IHttpContent cont)
-        {
-            return await getResponse(url, cont, true);
-        }
+        
 
         public bool hasInternet()
         {
@@ -451,24 +420,26 @@ namespace Followshows
 
         }
 
-        public async Task<List<Episode>> getQueue()
+        public List<Episode> getQueue()
         {
             if (!hasInternet() && queue != null)
                 return queue;
             queue = new List<Episode>();
 
-            Response resp = await getResponse("http://followshows.com/api/queue?from=0", null);
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(resp.page);
+            Response resp = new Response("http://followshows.com/api/queue?from=0");
+            
+            if(resp.somethingWentWrong)
+            {
+                return queue;
+            }
 
 
-
-            foreach (HtmlNode Episode in doc.DocumentNode.ChildNodes)
+            foreach (HtmlNode Episode in resp.firstNode.ChildNodes)
             {
                 if (Episode.Name != "li") { continue; }
                 Episode ep = new Episode(true, false);
 
-                foreach (HtmlNode item in Episode.DescendantNodes())
+                foreach (HtmlNode item in Episode.ChildNodes)
                 {
                     if (item.Attributes["class"] != null)
                     {
@@ -513,14 +484,14 @@ namespace Followshows
             return queue;
         }
 
-        public async Task<List<TvShow>> getTracker()
+        public List<TvShow> getTracker()
         {
             if (!hasInternet() && tracker != null)
                 return tracker;
             tracker = new List<TvShow>();
 
-            Response resp = await getResponse("http://followshows.com/viewStyleTracker?viewStyle=expanded", null);
-            if (!resp.hasInternet || resp.page == null)
+            Response resp = new Response("http://followshows.com/viewStyleTracker?viewStyle=expanded");
+            if (!resp.somethingWentWrong)
             {
                 return tracker;
             }
@@ -604,11 +575,11 @@ namespace Followshows
                 }
         }
 
-        public async Task<List<Episode>> getWatchList()
+        public List<Episode> getWatchList()
         {
             watchList = new List<Episode>();
 
-            Response resp = await getResponse("http://followshows.com/home/watchlist", null, false);
+            Response resp = new Response("http://followshows.com/home/watchlist", null, false);
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return watchList;
@@ -648,11 +619,11 @@ namespace Followshows
             return watchList;
         }
 
-        public async Task<List<Episode>> getCalendar()
+        public List<Episode> getCalendar()
         {
             calendar = new List<Episode>();
 
-            Response resp = await getResponse("http://followshows.com/api/calendar?date=" + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() + "&days=14", null);
+            Response resp = new Response("http://followshows.com/api/calendar?date=" + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() + "&days=14", null);
             
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
@@ -720,9 +691,9 @@ namespace Followshows
             return calendar;
         }
 
-        public async Task<TvShow> getShow(TvShow show)
+        public TvShow getShow(TvShow show)
         {
-            Response resp = await getResponse("http://followshows.com/show/" + show.showUrl, null, false);
+            Response resp = new Response("http://followshows.com/show/" + show.showUrl, null, false);
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return show;
@@ -770,15 +741,12 @@ namespace Followshows
         {
             List<Episode> season = new List<Episode>();
 
-            Response resp = await getResponse("http://followshows.com/api/show/" + show.showUrl + "/season/" + seasonNr, null, false);
-            HtmlDocument doc = new HtmlDocument();
-            if (resp.page == null)
+            Response resp = new Response("http://followshows.com/api/show/" + show.showUrl + "/season/" + seasonNr, null, false);
+
+            if (resp.somethingWentWrong)
                 return season;
-            doc.LoadHtml(resp.page);
 
-
-
-            foreach (HtmlNode episode in getChild(doc.DocumentNode.ChildNodes, "class", "clearfix").ChildNodes)
+            foreach (HtmlNode episode in getChild(resp.firstNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
                 Episode ep = new Episode(false, false);
                 ep.ShowName = show.Name;
@@ -821,7 +789,7 @@ namespace Followshows
             return season;
         }
 
-        public async Task<List<TvShow>> searchTvShow(string searchTerm)
+        public List<TvShow> searchTvShow(string searchTerm)
         {
             List<TvShow> res = new List<TvShow>();
             List<TvShow> res2 = new List<TvShow>();
@@ -832,7 +800,7 @@ namespace Followshows
                 return res;
             }
 
-            Response resp = await getResponse("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false);
+            Response resp = new Response("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false);
             if (resp.page == null)
                 return res;
             List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
@@ -865,49 +833,40 @@ namespace Followshows
             return res;
         }
 
-        public async void followShow(string showUrl)
+        public void followShow(string showUrl)
         {
             if (showUrl == null) return;
-            Response resp = await getResponse("http://followshows.com/api/followShow?show=" + showUrl, null);
-            if (resp.hasInternet)
-            {
-                lastPage = resp.page;
-            }
-            if (resp.page == null || resp.page.Contains("DMCA Policy"))
+            Response resp = new Response("http://followshows.com/api/followShow?show=" + showUrl, null);
+            
+            if (resp.somethingWentWrong)
             {
                 Helper.message("Uhm... Something went wrong.", "Sorry");
             }
         }
 
-        public async void unfollowShow(string showUrl)
+        public void unfollowShow(string showUrl)
         {
             if (showUrl == null) return;
-            Response resp = await getResponse("http://followshows.com/api/unfollowShow?show=" + showUrl, null);
-            if (resp.hasInternet)
-            {
-                lastPage = resp.page;
-            }
-            if (resp.page == null || resp.page.Contains("DMCA Policy"))
+            Response resp = new Response("http://followshows.com/api/unfollowShow?show=" + showUrl, null);
+
+            if (resp.somethingWentWrong)
             {
                 Helper.message("Uhm... Something went wrong.", "Sorry");
             }
         }
 
-        public async void markSeasonAsWatched(string seasonnr, TvShow show)
+        public void markSeasonAsWatched(string seasonnr, TvShow show)
         {
             if (seasonnr == null || show.showUrl == null) return;
-            Response resp = await getResponse("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl + "&season=" + seasonnr, null);
-            if (resp.hasInternet)
-            {
-                lastPage = resp.page;
-            }
-            if (resp.page == null || resp.page.Contains("DMCA Policy"))
+            Response resp = new Response("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl + "&season=" + seasonnr, null);
+            
+            if (resp.somethingWentWrong)
             {
                 Helper.message("Uhm... Something went wrong.", "Sorry");
             }
         }
 
-        public async void markAsWatched(Episode ep)
+        public void markAsWatched(Episode ep)
         {
             if (ep.id == null) return;
             if (!ep.Aired)
@@ -915,21 +874,14 @@ namespace Followshows
                 Helper.message("This episode hasn't aired yet. You cannot mark it as watched", "EPISODE NOT AIRED");
                 throw new Exception("IT DID NOT AIR");
             }
-            Response resp = await getResponse("http://followshows.com/api/markEpisodeAsWatched?episodeId=" + ep.id, null);
-            if (resp.hasInternet)
-            {
-                lastPage = resp.page;
-            }
+            Response resp = new Response("http://followshows.com/api/markEpisodeAsWatched?episodeId=" + ep.id, null);
+
         }
 
-        public async void markNotAsWatched(Episode ep)
+        public void markNotAsWatched(Episode ep)
         {
             if (ep.id == null) return;
-            Response resp = await getResponse("http://followshows.com/api/markEpisodeAsNotWatched?episodeId=" + ep.id, null);
-            if (resp.hasInternet)
-            {
-                lastPage = resp.page;
-            }
+            Response resp = new Response("http://followshows.com/api/markEpisodeAsNotWatched?episodeId=" + ep.id, null);
         }
 
 
