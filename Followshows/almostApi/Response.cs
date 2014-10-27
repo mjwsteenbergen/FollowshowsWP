@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Web.Http;
 
-namespace Followshows.Control
+namespace Followshows.almostApi
 {
     public class Response
     {
@@ -22,38 +22,68 @@ namespace Followshows.Control
         public HtmlDocument htmldoc;
         public HtmlNode firstNode;
 
+        private string url;
+        protected IHttpContent cont;
+        protected bool post;
+        private string p1;
+        private bool p2;
+
         public Response(string url)
         {
-            doActualResponse(url, null, true);
+            this.url = url;
+            cont = null;
+            post = true;
         }
 
-        public Response(string url, IHttpContent cont)
+        public Response(string stringurl, IHttpContent content)
         {
-            doActualResponse(url, cont, true);
+            url = stringurl;
+            cont = content;
+            post = true;
+
         }
 
         public Response(string url, IHttpContent cont, bool post)
         {
-            doActualResponse(url, cont, post);
+            this.url = url;
+            this.cont = cont;
+            this.post = post;
         }
 
-        public async void doActualResponse(string url, IHttpContent cont, bool post)
+        public Response(string url, bool post)
         {
-            HttpClient client = API.getAPI().getClient();
+            this.url = url;
+            this.post = post;
+        }
+
+        public async Task<Response> call()
+        {
+            await doActualResponse(url, cont, post);
+
+            return this;
+        }
+
+        public async Task doActualResponse(string url, IHttpContent cont, bool post)
+        {
+            client = API.getAPI().getClient();
+            notLoggedIn = true;
+            pageCouldNotBeFound = true;
+            somethingWentWrong = true;
+
 
             if (testInternet())
             {
-                somethingWentWrong = true;
                 return;
             }
             if (await getResponse(url, cont, post))
             {
-                somethingWentWrong = true;
                 return;
             }
-            htmldoc = new HtmlDocument();
-            htmldoc.LoadHtml(page);
-            firstNode = htmldoc.DocumentNode;
+            if (page.Contains("Forgot your password?"))
+            {
+                return;
+            }
+            notLoggedIn = false;
             somethingWentWrong = false;
         }
 
@@ -72,10 +102,12 @@ namespace Followshows.Control
 
         public async Task<bool> getResponse(string url, IHttpContent cont, bool post)
         {
-            Uri uri = new Uri(url);
-
             try
             {
+                Uri uri = new Uri(url);
+
+                HttpClient client = new HttpClient();
+
                 HttpResponseMessage response;
                 if (post)
                 {
@@ -84,24 +116,24 @@ namespace Followshows.Control
                 else
                 {
                     response = await client.GetAsync(uri);
-                }
+                }            
                 if (!response.IsSuccessStatusCode)
-                {
-                    pageCouldNotBeFound = true;
-                }
-                pageCouldNotBeFound = false;
-
-                page = Regex.Replace(((await response.Content.ReadAsStringAsync()).Replace("\n", "").Replace("\\\"", "").Replace("\t", "")), " {2,}", "");
-                content = response;
-                if (page.Contains("Forgot your password?") || resp.page.Contains("DMCA Policy"))
-                {
-                    notLoggedIn = true;
+                { 
                     return true;
                 }
-                notLoggedIn = false;
+                page = Regex.Replace(((await response.Content.ReadAsStringAsync()).Replace("\n", "").Replace("\\\"", "").Replace("\t", "")), " {2,}", "");                
+                pageCouldNotBeFound = false;
+
+
+
+                htmldoc = new HtmlDocument();
+                htmldoc.LoadHtml(page);
+                firstNode = htmldoc.DocumentNode;
+
+                content = response;
                 return false;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return true;
             }

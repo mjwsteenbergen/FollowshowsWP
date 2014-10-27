@@ -23,6 +23,7 @@ using Windows.ApplicationModel.Contacts;
 using Windows.ApplicationModel.Email;
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
+using Followshows.almostApi;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -304,7 +305,7 @@ namespace Followshows
         #region MarkAsWatched
 
 
-        private void Item_Tapped(object sender, DoubleTappedRoutedEventArgs e)
+        private async void Item_Tapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             item = sender as Grid;
             ep = item.DataContext as Episode;
@@ -355,7 +356,7 @@ namespace Followshows
 
                 if (api.hasInternet())
                 {
-                    api.markNotAsWatched(ep);
+                    await ep.markNotAsWatched();
                 }
                 else
                 {
@@ -374,11 +375,11 @@ namespace Followshows
 
         }
 
-        void board_Completed(object sender, object e)
+        async void board_Completed(object sender, object e)
         {
             if (api.hasInternet())
             {
-                api.markAsWatched(ep);
+                await ep.markAsWatched();
             }
             else
             {

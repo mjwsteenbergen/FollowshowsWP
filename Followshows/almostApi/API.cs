@@ -20,7 +20,7 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
-using Followshows.Control;
+using Followshows.almostApi;
 
 namespace Followshows
 {
@@ -28,7 +28,6 @@ namespace Followshows
     {
         HttpClient client;
         private HttpCookieManager cookieMonster;
-        public string lastPage { get; set; }
         public Object passed;
         public bool loggedIn;
         public bool gotInternet;
@@ -43,26 +42,6 @@ namespace Followshows
         private List<Episode> calendar;
 
         #region BASIC
-
-        public async void temp()
-        {
-            if (!await login())
-            {
-                Frame rootFrame = Window.Current.Content as Frame;
-                if (!rootFrame.Navigate(typeof(LandingPage), this))
-                {
-                    throw new Exception("Failed to create initial page");
-                }
-            }
-            if (post)
-            {
-                response = await client.PostAsync(uri, cont);
-            }
-            else
-            {
-                response = await client.GetAsync(uri);
-            }
-        }
 
         private static API api;
         public static API getAPI()
@@ -85,9 +64,7 @@ namespace Followshows
             filter.AutomaticDecompression = true;
             HttpClient http = new HttpClient(filter);
             cookieMonster = filter.CookieManager;
-            Frame rootFrame = Window.Current.Content as Frame;
 
-            lastPage = "None";
             client = http;
             loggedIn = false;
             gotInternet = false;
@@ -111,7 +88,7 @@ namespace Followshows
                 {
                     cred = vault.FindAllByResource("email")[0];
                     cred.RetrievePassword();
-                    return await this.LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString());
+                    return (await LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString()));
                 }
             }
             catch (Exception)
@@ -173,115 +150,6 @@ namespace Followshows
 
         #endregion
 
-        #region HTMLSTUFF
-
-        /// <summary>
-        /// Returns the first child of the node
-        /// </summary>
-        /// <param name="node">An HTML node</param>
-        /// <returns></returns>
-        private HtmlNode getChild(HtmlNode node)
-        {
-            return getChild(node, 0);
-        }
-
-        /// <summary>
-        /// Returns the i'th child
-        /// </summary>
-        /// <param name="node">HTML Node</param>
-        /// <param name="i">th child</param>
-        /// <returns></returns>
-        private HtmlNode getChild(HtmlNode node, int i)
-        {
-            if (node != null && i != null)
-            {
-                HtmlNode[] res = node.ChildNodes.ToArray<HtmlNode>();
-                if (res.Length > i - 1)
-                    return node.ChildNodes.ToArray<HtmlNode>()[i];
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Returns a node in the immediate decendants of the node which holds the attribute-value pair
-        /// </summary>
-        /// <param name="node">an HTML Node</param>
-        /// <param name="attribute"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public HtmlNode getChild(HtmlNode node, string attribute, string value)
-        {
-            if (node == null || attribute == null || value == null)
-                return null;
-            foreach (HtmlNode child in node.DescendantNodes())
-            {
-                if (child.Attributes[attribute] != null)
-                {
-                    if (child.Attributes[attribute].Value == value)
-                        return child;
-                }
-            }
-            throw new InvalidDataException();
-            //return null;
-        }
-
-        /// <summary>
-        /// Returns the node if anywhere in the decendants holds a attribute-value pair
-        /// </summary>
-        /// <param name="col"></param>
-        /// <param name="attribute"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public HtmlNode getChild(IEnumerable<HtmlNode> col, string attribute, string value)
-        {
-            if (col == null || attribute == null || value == null) return null;
-            foreach (HtmlNode child in col)
-            {
-                if (child.Attributes[attribute] != null)
-                {
-                    if (child.Attributes[attribute].Value == value)
-                        return child;
-                }
-                HtmlNode node = getChild(child.ChildNodes, attribute, value);
-                if (node != null)
-                    return node;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Returns a node with the attribute, if it is somewhere in the decendants tree
-        /// </summary>
-        /// <param name="col"></param>
-        /// <param name="attribute"></param>
-        /// <returns></returns>
-        private string getAttribute(IEnumerable<HtmlNode> col, string attribute)
-        {
-            if (col == null || attribute == null) return null;
-            foreach (HtmlNode child in col)
-            {
-                if (child.Attributes[attribute] != null)
-                {
-                    return child.Attributes[attribute].Value;
-                }
-                string node = getAttribute(child.DescendantNodes(), attribute);
-                if (node != null)
-                    return node;
-            }
-            return null;
-        }
-
-        private string getAttribute(HtmlNode node, string attribute)
-        {
-            if (node.Attributes[attribute] != null)
-            {
-                return node.Attributes[attribute].Value;
-            }
-            return null;
-        }
-
-        #endregion
-
         public async Task<bool> RegisterWithEmail(string firstname, string lastname, string email, string password, string timezone)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -292,16 +160,15 @@ namespace Followshows
             dict.Add("timezone", new Regex("(.)+ - ").Replace(timezone, "").ToString());
             IHttpContent content = new HttpFormUrlEncodedContent(dict);
 
-            Response resp = await getResponse("http://followshows.com/signup/save", content);
-            if (resp.hasInternet)
+            Response resp = await (new Response("http://followshows.com/signup/save", content)).call();
+            if (!resp.somethingWentWrong)
             {
-                lastPage = resp.page;
-                return lastPage.Contains("Last step! Follow some TV shows.");
+                return resp.page.Contains("Last step! Follow some TV shows.");
             }
             return false;
         }
 
-        public async Task<Boolean> LoginWithEmail(string username, string password)
+        public async Task<bool> LoginWithEmail(string username, string password)
         {
             //Login Data    
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -310,13 +177,11 @@ namespace Followshows
             IHttpContent content = new HttpFormUrlEncodedContent(dict);
 
             //Login
-            Response resp = await getResponse("http://followshows.com/login/j_spring_security_check", content);
-            if (resp.hasInternet && resp.page != null)
+            Response resp = await (new Response("http://followshows.com/login/j_spring_security_check", content)).call() ;
+            if (!(resp.pageCouldNotBeFound && resp.noInternet))
             {
-                lastPage = resp.page;
-
                 //Check if actually loggedIn
-                if (!lastPage.Contains("Wrong email or password."))
+                if (!resp.page.Contains("Wrong email or password."))
                 {
                     loggedIn = true;
                     return true;
@@ -347,9 +212,9 @@ namespace Followshows
                 }
 
                 //Check if it works
-                Response resp = await getResponse("http://followshows.com/", null);
+                Response resp = await (new Response("http://followshows.com/")).call();
 
-                if (resp.page == null || !resp.content.IsSuccessStatusCode || resp.page.Contains("Keep up to date on when your favorite shows air next in a convenient calendar,or with emails we send you when your shows are on.") || resp.page.Contains("Already have an account? Log in now"))
+                if (resp.somethingWentWrong)
                 {
                     return false;
                 }
@@ -391,7 +256,7 @@ namespace Followshows
 
                 string output = result.ResponseData.ToString();
 
-                Response resp = await getResponse(output, null);
+                Response resp = await (new Response(output, null)).call();
 
                 HttpCookieCollection col = cookieMonster.GetCookies(new Uri("http://followshows.com/"));
 
@@ -420,13 +285,13 @@ namespace Followshows
 
         }
 
-        public List<Episode> getQueue()
+        public async Task<List<Episode>> getQueue()
         {
             if (!hasInternet() && queue != null)
                 return queue;
             queue = new List<Episode>();
 
-            Response resp = new Response("http://followshows.com/api/queue?from=0");
+            Response resp = await (new Response("http://followshows.com/api/queue?from=0")).call();
             
             if(resp.somethingWentWrong)
             {
@@ -484,14 +349,14 @@ namespace Followshows
             return queue;
         }
 
-        public List<TvShow> getTracker()
+        public async Task<List<TvShow>> getTracker()
         {
             if (!hasInternet() && tracker != null)
                 return tracker;
             tracker = new List<TvShow>();
 
-            Response resp = new Response("http://followshows.com/viewStyleTracker?viewStyle=expanded");
-            if (!resp.somethingWentWrong)
+            Response resp = await (new Response("http://followshows.com/viewStyleTracker?viewStyle=expanded")).call();
+            if (resp.somethingWentWrong)
             {
                 return tracker;
             }
@@ -500,7 +365,7 @@ namespace Followshows
             doc.LoadHtml(resp.page);
 
             HtmlNode tbody = doc.GetElementbyId("tracker");
-            HtmlNode head = getChild(tbody);
+            HtmlNode head = HTML.getChild(tbody);
 
             if (head == null)
             {
@@ -515,13 +380,13 @@ namespace Followshows
                     //tvshow.Element("class");
                     //HtmlNodeCollection col =  tvshow.ChildNodes;
                     TvShow show = new TvShow(true);
-                    HtmlNode title = getChild(tvshow);
+                    HtmlNode title = HTML.getChild(tvshow);
                     show.Name = System.Net.WebUtility.HtmlDecode(title.InnerText);
-                    show.Image = new BitmapImage() { UriSource = new Uri(getAttribute(title.DescendantNodes(), "src")) };
+                    show.Image = new BitmapImage() { UriSource = new Uri(HTML.getAttribute(title.DescendantNodes(), "src")) };
                     //show.ImageUrl = getAttribute(title.DescendantNodes(), "src");
-                    show.showUrl = getAttribute(title.DescendantNodes(), "href").Replace("/show/", "");
-                    show.stillToWatch = getChild(tvshow.DescendantNodes(), "class", "towatch").InnerHtml;
-                    string perc = getChild(tvshow, "class", "progress").InnerText.Replace("%", "");
+                    show.showUrl = HTML.getAttribute(title.DescendantNodes(), "href").Replace("/show/", "");
+                    show.stillToWatch = HTML.getChild(tvshow.DescendantNodes(), "class", "towatch").InnerHtml;
+                    string perc = HTML.getChild(tvshow, "class", "progress").InnerText.Replace("%", "");
                     show.percentageWatched = float.Parse(perc) / 100 * 150;
                     tracker.Add(show);
                 }
@@ -575,11 +440,11 @@ namespace Followshows
                 }
         }
 
-        public List<Episode> getWatchList()
+        public async Task<List<Episode>> getWatchList()
         {
             watchList = new List<Episode>();
 
-            Response resp = new Response("http://followshows.com/home/watchlist", null, false);
+            Response resp = await (new Response("http://followshows.com/home/watchlist", false)).call();
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return watchList;
@@ -587,29 +452,29 @@ namespace Followshows
 
 
 
-            foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
+            foreach (HtmlNode episode in HTML.getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
                 Episode res = new Episode(true, false);
-                res.ShowName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
-                res.id = getAttribute(episode.ChildNodes, "episodeId");
-                HtmlNode Ename = getChild(episode.DescendantNodes(), "class", "subtitle");
-                res.EpisodeName = getChild(Ename).InnerText;
-                res.Image = new BitmapImage(new Uri(getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
-                string[] build = getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
+                res.ShowName = HTML.getChild(episode.DescendantNodes(), "class", "title").InnerText;
+                res.id = HTML.getAttribute(episode.ChildNodes, "episodeId");
+                HtmlNode Ename = HTML.getChild(episode.DescendantNodes(), "class", "subtitle");
+                res.EpisodeName = HTML.getChild(Ename).InnerText;
+                res.Image = new BitmapImage(new Uri(HTML.getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
+                string[] build = HTML.getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
                 res.ISeason = int.Parse(build[1]);
                 res.IEpisode = int.Parse(build[3].Replace(".", ""));
                 res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
                 watchList.Add(res);
             }
-            foreach (HtmlNode episode in getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid-home-more clearfix episodes-popover").ChildNodes)
+            foreach (HtmlNode episode in HTML.getChild(doc.DocumentNode.DescendantNodes(), "class", "videos-grid-home-more clearfix episodes-popover").ChildNodes)
             {
                 Episode res = new Episode(true, false);
-                res.ShowName = getChild(episode.DescendantNodes(), "class", "title").InnerText;
-                res.id = getAttribute(episode.ChildNodes, "episodeId");
-                HtmlNode Ename = getChild(episode.DescendantNodes(), "class", "subtitle");
-                res.EpisodeName = getChild(Ename).InnerText;
-                res.Image = new BitmapImage(new Uri(getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
-                string[] build = getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
+                res.ShowName = HTML.getChild(episode.DescendantNodes(), "class", "title").InnerText;
+                res.id = HTML.getAttribute(episode.ChildNodes, "episodeId");
+                HtmlNode Ename = HTML.getChild(episode.DescendantNodes(), "class", "subtitle");
+                res.EpisodeName = HTML.getChild(Ename).InnerText;
+                res.Image = new BitmapImage(new Uri(HTML.getAttribute(episode.DescendantNodes(), "style").Replace("background-image: url(", "").Replace(");", "")));
+                string[] build = HTML.getChild(episode.DescendantNodes(), "class", "description").InnerText.Split(new char[] { ' ' });
                 res.ISeason = int.Parse(build[1]);
                 res.IEpisode = int.Parse(build[3].Replace(".", ""));
                 res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
@@ -619,19 +484,23 @@ namespace Followshows
             return watchList;
         }
 
-        public List<Episode> getCalendar()
+        public async Task<List<Episode>> getCalendar()
         {
             calendar = new List<Episode>();
 
-            Response resp = new Response("http://followshows.com/api/calendar?date=" + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() + "&days=14", null);
+            string url = "http://followshows.com/api/calendar?date=" 
+                + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() 
+                + "&days=14";
+
+            Response resp = await (new Response(url)).call();
             
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return calendar;
             doc.LoadHtml(resp.page);
 
-            HtmlNode table = getChild(doc.DocumentNode, "class", "calendar");
-            HtmlNode tableRow = getChild(table, 1);
+            HtmlNode table = HTML.getChild(doc.DocumentNode, "class", "calendar");
+            HtmlNode tableRow = HTML.getChild(table, 1);
 
             bool check = false;
             foreach(HtmlNode day in tableRow.ChildNodes)
@@ -653,29 +522,29 @@ namespace Followshows
 
                 //List<Episode> epis = new List<Episode>();
 
-                HtmlNode ul = getChild(day);
+                HtmlNode ul = HTML.getChild(day);
                 if(ul != null)
                 {
                     foreach(HtmlNode li in ul.ChildNodes)
                     {
                         Episode ep = new Episode(false,false);
-                        HtmlNode a = getChild(li);
+                        HtmlNode a = HTML.getChild(li);
 
-                        ep.ShowName = getAttribute(a, "data-show");
-                        ep.network = getChild(a, "class", "network").InnerText;
-                        ep.Image = new BitmapImage(new Uri(Regex.Match(getAttribute(getChild(a, "class", "poster"), "style"), @"(?<=\().+(?!\))").ToString().Replace(@");","")));
+                        ep.ShowName = HTML.getAttribute(a, "data-show");
+                        ep.network = HTML.getChild(a, "class", "network").InnerText;
+                        ep.Image = new BitmapImage(new Uri(Regex.Match(HTML.getAttribute(HTML.getChild(a, "class", "poster"), "style"), @"(?<=\().+(?!\))").ToString().Replace(@");", "")));
 
 
                         //Season Position and episode url
                         HtmlDocument data = new HtmlDocument();
-                        data.LoadHtml(getAttribute(a, "data-content"));
-                        ep.EpisodeName = getChild(getChild(data.DocumentNode)).InnerText;
-                        string air = getChild(data.DocumentNode, 1).InnerText.Replace("Airs on ", "").Replace(", on " + ep.network + " at "," ");
+                        data.LoadHtml(HTML.getAttribute(a, "data-content"));
+                        ep.EpisodeName = HTML.getChild(HTML.getChild(data.DocumentNode)).InnerText;
+                        string air = HTML.getChild(data.DocumentNode, 1).InnerText.Replace("Airs on ", "").Replace(", on " + ep.network + " at ", " ");
                         ep.airtime = DateTime.Parse(air);
                         ep.airdate = DateTime.Parse(air).Date;
-                        ep.url = getAttribute(getChild(getChild(data.DocumentNode, 2)), "href");
+                        ep.url = HTML.getAttribute(HTML.getChild(HTML.getChild(data.DocumentNode, 2)), "href");
 
-                        string[] build = getChild(getChild(data.DocumentNode, 2)).InnerText.Split(new char[] { ' ' });
+                        string[] build = HTML.getChild(HTML.getChild(data.DocumentNode, 2)).InnerText.Split(new char[] { ' ' });
                         ep.ISeason = int.Parse(build[1]);
                         ep.IEpisode = int.Parse(build[3]);
                         ep.EpisodePos = "S" + build[1] + "E" + build[3].Replace(":", "");
@@ -691,78 +560,32 @@ namespace Followshows
             return calendar;
         }
 
-        public TvShow getShow(TvShow show)
-        {
-            Response resp = new Response("http://followshows.com/show/" + show.showUrl, null, false);
-            HtmlDocument doc = new HtmlDocument();
-            if (resp.page == null)
-                return show;
-
-            doc.LoadHtml(resp.page);
-
-            HtmlNode summaryid = doc.GetElementbyId("summary");
-
-            string extendedPart = getChild(summaryid.DescendantNodes(), "class", "details").InnerText;
-            show.SummaryExtended = getChild(summaryid.DescendantNodes(), "class", "summary-text").InnerText.Replace("...&nbsp;(more)", "");
-
-            show.Summary = show.SummaryExtended.Replace(extendedPart, "") + "...";
-
-
-
-            HtmlNode showSummary = doc.GetElementbyId("content-about");
-            show.Genre = getChild(showSummary.ChildNodes, "class", "genres").InnerText.Replace("GENRES:", "");
-            show.Airs = getChild(showSummary.DescendantNodes(), "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
-
-            HtmlNode forFollowandName = getChild(showSummary.ChildNodes, "class", "summary");
-            show.Followers = getChild(forFollowandName.ChildNodes, "class", "followers").InnerText.Replace(" followers)", "").Replace("( ","");
-            show.Name = getChild(forFollowandName, 0).InnerText;
-
-            HtmlNode season = doc.GetElementbyId("season-filter");
-            if (season != null)
-            {
-                show.numberOfSeasons = season.ChildNodes.ToArray<HtmlNode>().Length;
-            }
-
-            HtmlNode actors = doc.GetElementbyId("actors");
-            if (actors != null)
-            {
-                show.Actors = actors.InnerText;
-            }
-            else
-            {
-                show.Actors = "None";
-            }
-
-
-            return show;
-        }
-
         public async Task<List<Episode>> getSeason(TvShow show, int seasonNr)
         {
             List<Episode> season = new List<Episode>();
 
-            Response resp = new Response("http://followshows.com/api/show/" + show.showUrl + "/season/" + seasonNr, null, false);
+            Response resp = await (new Response("http://followshows.com/api/show/" + show.showUrl + "/season/" + seasonNr, false)).call();
 
             if (resp.somethingWentWrong)
                 return season;
 
-            foreach (HtmlNode episode in getChild(resp.firstNode.ChildNodes, "class", "clearfix").ChildNodes)
+            foreach (HtmlNode episode in HTML.getChild(resp.firstNode.ChildNodes, "class", "clearfix").ChildNodes)
             {
                 Episode ep = new Episode(false, false);
                 ep.ShowName = show.Name;
 
-                HtmlNode name = getChild(episode.DescendantNodes(), "class", "episode-link");
+                HtmlNode name = HTML.getChild(episode.DescendantNodes(), "class", "episode-link");
                 if (name != null)
                 {
                     ep.Aired = true;
                     ep.EpisodeName = name.InnerText;
-                    ep.Image = new BitmapImage(new Uri(getAttribute(getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src").Replace("130x75", "360x207")));
+                    ep.Image = new BitmapImage(new Uri(HTML.getAttribute(HTML.getChild(episode.DescendantNodes(), "class", "poster").DescendantNodes(), "src").Replace("130x75", "360x207")));
 
-                    string[] build = getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
+                    string[] build = HTML.getChild(episode.DescendantNodes(), "class", "episode-label").InnerText.Split(new char[] { ' ' });
                     ep.ISeason = int.Parse(build[1]);
                     ep.IEpisode = int.Parse(build[3].Split(new char[] { ',' })[0]);
                     ep.EpisodePos = "S" + ep.ISeason + "E" + ep.IEpisode;
-                    ep.id = getAttribute(episode.ChildNodes, "episodeid");
+                    ep.id = HTML.getAttribute(episode.ChildNodes, "episodeid");
                     if (!episode.InnerText.Contains("Mark as watched"))
                     {
                         ep.Seen = true;
@@ -789,7 +612,7 @@ namespace Followshows
             return season;
         }
 
-        public List<TvShow> searchTvShow(string searchTerm)
+        public async Task<List<TvShow>> searchTvShow(string searchTerm)
         {
             List<TvShow> res = new List<TvShow>();
             List<TvShow> res2 = new List<TvShow>();
@@ -800,7 +623,7 @@ namespace Followshows
                 return res;
             }
 
-            Response resp = new Response("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false);
+            Response resp = await (new Response("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false)).call();
             if (resp.page == null)
                 return res;
             List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
@@ -833,10 +656,10 @@ namespace Followshows
             return res;
         }
 
-        public void followShow(string showUrl)
+        public async Task followShow(string showUrl)
         {
             if (showUrl == null) return;
-            Response resp = new Response("http://followshows.com/api/followShow?show=" + showUrl, null);
+            Response resp = await (new Response("http://followshows.com/api/followShow?show=" + showUrl, null)).call();
             
             if (resp.somethingWentWrong)
             {
@@ -844,10 +667,10 @@ namespace Followshows
             }
         }
 
-        public void unfollowShow(string showUrl)
+        public async Task unfollowShow(string showUrl)
         {
             if (showUrl == null) return;
-            Response resp = new Response("http://followshows.com/api/unfollowShow?show=" + showUrl, null);
+            Response resp = await (new Response("http://followshows.com/api/unfollowShow?show=" + showUrl, null)).call();
 
             if (resp.somethingWentWrong)
             {
@@ -855,10 +678,10 @@ namespace Followshows
             }
         }
 
-        public void markSeasonAsWatched(string seasonnr, TvShow show)
+        public async Task markSeasonAsWatched(string seasonnr, TvShow show)
         {
             if (seasonnr == null || show.showUrl == null) return;
-            Response resp = new Response("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl + "&season=" + seasonnr, null);
+            Response resp = await (new Response("http://followshows.com/api/markSeasonAsWatched?show=" + show.showUrl + "&season=" + seasonnr, null)).call();
             
             if (resp.somethingWentWrong)
             {
@@ -866,23 +689,7 @@ namespace Followshows
             }
         }
 
-        public void markAsWatched(Episode ep)
-        {
-            if (ep.id == null) return;
-            if (!ep.Aired)
-            {
-                Helper.message("This episode hasn't aired yet. You cannot mark it as watched", "EPISODE NOT AIRED");
-                throw new Exception("IT DID NOT AIR");
-            }
-            Response resp = new Response("http://followshows.com/api/markEpisodeAsWatched?episodeId=" + ep.id, null);
-
-        }
-
-        public void markNotAsWatched(Episode ep)
-        {
-            if (ep.id == null) return;
-            Response resp = new Response("http://followshows.com/api/markEpisodeAsNotWatched?episodeId=" + ep.id, null);
-        }
+        
 
 
 
@@ -1077,11 +884,11 @@ namespace Followshows
                 {
                     if (com.watched)
                     {
-                        markAsWatched(com.episode);
+                        com.episode.markAsWatched();
                     }
                     else
                     {
-                        markNotAsWatched(com.episode);
+                        com.episode.markNotAsWatched();
                     }
                 }
                 try
