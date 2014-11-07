@@ -258,7 +258,7 @@ namespace Followshows
                         epi.OnPropertyChanged("Opacity");
                     }
                 }
-                await api.markSeasonAsWatched(seasonnr, Show);
+                await Show.markSeasonAsWatched(seasonnr);
             }
         }
 
@@ -417,18 +417,18 @@ namespace Followshows
 
         #endregion
 
-        private void Tapped_Favorite(object sender, RoutedEventArgs e)
+        private async void Tapped_Favorite(object sender, RoutedEventArgs e)
         {
             if (Show.following)
             {
-                api.unfollowShow(Show.showUrl);
+                await Show.unfollow();
                 Show.following = false;
                 //followColor.Fill = ((SolidColorBrush)App.Current.Resources["AppBarBackgroundThemeBrush"]);
 
             }
             else
             {
-                api.followShow(Show.showUrl);
+                await Show.follow();
                 Show.following = true;
                 //followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
             }

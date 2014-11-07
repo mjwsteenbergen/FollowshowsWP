@@ -1,8 +1,10 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
@@ -89,6 +91,93 @@ namespace Followshows.almostApi
         public async Task markNotAsWatched()
         {
             Response resp = await (new Response("http://followshows.com/api/markEpisodeAsNotWatched?episodeId=" + id, null)).call();
+        }
+
+
+
+        /// <summary>
+        /// Converts Html to a Episode object
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static Episode getQueueEpisode(HtmlNode node)
+        {
+            Episode res = new Episode(true, false);
+
+            HtmlNode netDate =  HTML.getChild(node);
+            res.network = HTML.getAttribute(netDate.ChildNodes, "network");
+            
+            HtmlNode posterNode = HTML.getChild(node, "class", "column_poster");
+
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.UriSource = new Uri(HTML.getAttribute(HTML.getChild(HTML.getChild(posterNode)),"src").Replace("180", "360").Replace("104", "207"));
+            bitmapImage.CreateOptions = BitmapCreateOptions.None;
+            res.Image = bitmapImage;
+
+            HtmlNode rest = HTML.getChild(node.ChildNodes, "class", "column_infos");
+
+            HtmlNode one = HTML.getChild(rest, "class", "title ");
+            HtmlNode two = HTML.getChild(one);
+
+
+            res.url = HTML.getAttribute(two, "href");
+            res.ShowName = HTML.getChild(rest, "class", "title ").InnerText;
+
+            HtmlNode locDateSum = HTML.getChild(rest, "class", "infos");
+
+            string entire = HTML.getChild(locDateSum).InnerText;
+
+            string[] split = entire.Split(':');
+            string[] seasonEps = split[0].Replace("Season ", "").Replace("Episode ", "").Split(' ');
+            res.ISeason = int.Parse(seasonEps[0]);
+            res.IEpisode = int.Parse(seasonEps[1]);
+            res.EpisodePos = "S" + res.ISeason + "E" + res.IEpisode;
+
+            res.EpisodeName = split[1].Remove(0,1);
+
+            HtmlNode dateNode = HTML.getChild(locDateSum, 1);
+            split = dateNode.InnerText.Split(' ');
+            res.airdate = DateTime.Parse(split[0]);
+
+            res.summary = HTML.getChild(locDateSum, 2).InnerText;
+
+            res.id = HTML.getAttribute(node.ChildNodes, "episodeid");
+
+            return res;
+        }
+
+        /// <summary>
+        /// Converts Html to a Episode object
+        /// DONT LOOK AT ME, I AM UGLY
+        /// </summary>
+        /// <param name="li"></param>
+        /// <returns></returns>
+        public static Episode getCalendarEpisode(HtmlNode li) {
+
+            HtmlNode a = HTML.getChild(li);
+
+            Episode ep = new Episode(false, false);
+            ep.ShowName = HTML.getAttribute(a, "data-show");
+            ep.network = HTML.getChild(a.ChildNodes, "class", "network").InnerText;
+            ep.Image = new BitmapImage(new Uri(Regex.Match(HTML.getAttribute(HTML.getChild(a, "class", "poster"), "style"), @"(?<=\().+(?!\))").ToString().Replace(@");", "")));
+
+
+            //Season Position and episode url
+            HtmlDocument data = new HtmlDocument();
+            data.LoadHtml(HTML.getAttribute(a, "data-content"));
+            ep.EpisodeName = HTML.getChild(HTML.getChild(data.DocumentNode)).InnerText;
+            string air = HTML.getChild(data.DocumentNode, 1).InnerText.Replace("Airs on ", "").Replace(", on " + ep.network + " at ", " ");
+            ep.airtime = DateTime.Parse(air);
+            ep.airdate = DateTime.Parse(air).Date;
+            ep.url = HTML.getAttribute(HTML.getChild(HTML.getChild(data.DocumentNode, 2)), "href");
+
+            string[] build = HTML.getChild(HTML.getChild(data.DocumentNode, 2)).InnerText.Split(' ');
+            ep.ISeason = int.Parse(build[1]);
+            ep.IEpisode = int.Parse(build[3]);
+            ep.EpisodePos = "S" + build[1] + "E" + build[3].Replace(":", "");
+
+            return ep;
+
         }
     }
 

@@ -49,7 +49,7 @@ namespace Followshows.almostApi
         {
             if (node == null || attribute == null || value == null)
                 return null;
-            foreach (HtmlNode child in node.DescendantNodes())
+            foreach (HtmlNode child in node.ChildNodes)
             {
                 if (child.Attributes[attribute] != null)
                 {
@@ -57,7 +57,7 @@ namespace Followshows.almostApi
                         return child;
                 }
             }
-            throw new InvalidDataException();
+            throw new Exception("The class,value combination was not found");
             //return null;
         }
 
@@ -100,7 +100,7 @@ namespace Followshows.almostApi
                 {
                     return child.Attributes[attribute].Value;
                 }
-                string node = getAttribute(child.DescendantNodes(), attribute);
+                string node = getAttribute(child.ChildNodes, attribute);
                 if (node != null)
                     return node;
             }

@@ -96,6 +96,39 @@ namespace Followshows.almostApi
             OnPropertyChanged("");
         }
 
+        public async Task follow()
+        {
+            if (showUrl == null) return;
+            Response resp = await (new Response("http://followshows.com/api/followShow?show=" + showUrl, null)).call();
+
+            if (resp.somethingWentWrong)
+            {
+                Helper.message("Uhm... Something went wrong.", "Sorry");
+            }
+        }
+
+        public async Task unfollow()
+        {
+            if (showUrl == null) return;
+            Response resp = await (new Response("http://followshows.com/api/unfollowShow?show=" + showUrl, null)).call();
+
+            if (resp.somethingWentWrong)
+            {
+                Helper.message("Uhm... Something went wrong.", "Sorry");
+            }
+        }
+
+        public async Task markSeasonAsWatched(string seasonnr)
+        {
+            if (seasonnr == null || showUrl == null) return;
+            Response resp = await (new Response("http://followshows.com/api/markSeasonAsWatched?show=" + showUrl + "&season=" + seasonnr, null)).call();
+
+            if (resp.somethingWentWrong)
+            {
+                Helper.message("Uhm... Something went wrong.", "Sorry");
+            }
+        }
+
         //Property changed
         public event PropertyChangedEventHandler PropertyChanged;
 
