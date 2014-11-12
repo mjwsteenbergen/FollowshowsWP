@@ -100,6 +100,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="almostApi\Episode.cs" />
+    <Compile Include="almostApi\HTML.cs" />
+    <Compile Include="almostApi\TvShow.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -107,8 +110,10 @@
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="Control\API.cs" />
-    <Compile Include="Control\Memory.cs" />
+    <Compile Include="almostApi\API.cs" />
+    <Compile Include="almostApi\Memory.cs" />
+    <Compile Include="almostApi\Queue.cs" />
+    <Compile Include="almostApi\Response.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Pages\LandingPage.xaml.cs">
       <DependentUpon>LandingPage.xaml</DependentUpon>

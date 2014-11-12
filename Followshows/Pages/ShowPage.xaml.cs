@@ -1,4 +1,5 @@
-﻿using Followshows.Common;
+﻿using Followshows.almostApi;
+using Followshows.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -88,8 +89,8 @@ namespace Followshows
             //NTW.DataContext = new Episode(false, true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
 
             api = (API)e.NavigationParameter;
-            //Show = (api.passed as ShowTVShow);
-            Show = await api.getShow(api.passed as TvShow);
+            Show = api.passed as TvShow;
+            await Show.expand();
 
             //if(Show.following)
             //{
@@ -257,7 +258,7 @@ namespace Followshows
                         epi.OnPropertyChanged("Opacity");
                     }
                 }
-                api.markSeasonAsWatched(seasonnr, Show);
+                await Show.markSeasonAsWatched(seasonnr);
             }
         }
 
@@ -328,7 +329,7 @@ namespace Followshows
         #region MarkAsWatched
 
 
-        private void Item_Tapped(object sender, DoubleTappedRoutedEventArgs e)
+        private async void Item_Tapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             item = sender as Grid;
             ep = item.DataContext as Episode;
@@ -377,7 +378,7 @@ namespace Followshows
 
                 if (api.hasInternet())
                 {
-                    api.markNotAsWatched(ep);
+                    await ep.markNotAsWatched();
                 }
                 else
                 {
@@ -396,11 +397,11 @@ namespace Followshows
 
         }
 
-        void board_Completed(object sender, object e)
+        async void board_Completed(object sender, object e)
         {
             if (api.hasInternet())
             {
-                api.markAsWatched(ep);
+                await ep.markAsWatched();
             }
             else
             {
@@ -416,18 +417,18 @@ namespace Followshows
 
         #endregion
 
-        private void Tapped_Favorite(object sender, RoutedEventArgs e)
+        private async void Tapped_Favorite(object sender, RoutedEventArgs e)
         {
             if (Show.following)
             {
-                api.unfollowShow(Show.showUrl);
+                await Show.unfollow();
                 Show.following = false;
                 //followColor.Fill = ((SolidColorBrush)App.Current.Resources["AppBarBackgroundThemeBrush"]);
 
             }
             else
             {
-                api.followShow(Show.showUrl);
+                await Show.follow();
                 Show.following = true;
                 //followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
             }

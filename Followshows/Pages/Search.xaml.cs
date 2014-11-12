@@ -1,4 +1,5 @@
-﻿using Followshows.Common;
+﻿using Followshows.almostApi;
+using Followshows.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -132,7 +133,7 @@ namespace Followshows
 
         private async void search(string searchterm)
         {
-            searchShow.ItemsSource = await api.searchTvShow(searchterm);
+            searchShow.ItemsSource = api.searchTvShow(searchterm);
             searchUser.ItemsSource = api.passed as List<TvShow>;
         }
 

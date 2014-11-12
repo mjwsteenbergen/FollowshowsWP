@@ -189,7 +189,6 @@ namespace Followshows
                 if (!(await api.LoginWithEmail(emailad, password.Password)))
                 {
                     await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
-
                 }
                 else
                 {
