@@ -179,6 +179,22 @@ namespace Followshows.almostApi
             return ep;
 
         }
+
+        public static Episode getWatchListEpisode(HtmlNode episode)
+        {
+            Episode res = new Episode(true, false);
+            res.ShowName = HTML.getChild(episode.ChildNodes, "class", "title").InnerText;
+            res.id = HTML.getAttribute(episode.ChildNodes, "episodeId");
+            HtmlNode Ename = HTML.getChild(episode.ChildNodes, "class", "subtitle");
+            res.EpisodeName = HTML.getChild(Ename).InnerText;
+            res.Image = new BitmapImage(new Uri(HTML.getAttribute(episode.ChildNodes, "style").Replace("background-image: url(", "").Replace(");", "")));
+            string[] build = HTML.getChild(episode.ChildNodes, "class", "description").InnerText.Split(new char[] { ' ' });
+            res.ISeason = int.Parse(build[1]);
+            res.IEpisode = int.Parse(build[3].Replace(".", ""));
+            res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
+            
+            return res;
+        }
     }
 
 

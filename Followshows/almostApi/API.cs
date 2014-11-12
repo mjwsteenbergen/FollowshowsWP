@@ -76,6 +76,27 @@ namespace Followshows
             Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += NetworkStatusChanged;
         }
 
+        public async void refresh()
+        {
+            client = new HttpClient();
+
+            queue = new List<Episode>();
+            calendar = new List<Episode>();
+            tracker = new List<TvShow>();
+
+            loggedIn = false;
+
+            try
+            {
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
+                StorageFile fil = await temp.CreateFileAsync("cookie", CreationCollisionOption.ReplaceExisting);
+            }
+            catch
+            { }
+        }
+
+#endregion
+
         public async Task<bool> login()
         {
             Frame rootFrame = Window.Current.Content as Frame;
@@ -110,29 +131,6 @@ namespace Followshows
 
         }
 
-        public async void refresh()
-        {
-            client = new HttpClient();
-
-            queue = new List<Episode>();
-            calendar = new List<Episode>();
-            tracker = new List<TvShow>();
-
-            loggedIn = false;
-
-            try
-            {
-                StorageFolder temp = ApplicationData.Current.LocalFolder;
-                StorageFile fil = await temp.CreateFileAsync("cookie", CreationCollisionOption.ReplaceExisting);
-            }
-            catch
-            { }
-        }
-
-        
-
-        
-
         public bool hasInternet()
         {
             if (gotInternet)
@@ -147,8 +145,6 @@ namespace Followshows
             }
             return true;
         }
-
-        #endregion
 
         public async Task<bool> RegisterWithEmail(string firstname, string lastname, string email, string password, string timezone)
         {
@@ -335,14 +331,10 @@ namespace Followshows
             {
                 try
                 {
-                    //bool bol = tvshow.GetAttributeValue("class", true);
-                    //tvshow.Element("class");
-                    //HtmlNodeCollection col =  tvshow.ChildNodes;
                     TvShow show = new TvShow(true);
                     HtmlNode title = HTML.getChild(tvshow);
                     show.Name = System.Net.WebUtility.HtmlDecode(title.InnerText);
                     show.Image = new BitmapImage() { UriSource = new Uri(HTML.getAttribute(title.ChildNodes, "src")) };
-                    //show.ImageUrl = getAttribute(title.ChildNodes, "src");
                     show.showUrl = HTML.getAttribute(title.ChildNodes, "href").Replace("/show/", "");
                     show.stillToWatch = HTML.getChild(tvshow.ChildNodes, "class", "towatch").InnerHtml;
                     string perc = HTML.getChild(tvshow.ChildNodes, "role", "progressbar").InnerText.Replace("%", "");
@@ -353,10 +345,6 @@ namespace Followshows
                 {
 
                 }
-
-                //if debug enabled break to save time 
-                if (debug && tracker.Count == 5)
-                    break;
             }
             return tracker;
         }
@@ -371,35 +359,13 @@ namespace Followshows
                 return watchList;
             doc.LoadHtml(resp.page);
 
-
-
             foreach (HtmlNode episode in HTML.getChild(doc.DocumentNode.ChildNodes, "class", "videos-grid videos-grid-home clearfix episodes-popover").ChildNodes)
             {
-                Episode res = new Episode(true, false);
-                res.ShowName = HTML.getChild(episode.ChildNodes, "class", "title").InnerText;
-                res.id = HTML.getAttribute(episode.ChildNodes, "episodeId");
-                HtmlNode Ename = HTML.getChild(episode.ChildNodes, "class", "subtitle");
-                res.EpisodeName = HTML.getChild(Ename).InnerText;
-                res.Image = new BitmapImage(new Uri(HTML.getAttribute(episode.ChildNodes, "style").Replace("background-image: url(", "").Replace(");", "")));
-                string[] build = HTML.getChild(episode.ChildNodes, "class", "description").InnerText.Split(new char[] { ' ' });
-                res.ISeason = int.Parse(build[1]);
-                res.IEpisode = int.Parse(build[3].Replace(".", ""));
-                res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
-                watchList.Add(res);
+                watchList.Add(Episode.getWatchListEpisode(episode));
             }
             foreach (HtmlNode episode in HTML.getChild(doc.DocumentNode.ChildNodes, "class", "videos-grid-home-more clearfix episodes-popover").ChildNodes)
             {
-                Episode res = new Episode(true, false);
-                res.ShowName = HTML.getChild(episode.ChildNodes, "class", "title").InnerText;
-                res.id = HTML.getAttribute(episode.ChildNodes, "episodeId");
-                HtmlNode Ename = HTML.getChild(episode.ChildNodes, "class", "subtitle");
-                res.EpisodeName = HTML.getChild(Ename).InnerText;
-                res.Image = new BitmapImage(new Uri(HTML.getAttribute(episode.ChildNodes, "style").Replace("background-image: url(", "").Replace(");", "")));
-                string[] build = HTML.getChild(episode.ChildNodes, "class", "description").InnerText.Split(new char[] { ' ' });
-                res.ISeason = int.Parse(build[1]);
-                res.IEpisode = int.Parse(build[3].Replace(".", ""));
-                res.EpisodePos = "Season " + res.ISeason + " Episode " + res.IEpisode;
-                watchList.Add(res);
+                watchList.Add(Episode.getWatchListEpisode(episode));
             }
 
             return watchList;
@@ -492,7 +458,6 @@ namespace Followshows
                 season.Add(ep);
             }
 
-            //season.Reverse();
             return season;
         }
 
