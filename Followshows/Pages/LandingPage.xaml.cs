@@ -3,12 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -17,6 +21,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -31,34 +36,9 @@ namespace Followshows
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private API api;
+        private List<BitmapImage> list;
 
         private bool loggingin;
-
-
-        private TextBox email;
-        private TextBox firstName;
-        private TextBox lastName;
-        private ComboBox timeZone;
-        private PasswordBox password;
-        private TextBlock noAc;
-        private TextBlock passBlock;
-        private TextBlock header;
-        private Button logreg;
-
-        private Grid LoginForm;
-        private Grid Email;
-        private Grid FirstName;
-        private Grid LastName;
-        private Grid TimeZone;
-
-        private string firstname;
-        private string lastname;
-        private string emailad;
-        private string option;
-        private string timezone;
-
-        //Facebook
-        WebView webv_facebook;
 
         public LandingPage()
         {
@@ -105,6 +85,8 @@ namespace Followshows
             api = e.NavigationParameter as API;
 
             loggingin = true;
+
+            startTimer();
 
         }
 
@@ -164,59 +146,32 @@ namespace Followshows
             TryLoginOrRegister();
         }
 
-        private void LoginWithFacebook(object sender, TappedRoutedEventArgs e)
+        private async void RegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            api.RegisterWithFacebook();
-        }
-
-        private async void TryLoginOrRegister()
-        {
-            StatusBar bar = StatusBar.GetForCurrentView();
-            await bar.ProgressIndicator.ShowAsync();
-            await bar.ShowAsync();
-
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (loggingin)
+            if (Register.Visibility == Windows.UI.Xaml.Visibility.Collapsed)
             {
-                bar.ProgressIndicator.Text = "Trying to log in...";
-
-
-                if (emailad == null || password.Password == null)
-                {
-                    await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
-                    return;
-                }
-                if (!(await api.LoginWithEmail(emailad, password.Password)))
-                {
-                    await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
-                }
-                else
-                {
-                    Windows.Security.Credentials.PasswordVault vault = new Windows.Security.Credentials.PasswordVault();
-                    vault.Add(new Windows.Security.Credentials.PasswordCredential("email", emailad, password.Password));
-                    if (!rootFrame.Navigate(typeof(MainPage), api))
-                    {
-                        throw new Exception("Failed to create initial page");
-                    }
-                }
-                await bar.HideAsync();
+                Register.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             else
             {
+                Frame rootFrame = Window.Current.Content as Frame;
+                StatusBar bar = StatusBar.GetForCurrentView();
+                await bar.ProgressIndicator.ShowAsync();
+                await bar.ShowAsync();
                 bar.ProgressIndicator.Text = "Trying to register...";
 
                 bool allok = true;
-                if (firstname == null)
+                if (firstname.Text == null)
                 {
-                    firstName.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
+                    firstname.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
                 }
-                if (lastname == null)
+                if (lastname.Text == null)
                 {
-                    lastName.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
+                    lastname.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
                 }
-                if (emailad == null || !Regex.IsMatch(emailad, "[^@]+@[^@]+.[a-zA-Z]{2,6}"))
+                if (email.Text == null || !Regex.IsMatch(email.Text, "[^@]+@[^@]+.[a-zA-Z]{2,6}"))
                 {
                     email.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
@@ -226,199 +181,165 @@ namespace Followshows
                     password.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
                 }
-                if (timezone == null)
+                if (timezone.SelectedItem == null)
                 {
-                    timeZone.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
+                    timezone.BorderBrush = new SolidColorBrush() { Color = Windows.UI.Colors.Red };
                     allok = false;
                 }
                 if (allok)
                 {
-                    if (await api.RegisterWithEmail(firstname, lastname, emailad, password.Password, timezone))
+                    if (await api.RegisterWithEmail(firstname.Text, lastname.Text, email.Text, password.Password, (timezone.SelectedItem as string)))
                     {
                         Windows.Security.Credentials.PasswordVault vault = new Windows.Security.Credentials.PasswordVault();
-                        vault.Add(new Windows.Security.Credentials.PasswordCredential("email", emailad, password.Password));
+                        vault.Add(new Windows.Security.Credentials.PasswordCredential("email", email.Text, password.Password));
 
                         if (!rootFrame.Navigate(typeof(MainPage), api))
                         {
                             throw new Exception("Failed to create initial page");
                         }
                     }
-                    else
-                    {
-                        noAc.Text = "Something went wrong :(";
-                    }
                 }
             }
+        }
+
+        private async void TryLoginOrRegister()
+        {
+            StatusBar bar = StatusBar.GetForCurrentView();
+            await bar.ProgressIndicator.ShowAsync();
+            await bar.ShowAsync();
+
+            Frame rootFrame = Window.Current.Content as Frame;
+                bar.ProgressIndicator.Text = "Trying to log in...";
 
 
+            if (email.Text == null || password.Password == null)
+            {
+                await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
+                return;
+            }
+            if (!(await api.LoginWithEmail(email.Text, password.Password)))
+            {
+                await new MessageDialog("Your password was incorrect. Please try again", "Incorrect password").ShowAsync();
+            }
+            else
+            {
+                Windows.Security.Credentials.PasswordVault vault = new Windows.Security.Credentials.PasswordVault();
+                vault.Add(new Windows.Security.Credentials.PasswordCredential("email", email.Text, password.Password));
+                if (!rootFrame.Navigate(typeof(MainPage), api))
+                {
+                    throw new Exception("Failed to create initial page");
+                }
+            }
             await bar.HideAsync();
         }
 
         private void SwitchRegister(object sender, TappedRoutedEventArgs e)
         {
-            if (loggingin)
-            {
-                FirstName.Visibility = Visibility.Visible;
-                LastName.Visibility = Visibility.Visible;
-                TimeZone.Visibility = Visibility.Visible;
-                LoginForm.Margin = new Thickness(0, 80, 0, 0);
-                loggingin = false;
-                noAc.Text = "Got an account?";
-                logreg.Content = "Register";
-                passBlock.Text = "Password (more than 6 characters)";
-                header.Text = "Register";
-            }
-            else
-            {
-                FirstName.Visibility = Visibility.Collapsed;
-                LastName.Visibility = Visibility.Collapsed;
-                TimeZone.Visibility = Visibility.Collapsed;
-                LoginForm.Margin = new Thickness(0, 0, 0, 0);
-                loggingin = true;
-                noAc.Text = "Don't have an account?";
-                logreg.Content = "Login";
-                passBlock.Text = "Password";
-                header.Text = "Login";
-            }
+            
         }
 
 
-        #region register Items
+        #region focus
 
-        #region loading and identifying controls
-
-        private void password_Loaded(object sender, RoutedEventArgs e)
+        private void gotFocus(object sender, RoutedEventArgs e)
         {
-            password = sender as PasswordBox;
+            (sender as Control).Foreground = new SolidColorBrush(Colors.Black);
         }
 
-        private void loaded(object sender, RoutedEventArgs e)
-        {
-
-            Control control = sender as Control;
-            if (control == null)
-            {
-                webv_facebook = sender as WebView;
-                return;
-            }
-            switch (control.Name)
-            {
-                case ("firstname"):
-                    firstName = sender as TextBox;
-                    break;
-                case ("lastname"):
-                    lastName = sender as TextBox;
-                    break;
-                case ("email"):
-                    email = sender as TextBox;
-                    break;
-            }
-        }
-
-        private void gridLoad(object sender, RoutedEventArgs e)
-        {
-            Grid gr = sender as Grid;
-            switch (gr.Name)
-            {
-                case ("LoginForm"):
-                    LoginForm = gr;
-                    break;
-                case ("FirstName"):
-                    FirstName = gr;
-                    break;
-                case ("LastName"):
-                    LastName = gr;
-                    break;
-                case ("TimeZone"):
-                    TimeZone = gr;
-                    break;
-                case ("Email"):
-                    Email = gr;
-                    break;
-            }
-        }
-
-        private void Button_Loaded(object sender, RoutedEventArgs e)
-        {
-            logreg = sender as Button;
-        }
-
-        private void TextBlock_Loaded(object sender, RoutedEventArgs e)
-        {
-            TextBlock block = sender as TextBlock;
-            switch (block.Name)
-            {
-                case "passBlock":
-                    passBlock = block;
-                    break;
-                case "header":
-                    header = block;
-                    break;
-                case "noAc":
-                    noAc = block;
-
-                    break;
-            }
-        }
-
-
-        #endregion
-
-        #region changed
-
-        private void firstName_Changed(object sender, TextChangedEventArgs e)
-        {
-            firstName = sender as TextBox;
-            firstname = firstName.Text;
-            firstName.BorderBrush = null;
-        }
-
-        private void lastName_Changed(object sender, TextChangedEventArgs e)
-        {
-            lastName = sender as TextBox;
-            lastname = firstName.Text;
-            lastName.BorderBrush = BorderBrush;
-        }
-
-        void email_Changed(object sender, TextChangedEventArgs e)
-        {
-            email = sender as TextBox;
-            emailad = email.Text;
-            email.BorderBrush = BorderBrush;
-        }
-
-        private void TimeZoneChanged(object sender, SelectionChangedEventArgs e)
-        {
-            timeZone = sender as ComboBox;
-            timezone = timeZone.SelectedItem.ToString();
-            timeZone.BorderBrush = new SolidColorBrush(Windows.UI.Colors.White);
+        private void lostFocus(object sender, RoutedEventArgs e)
+        {  
+            (sender as Control).Foreground = new SolidColorBrush(Colors.White);
+            (sender as Control).BorderBrush = new SolidColorBrush(Colors.White);
         }
 
         #endregion
 
-        private void timezoneLoaded(object sender, RoutedEventArgs e)
+        private void buttonTapped(object sender, TappedRoutedEventArgs e)
         {
-            timeZone = sender as ComboBox;
+            Pivo.SelectedIndex = (sender as StackPanel).Name == "zero" ? 0 : 2;
         }
 
-        #endregion
+        private async void startTimer()
+        {
+            List<string> wallpaper = new List<string>(){
+                    "http://www.pagepulp.com/wp-content/gotseas2.jpg",
+                    "http://i.fokzine.net/upload/14/09/140905_725_arrow_ver3_xlg.jpg",
+                    "http://img2.wikia.nocookie.net/__cb20141026203433/agentsofshield/images/1/17/Agents_of_S.H.I.E.L.D._Season_1_Poster.jpg",
+                    "http://fc05.deviantart.net/fs70/i/2010/180/5/1/Doctor_Who_Season_5_Poster_by_JKop360.jpg",
+                    "http://www.xnds.de/wp-content/uploads/2014/06/The-Blacklist-poster.jpg",
+                    "http://www.moviesonline.ca/wp-content/uploads/2010/09/TWD_1-SHEET_WEB.jpg"
+                        };
+
+            list = new List<BitmapImage>();
+            List<BitmapImage>  list2 = new List<BitmapImage>();
+
+            foreach(string item in wallpaper)
+            {
+                BitmapImage image = new BitmapImage();
+                image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                image.ImageOpened += image_ImageOpened;
+                image.UriSource = new Uri(item);
+                list2.Add(image);
+            }
+            //bak.ItemsSource = list;
+            
+            while(true){
+                await Task.Delay(5000);
+
+                if (list.Count < wallpaper.Count)
+                {
+                    foreach (BitmapImage image in list2)
+                    {
+                        Tester.Source = image;
+                    }
+                }
+                
+                if(list.Count == 0)
+                {
+                    continue;
+                }
+
+                //bak.ScrollIntoView(bak.Items[new Random().Next(0, 3)],ScrollIntoViewAlignment.Leading);
+                Background.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                Background.Source = list[new Random().Next(0, wallpaper.Count)];
+                Background.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+
+                
+
+                //HttpClient http = new HttpClient();
+                //Stream resp = await http.GetStreamAsync(wallpaper[1]);
+                
+
+                //var ras = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+                //await resp.CopyToAsync(ras.AsStreamForWrite());
+                //bi.SetSource(ras);
+
+                
+                //bi.ImageOpened += (object sener, RoutedEventArgs f) =>
+                //{
+                //    LayoutRoot.Background = new ImageBrush() { ImageSource = sener as BitmapImage, Opacity = 0.4 };
+                //};
+                //bi.UriSource = new Uri(wallpaper[1]);
+                //Background.Source = bi;
+            }
+            
+        }
+
+        void image_ImageOpened(object sender, RoutedEventArgs e)
+        {
+            list.Add(sender as BitmapImage);
+        }
+
+        private void PivotChanged(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            Pivot piv = sender as Pivot;
+            if (piv.SelectedIndex == 2)
+            {
+                api.RegisterWithFacebook();
+            }
+        }
 
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }

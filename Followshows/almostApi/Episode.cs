@@ -167,8 +167,13 @@ namespace Followshows.almostApi
             data.LoadHtml(HTML.getAttribute(a, "data-content"));
             ep.EpisodeName = HTML.getChild(HTML.getChild(data.DocumentNode)).InnerText;
             string air = HTML.getChild(data.DocumentNode, 1).InnerText.Replace("Airs on ", "").Replace(", on " + ep.network + " at ", " ");
-            ep.airtime = DateTime.Parse(air);
-            ep.airdate = DateTime.Parse(air).Date;
+            try
+            {
+                ep.airtime = DateTime.Parse(air);
+                ep.airdate = DateTime.Parse(air).Date;
+            }
+            catch (Exception e) { }
+            
             ep.url = HTML.getAttribute(HTML.getChild(HTML.getChild(data.DocumentNode, 2)), "href");
 
             string[] build = HTML.getChild(HTML.getChild(data.DocumentNode, 2)).InnerText.Split(' ');

@@ -91,10 +91,8 @@ namespace Followshows
 
                 API ap = new API();
 
-                if(!ap.hasInternet() && ap.hasLoginCreds())
+                if (await ap.login())
                 {
-                    Helper.message("You don't have internet. Some features won't be enabled");
-
                     if (!rootFrame.Navigate(typeof(MainPage), ap))
                     {
                         throw new Exception("Failed to create initial page");
@@ -102,8 +100,9 @@ namespace Followshows
                 }
                 else
                 {
-                    if (await ap.login())
-                    {
+                    if(ap.hasLoginCreds()) {
+                        Helper.message("You don't have internet. Some features won't be enabled");
+
                         if (!rootFrame.Navigate(typeof(MainPage), ap))
                         {
                             throw new Exception("Failed to create initial page");
@@ -117,6 +116,7 @@ namespace Followshows
                         }
                     }
                 }
+                
             }
 
             // Ensure the current window is active
