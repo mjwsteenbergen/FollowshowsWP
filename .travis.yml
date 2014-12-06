@@ -1,4 +1,5 @@
 ## Travis CI Integration
 
 language: csharp
+sudo: false
 solution: Followshows.sln
