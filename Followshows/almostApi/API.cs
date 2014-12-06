@@ -463,18 +463,18 @@ namespace Followshows
 
         public async Task<List<TvShow>> searchTvShow(string searchTerm)
         {
-            List<TvShow> res = new List<TvShow>();
-            List<TvShow> res2 = new List<TvShow>();
+            List<TvShow> showList = new List<TvShow>();
+            List<TvShow> userList = new List<TvShow>();
 
             if (searchTerm == null || searchTerm == "")
             {
-                passed = res2;
-                return res;
+                passed = userList;
+                return showList;
             }
 
             Response resp = await (new Response("http://followshows.com/ajax/header/search?term=" + searchTerm, null, false)).call();
             if (resp.page == null)
-                return res;
+                return showList;
             List<SearchResult> response = JsonConvert.DeserializeObject<List<SearchResult>>(resp.page);
             foreach (SearchResult result in response)
             {
@@ -487,7 +487,7 @@ namespace Followshows
                     }
                     show.Name = result.value;
                     show.showUrl = result.id;
-                    res.Add(show);
+                    showList.Add(show);
                 }
                 else
                 {
@@ -498,11 +498,11 @@ namespace Followshows
                     }
                     show.Name = result.value;
                     show.showUrl = result.id;
-                    res2.Add(show);
+                    userList.Add(show);
                 }
             }
-            passed = res2;
-            return res;
+            passed = userList;
+            return showList;
         }
 
         

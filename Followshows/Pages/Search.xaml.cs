@@ -133,7 +133,7 @@ namespace Followshows
 
         private async void search(string searchterm)
         {
-            searchShow.ItemsSource = api.searchTvShow(searchterm);
+            searchShow.ItemsSource = await api.searchTvShow(searchterm);
             searchUser.ItemsSource = api.passed as List<TvShow>;
         }
 

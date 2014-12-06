@@ -125,15 +125,21 @@ namespace Followshows.almostApi
                 pageCouldNotBeFound = false;
 
 
-
-                htmldoc = new HtmlDocument();
+                try
+                {
+                    htmldoc = new HtmlDocument();
                 htmldoc.LoadHtml(page);
                 firstNode = htmldoc.DocumentNode;
+                }
+                catch(Exception)
+                {}
+
+                
 
                 content = response;
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return true;
             }

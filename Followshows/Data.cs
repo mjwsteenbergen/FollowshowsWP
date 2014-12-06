@@ -56,9 +56,10 @@ public class SearchResult
     public string label { get; set; }
     public string value { get; set; }
     public string type { get; set; }
+    public string category { get; set; }
     public string image { get; set; }
     public bool poster { get; set; }
-    public bool followed { get; set; }
+    public bool followed { get; set; }    
 }
 
 public class Command
