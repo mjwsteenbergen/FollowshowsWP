@@ -102,6 +102,14 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Logos.scale-240.png" />
+    <Content Include="Assets\SmallLogos.scale-240.png" />
+    <Content Include="Assets\SplashScreenish.scale-240.png" />
+    <Content Include="Assets\Square71x71Logos.scale-240.png" />
+    <Content Include="Assets\StoreLogoSAd.scale-240.png" />
+    <Content Include="Assets\WideLogos.scale-240.png" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
