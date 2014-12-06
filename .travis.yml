@@ -1,4 +1,4 @@
 ## Travis CI Integration
 
 language: csharp
-solution: Followshows/Followshows.sln
+solution: Followshows.sln
