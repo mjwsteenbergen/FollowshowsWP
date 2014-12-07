@@ -36,4 +36,8 @@ namespace Testing
             Assert.IsTrue(res.somethingWentWrong && res.pageCouldNotBeFound && res.notLoggedIn);
         }
     }
+
+    [TestClass]
+    public class Search
+    { }
 }

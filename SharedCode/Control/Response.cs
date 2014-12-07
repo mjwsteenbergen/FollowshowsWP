@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Web.Http;
 
-namespace Followshows.almostApi
+namespace SharedCode
 {
     public class Response
     {

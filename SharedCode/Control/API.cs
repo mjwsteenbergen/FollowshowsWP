@@ -20,9 +20,9 @@ using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
-using Followshows.almostApi;
+using SharedCode;
 
-namespace Followshows
+namespace SharedCode
 {
     public class API
     {
@@ -95,7 +95,7 @@ namespace Followshows
             { }
         }
 
-#endregion
+        #endregion
 
         public async Task<bool> login()
         {
@@ -173,7 +173,7 @@ namespace Followshows
             IHttpContent content = new HttpFormUrlEncodedContent(dict);
 
             //Login
-            Response resp = await (new Response("http://followshows.com/login/j_spring_security_check", content)).call() ;
+            Response resp = await (new Response("http://followshows.com/login/j_spring_security_check", content)).call();
             if (!(resp.pageCouldNotBeFound && resp.noInternet))
             {
                 //Check if actually loggedIn
@@ -222,7 +222,7 @@ namespace Followshows
 
             return false;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -288,8 +288,8 @@ namespace Followshows
             queue = new List<Episode>();
 
             Response resp = await (new Response("http://followshows.com/api/queue?from=0")).call();
-            
-            if(resp.somethingWentWrong)
+
+            if (resp.somethingWentWrong)
             {
                 return queue;
             }
@@ -375,12 +375,12 @@ namespace Followshows
         {
             calendar = new List<Episode>();
 
-            string url = "http://followshows.com/api/calendar?date=" 
-                + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString() 
+            string url = "http://followshows.com/api/calendar?date="
+                + (DateTime.UtcNow.Date.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds.ToString()
                 + "&days=14";
 
             Response resp = await (new Response(url)).call();
-            
+
             HtmlDocument doc = new HtmlDocument();
             if (resp.page == null)
                 return calendar;
@@ -390,16 +390,16 @@ namespace Followshows
             HtmlNode tableRow = HTML.getChild(table, 1);
 
             bool check = false;
-            foreach(HtmlNode day in tableRow.ChildNodes)
+            foreach (HtmlNode day in tableRow.ChildNodes)
             {
-                if (!HTML.getAttribute(day,"class").Contains("today") && check == false)
+                if (!HTML.getAttribute(day, "class").Contains("today") && check == false)
                     continue;
                 check = true;
 
                 HtmlNode ul = HTML.getChild(day);
-                if(ul != null)
+                if (ul != null)
                 {
-                    foreach(HtmlNode li in ul.ChildNodes)
+                    foreach (HtmlNode li in ul.ChildNodes)
                     {
                         calendar.Add(Episode.getCalendarEpisode(li));
                     }
@@ -505,11 +505,11 @@ namespace Followshows
             return showList;
         }
 
-        
 
-        
 
-        
+
+
+
 
 
 
@@ -529,11 +529,6 @@ namespace Followshows
                     cred.RetrievePassword();
                     if ((await LoginWithEmail(cred.UserName.ToString(), cred.Password.ToString())) != true)
                     {
-                        Frame rootFrame = Window.Current.Content as Frame;
-                        if (!rootFrame.Navigate(typeof(LandingPage), this))
-                        {
-                            throw new Exception("Failed to create initial page");
-                        }
                     }
 
                     network.OnPropertyChanged("network");
@@ -571,7 +566,7 @@ namespace Followshows
                     await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(tracker));
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
             }
@@ -704,11 +699,11 @@ namespace Followshows
                 {
                     if (com.watched)
                     {
-                        com.episode.markAsWatched();
+                        await com.episode.markAsWatched();
                     }
                     else
                     {
-                        com.episode.markNotAsWatched();
+                        await com.episode.markNotAsWatched();
                     }
                 }
                 try

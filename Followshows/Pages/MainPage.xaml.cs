@@ -23,7 +23,7 @@ using Windows.ApplicationModel.Contacts;
 using Windows.ApplicationModel.Email;
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
-using Followshows.almostApi;
+using SharedCode;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -134,17 +134,7 @@ namespace Followshows
             await statusBar.HideAsync();
 
             ////Loading
-            if (e.NavigationParameter != null)
-            {
-                api = (API)e.NavigationParameter;
-            }
-            else
-            {
-                if (api == null)
-                {
-                    throw new Exception("There is no api defined");
-                }
-            }
+            api = API.getAPI();
 
             //As a precaution set a show as the passed object
             TvShow show = new TvShow(false);
@@ -197,8 +187,7 @@ namespace Followshows
             }
 
 
-
-            //lijst.SelectionMode = ListViewSelectionMode.Multiple;
+            Tile.setTile(0);
 
 
         }

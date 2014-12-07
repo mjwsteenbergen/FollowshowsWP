@@ -1,4 +1,5 @@
-﻿using Followshows.Common;
+﻿using SharedCode;
+using Followshows.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -82,7 +83,7 @@ namespace Followshows
             StatusBar statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
             // Hide the status bar
             await statusBar.HideAsync();
-            api = e.NavigationParameter as API;
+            api = API.getAPI();
 
             loggingin = true;
 

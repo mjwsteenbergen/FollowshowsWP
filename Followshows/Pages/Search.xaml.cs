@@ -1,5 +1,5 @@
-﻿using Followshows.almostApi;
-using Followshows.Common;
+﻿using Followshows.Common;
+using SharedCode;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,17 +71,7 @@ namespace Followshows
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             ////Loading
-            if (e.NavigationParameter != null)
-            {
-                api = (API)e.NavigationParameter;
-            }
-            else
-            {
-                if (api == null)
-                {
-                    throw new Exception("There is no api defined");
-                }
-            }
+            api = API.getAPI();
             
         }
 

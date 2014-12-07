@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Followshows.almostApi
+namespace SharedCode
 {
     public class Episode : INotifyPropertyChanged
     {

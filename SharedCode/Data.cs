@@ -1,6 +1,5 @@
-﻿using Followshows;
-using Followshows.almostApi;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
+using SharedCode;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

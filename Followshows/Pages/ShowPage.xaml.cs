@@ -1,5 +1,5 @@
-﻿using Followshows.almostApi;
-using Followshows.Common;
+﻿using Followshows.Common;
+using SharedCode;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,6 +87,7 @@ namespace Followshows
 
             //Create a fake show, which isn't visible to decrease uglyness
             //NTW.DataContext = new Episode(false, true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
+
 
             api = (API)e.NavigationParameter;
             Show = api.passed as TvShow;

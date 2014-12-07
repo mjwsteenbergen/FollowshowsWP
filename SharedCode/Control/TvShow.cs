@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Followshows.almostApi
+namespace SharedCode
 {
     public class TvShow : INotifyPropertyChanged
     {
