@@ -49,8 +49,6 @@ namespace Followshows
 
         List<Episode> q;
 
-        private int selectedPivot;
-
         public MainPage()
         {
             this.InitializeComponent();
@@ -63,8 +61,6 @@ namespace Followshows
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
-            selectedPivot = 0;
 
             //http://followshowswp.uservoice.com/forums/255100-general
         }

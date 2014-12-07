@@ -566,10 +566,8 @@ namespace SharedCode
                     await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(tracker));
                 }
             }
-            catch (Exception e)
-            {
-
-            }
+            catch (Exception)
+            { }
         }
 
         public async Task<List<Episode>> recoverQueue()

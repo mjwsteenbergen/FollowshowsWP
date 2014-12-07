@@ -39,8 +39,6 @@ namespace Followshows
         private API api;
         private List<BitmapImage> list;
 
-        private bool loggingin;
-
         public LandingPage()
         {
             this.InitializeComponent();
@@ -84,8 +82,6 @@ namespace Followshows
             // Hide the status bar
             await statusBar.HideAsync();
             api = API.getAPI();
-
-            loggingin = true;
 
             startTimer();
 

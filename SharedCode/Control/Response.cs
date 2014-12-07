@@ -25,8 +25,6 @@ namespace SharedCode
         private string url;
         protected IHttpContent cont;
         protected bool post;
-        private string p1;
-        private bool p2;
 
         public Response(string url)
         {
@@ -93,7 +91,6 @@ namespace SharedCode
             if (connectionP == null)
             {
                 noInternet = true;
-                Helper.message("I am sorry to tell you, but I cannot connect to the internet :(", "No Internet");
                 return true;
             }
             noInternet = false;

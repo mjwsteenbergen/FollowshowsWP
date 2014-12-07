@@ -87,12 +87,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Followshows\Followshows.csproj">
-      <Project>{132e9ed8-d706-4496-aef1-e5adbf8b10b8}</Project>
-      <Name>Followshows</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid+MonoTouch\HtmlAgilityPack.dll</HintPath>
@@ -109,6 +103,12 @@
     <Content Include="Assets\Square71x71Logos.scale-240.png" />
     <Content Include="Assets\StoreLogoSAd.scale-240.png" />
     <Content Include="Assets\WideLogos.scale-240.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharedCode\SharedCode.csproj">
+      <Project>{23272c59-ea46-45a2-a6b1-f3252b8de952}</Project>
+      <Name>SharedCode</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

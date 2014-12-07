@@ -172,7 +172,7 @@ namespace SharedCode
                 ep.airtime = DateTime.Parse(air);
                 ep.airdate = DateTime.Parse(air).Date;
             }
-            catch (Exception e) { }
+            catch (Exception) { }
             
             ep.url = HTML.getAttribute(HTML.getChild(HTML.getChild(data.DocumentNode, 2)), "href");
 

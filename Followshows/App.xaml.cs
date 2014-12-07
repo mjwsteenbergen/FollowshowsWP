@@ -60,10 +60,8 @@ namespace Followshows
             {
                 await registerBackgroundTask();
             }
-            catch(Exception f8ckingf)
-            {
-
-            }
+            catch(Exception)
+            { }
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -104,21 +102,21 @@ namespace Followshows
 
                 API ap = API.getAPI();
 
-                if (await ap.login())
-                {
-                    if (!rootFrame.Navigate(typeof(MainPage), ap))
+                if(ap.hasLoginCreds()) {
+                    if (await ap.login())
                     {
-                        throw new Exception("Failed to create initial page");
+                        if (!rootFrame.Navigate(typeof(MainPage), ap))
+                        {
+                            throw new Exception("Failed to create initial page");
+                        }
                     }
-                }
-                else
-                {
 
-                    if(ap.hasLoginCreds()) {
+                    var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                    if (connectionP == null)
+                    {
                         Helper.message("You don't have internet. Some features won't be enabled");
 
                         if (!rootFrame.Navigate(typeof(MainPage), ap))
-
                         {
                             throw new Exception("Failed to create initial page");
                         }
@@ -131,6 +129,14 @@ namespace Followshows
                         }
                     }
                 }
+                else
+                {
+                    if (!rootFrame.Navigate(typeof(LandingPage)))
+                    {
+                        throw new Exception("Failed to create initial page");
+                    }
+                }
+                
                 
             }
 

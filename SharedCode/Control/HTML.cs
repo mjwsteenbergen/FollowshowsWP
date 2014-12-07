@@ -29,7 +29,7 @@ namespace SharedCode
         /// <returns></returns>
         public static HtmlNode getChild(HtmlNode node, int i)
         {
-            if (node != null && i != null)
+            if (node != null)
             {
                 HtmlNode[] res = node.ChildNodes.ToArray<HtmlNode>();
                 if (res.Length > i - 1)

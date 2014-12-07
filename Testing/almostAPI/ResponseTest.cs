@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using Followshows;
-using Followshows.almostApi;
 using System.Threading.Tasks;
+using SharedCode;
 
 namespace Testing
 {
@@ -39,5 +38,53 @@ namespace Testing
 
     [TestClass]
     public class Search
-    { }
+    { 
+        [TestMethod]
+        public async Task testSearch()
+        {
+            API api = new API();
+            var list = await api.searchTvShow("Suits");
+            foreach(TvShow show in list)
+            {
+                if(show.Name.Contains("Suits"))
+                {
+                    Assert.IsTrue(true);
+                    return;
+                }
+            }
+            Assert.IsTrue(false, "Suits is not in the searchList");
+
+        }
+    }
+
+    [TestClass]
+    public class MainMenu
+    {
+        public async Task<API> getApi()
+        {
+            //TODO create fake followshows account to test on
+            return new API();
+        }
+
+        [TestMethod]
+        public async Task testQueue()
+        {
+            API api = new API();
+            await api.getQueue();
+        }
+
+        [TestMethod]
+        public async Task testCalendar()
+        {
+            API api = new API();
+            await api.getCalendar();
+        }
+
+        [TestMethod]
+        public async Task testTracker()
+        {
+            API api = await getApi();
+            await api.getTracker();
+        }
+    }
 }
