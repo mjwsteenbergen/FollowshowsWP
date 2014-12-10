@@ -110,22 +110,24 @@ namespace Followshows
                             throw new Exception("Failed to create initial page");
                         }
                     }
-
-                    var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
-                    if (connectionP == null)
-                    {
-                        Helper.message("You don't have internet. Some features won't be enabled");
-
-                        if (!rootFrame.Navigate(typeof(MainPage), ap))
-                        {
-                            throw new Exception("Failed to create initial page");
-                        }
-                    }
                     else
                     {
-                        if (!rootFrame.Navigate(typeof(LandingPage)))
+                        var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                        if (connectionP == null)
                         {
-                            throw new Exception("Failed to create initial page");
+                            Helper.message("You don't have internet. Some features won't be enabled");
+
+                            if (!rootFrame.Navigate(typeof(MainPage), ap))
+                            {
+                                throw new Exception("Failed to create initial page");
+                            }
+                        }
+                        else
+                        {
+                            if (!rootFrame.Navigate(typeof(LandingPage)))
+                            {
+                                throw new Exception("Failed to create initial page");
+                            }
                         }
                     }
                 }
