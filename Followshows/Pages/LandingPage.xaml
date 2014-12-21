@@ -8,152 +8,148 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    
+    
     <!--LayoutRoot is the root grid where all page content is placed.-->
-    <Grid x:Name="LayoutRoot" Background="#22B5FF">
-        <Hub Name="hub" Margin="0" Grid.RowSpan="2" DefaultSectionIndex="1">
-            <HubSection Name="EmailLogin">
-                <DataTemplate>
-                    <Grid>
-                        <TextBlock Name="header" Loaded="TextBlock_Loaded" Text="Login" Style="{StaticResource HeaderTextBlockStyle}" Margin="5,55,55,0" TextAlignment="Center"/>
+    <Grid x:Name="LayoutRoot" >
+        <Grid>
+            <!--<GridView x:Name="bak">
+                <GridView.ItemTemplate>
+                    <DataTemplate>-->
+            <Image x:Name="Background" Source="/Assets/Startup/GOT.jpg" Opacity="0.4" Stretch="UniformToFill" HorizontalAlignment="Center" />
+            <Image x:Name="Tester" Visibility="Collapsed" />
 
-                        <Grid VerticalAlignment="Center" Margin="0,0,0,00" Name="LoginForm" Loaded="gridLoad">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Name="FirstName" Loaded="gridLoad" Visibility="Collapsed">
-                                <StackPanel>
-                                    <TextBlock Text="First Name" Style="{StaticResource BodyTextBlockStyle}"/>
-                                    <TextBox Name="firstname"
-                                             TabIndex="1" 
-                                             KeyDown="keyDown" 
-                                             TextChanged="firstName_Changed" 
-                                             Loaded="loaded"
-                                             PlaceholderText="John" 
-                                             VerticalAlignment="Bottom"/>
-                                </StackPanel>
-                            </Grid>
-                            <Grid Grid.Row="1" Name="LastName" Loaded="gridLoad" Visibility="Collapsed">
-                                <StackPanel>
-                                    <TextBlock Text="Last Name" Style="{StaticResource BodyTextBlockStyle}"/>
-                                    <TextBox Name="lastname" 
+            <!--<Grid>
+                            <Image Source="{Binding}" Opacity="0.4" Stretch="UniformToFill" HorizontalAlignment="Center" />    
+                        </Grid>
+                    </DataTemplate>
+                    
+                </GridView.ItemTemplate>
+            </GridView>-->
+            
+        </Grid>
+        <StackPanel>
+            <TextBlock Style="{StaticResource HeaderTextBlockStyle}" TextAlignment="Center" Margin="0,70,0,0" FontWeight="ExtraBold"><Run Foreground="#22B5FF">follow</Run>shows</TextBlock>
+            <Pivot Margin="0,50,0,0" SelectedIndex="1" x:Name="Pivo" ManipulationCompleted="PivotChanged">
+                <PivotItem>
+                    <!--Background="#22B5FF"-->
+                    <StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Email Adress" Style="{StaticResource BodyTextBlockStyle}"/>
+                            <TextBox x:Name="email"
+                                     TabIndex="1"
+                                     KeyDown="keyDown" 
+                                     PlaceholderText="example@example.com" 
+                                     InputScope="EmailSmtpAddress"
+                                     Foreground="White"
+                                     Background="Transparent"
+                                     GotFocus="gotFocus"
+                                     LostFocus="lostFocus"
+                                     />
+                            <TextBlock Text="Password" Style="{StaticResource BodyTextBlockStyle}" Grid.Row="0"/>
+                            <PasswordBox x:Name="password"
+                                         Grid.Row="1" 
+                                         PlaceholderText="******" 
+                                         TabIndex="2" 
+                                         KeyDown="password_KeyDown" 
+                                         DataContext="password" 
+                                         Background="Transparent"
+                                         GotFocus="gotFocus"
+                                         LostFocus="lostFocus"/>
+                            <StackPanel Visibility="Collapsed" x:Name="Register">
+                                <TextBlock Text="First Name" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBox x:Name="firstname"
+                                         TabIndex="1" 
+                                         KeyDown="keyDown" 
+                                         PlaceholderText="John" 
+                                         VerticalAlignment="Bottom"/>
+                                <TextBlock Text="Last Name" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <TextBox x:Name="lastname" 
                                              TabIndex="1"
                                              KeyDown="keyDown"  
-                                             TextChanged="lastName_Changed" 
-                                             Loaded="loaded"
                                              PlaceholderText="Doe" 
                                              VerticalAlignment="Bottom"/>
-                                </StackPanel>
-                            </Grid>
-                            <Grid Grid.Row="2" Name="Email" Loaded="gridLoad">
-                                <StackPanel>
-                                    <TextBlock Text="Email Adress" Style="{StaticResource BodyTextBlockStyle}"/>
-                                    <TextBox Name="email" 
-                                             TabIndex="1"
-                                             KeyDown="keyDown" 
-                                             TextChanged="email_Changed"
-                                             Loaded="loaded"
-                                             PlaceholderText="example@example.com" 
-                                             InputScope="EmailSmtpAddress"
-                                             />
-                                </StackPanel>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <StackPanel>
-                                    <TextBlock Name="passBlock" Loaded="TextBlock_Loaded" Text="Password" Style="{StaticResource BodyTextBlockStyle}" Grid.Row="0"/>
-                                    <PasswordBox Name="password" 
-                                                 Grid.Row="1" 
-                                                 PlaceholderText="******" 
-                                                 TabIndex="2" 
-                                                 KeyDown="password_KeyDown" 
-                                                 DataContext="password" 
-                                                 Loaded="password_Loaded"/>
-                                    
-                                </StackPanel>
-                            </Grid>
-                            <Grid Grid.Row="4" Visibility="Collapsed" Name="TimeZone" Loaded="gridLoad">
-                                <StackPanel>
-                                    <TextBlock Text="Time Zone" Style="{StaticResource BodyTextBlockStyle}"/>
-                                    <ComboBox Name="timezone" SelectionChanged="TimeZoneChanged" Loaded="timezoneLoaded" PlaceholderText="(GMT) - Europe/London">
-                                        <x:String>(GMT-12)   - Pacific/Kwajalein</x:String>
-                                        <x:String>(GMT-11)   - Pacific/Midway</x:String>
-                                        <x:String>(GMT-10)   - America/Adak</x:String>
-                                        <x:String>(GMT-8)    - America/Los_Angeles</x:String>
-                                        <x:String>(GMT-7)    - America/Denver</x:String>
-                                        <x:String>(GMT-6)    - America/Chicago</x:String>
-                                        <x:String>(GMT-5)    - America/New_York</x:String>
-                                        <x:String>(GMT-4)    - Atlantic/Bermuda</x:String>
-                                        <x:String>(GMT-3)    - America/Anchorage</x:String>
-                                        <x:String>(GMT-3)    - America/Buenos_Aires</x:String>
-                                        <x:String>(GMT-1)    - Atlantic/Azores</x:String>
-                                        <x:String>(GMT)      - Europe/London</x:String>
-                                        <x:String>(GMT+1)    - Europe/Paris</x:String>
-                                        <x:String>(GMT+2)    - Europe/Athens</x:String>
-                                        <x:String>(GMT+3)    - Europe/Moscow</x:String>
-                                        <x:String>(GMT+3:30) - Tehran</x:String>
-                                        <x:String>(GMT+5)    - Asia/Karachi</x:String>
-                                        <x:String>(GMT+5:30) - Asia/Calcutta</x:String>
-                                        <x:String>(GMT+7)    - Asia/Bangkok</x:String>
-                                        <x:String>(GMT+8)    - Asia/Singapore</x:String>
-                                        <x:String>(GMT+9)    - Asia/Tokyo</x:String>
-                                        <x:String>(GMT+9:30) - Australia/Adelaide</x:String>
-                                        <x:String>(GMT+10)   - Australia/Brisbane</x:String>
-                                        <x:String>(GMT+11)   - Asia/Magadan</x:String>
-                                        <x:String>(GMT+12)   - Pacific/Fiji</x:String>
-                                    </ComboBox>
-                                              
-                                </StackPanel>
-                            </Grid>
-                            <Grid Grid.Row="5">
+                                <TextBlock Text="Time Zone" Style="{StaticResource BodyTextBlockStyle}"/>
+                                <ComboBox x:Name="timezone" PlaceholderText="(GMT) - Europe/London">
+                                    <x:String>(GMT-12)   - Pacific/Kwajalein</x:String>
+                                    <x:String>(GMT-11)   - Pacific/Midway</x:String>
+                                    <x:String>(GMT-10)   - America/Adak</x:String>
+                                    <x:String>(GMT-8)    - America/Los_Angeles</x:String>
+                                    <x:String>(GMT-7)    - America/Denver</x:String>
+                                    <x:String>(GMT-6)    - America/Chicago</x:String>
+                                    <x:String>(GMT-5)    - America/New_York</x:String>
+                                    <x:String>(GMT-4)    - Atlantic/Bermuda</x:String>
+                                    <x:String>(GMT-3)    - America/Anchorage</x:String>
+                                    <x:String>(GMT-3)    - America/Buenos_Aires</x:String>
+                                    <x:String>(GMT-1)    - Atlantic/Azores</x:String>
+                                    <x:String>(GMT)      - Europe/London</x:String>
+                                    <x:String>(GMT+1)    - Europe/Paris</x:String>
+                                    <x:String>(GMT+2)    - Europe/Athens</x:String>
+                                    <x:String>(GMT+3)    - Europe/Moscow</x:String>
+                                    <x:String>(GMT+3:30) - Tehran</x:String>
+                                    <x:String>(GMT+5)    - Asia/Karachi</x:String>
+                                    <x:String>(GMT+5:30) - Asia/Calcutta</x:String>
+                                    <x:String>(GMT+7)    - Asia/Bangkok</x:String>
+                                    <x:String>(GMT+8)    - Asia/Singapore</x:String>
+                                    <x:String>(GMT+9)    - Asia/Tokyo</x:String>
+                                    <x:String>(GMT+9:30) - Australia/Adelaide</x:String>
+                                    <x:String>(GMT+10)   - Australia/Brisbane</x:String>
+                                    <x:String>(GMT+11)   - Asia/Magadan</x:String>
+                                    <x:String>(GMT+12)   - Pacific/Fiji</x:String>
+                                </ComboBox>
+                            </StackPanel>
+                            <Grid>
                                 <Button Content="Login" 
-                                        Loaded="Button_Loaded"
-                                        HorizontalAlignment="Right" 
-                                        Margin="0,0,0,0" 
-                                        VerticalAlignment="Top" 
-                                        Tapped="LoginAndRegisterButton_Tapped"
+                                    HorizontalAlignment="Right" 
+                                    Margin="0,0,0,0" 
+                                    VerticalAlignment="Top" 
+                                    Tapped="LoginAndRegisterButton_Tapped"
+                                    Background="Transparent"
+                                        Width="150"
+                                        />
+                                <Button Content="Register" 
+                                    HorizontalAlignment="Left" 
+                                    Margin="0,0,0,0" 
+                                    VerticalAlignment="Top" 
+                                    Tapped="RegisterButton_Tapped"
+                                    Background="Transparent"
+                                        Width="150"
                                         />
                             </Grid>
+                            
+                            
+                           
+                        </StackPanel>
+                    </StackPanel>
+                </PivotItem>
+                <PivotItem>
+                    <StackPanel HorizontalAlignment="Center" Margin="-20,0,0,0">
+                        <StackPanel Orientation="Horizontal" Tapped="buttonTapped" Name="zero">
+                            <Image Source="/Assets/StartUp/email.png" Height="110" Margin="0,0,10,0"/>
+                            <TextBlock Text="Email" VerticalAlignment="Center" Style="{StaticResource MessageDialogTitleStyle}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Tapped="buttonTapped" Name="two">
+                            <Image Source="/Assets/StartUp/facebook-50.png" Height="60"  Margin="25,0,30,0" />
+                            <TextBlock Text="Facebook" VerticalAlignment="Center" Style="{StaticResource MessageDialogTitleStyle}"/>
+                        </StackPanel>
+                        </StackPanel>
+                    
+                </PivotItem>
+                <PivotItem>
+                    <StackPanel>
+                        <TextBlock Text="Trying to contact facebook" Style="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" Margin="0,50,0,0"/>
+                        <ProgressBar IsIndeterminate="True" Margin="0,20,0,0" Height="2"/>
+                    </StackPanel>
+                    
+                </PivotItem>
 
-                        </Grid>
-                        <TextBlock Name="noAc" Text="Don't have an account?" HorizontalAlignment="Center" VerticalAlignment="Bottom" Style="{StaticResource SubheaderTextBlockStyle}" Tapped="SwitchRegister" Loaded="TextBlock_Loaded"/>
-                    </Grid>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Margin="0" Name="middle">
-                <DataTemplate>
-                    <Grid Margin="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"></RowDefinition>
-                            <RowDefinition Height="1*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Image Source="ms-appx:///assets/Buttons/back.png" Margin="-300,0,0,0" Height="200" Grid.Row="0" VerticalAlignment="Top"/>
-                        <TextBlock Text="email" Margin="90,120,0,0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource HeaderTextBlockStyle}" Width="156" RenderTransformOrigin="0.552,0.656"/>
-                        <TextBlock Text="Log In" Grid.Row="0" Margin="0,0,0,-15" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource SubheaderTextBlockStyle}"/>
-                        <TextBlock Text="facebook" Margin="0,0,90,150"  Grid.Row="1" Style="{StaticResource HeaderTextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
-                        <Image Source="ms-appx:///assets/Buttons/forward.png" Margin="0,0,-300,10" Height="200" Grid.Row="1" VerticalAlignment="Bottom"/>
-                    </Grid>
-                </DataTemplate>
-            </HubSection>
-            <HubSection Name="twee">
-                <DataTemplate>
-                    <Grid>
-                        
-                        
-
-                        <Button Tapped="LoginWithFacebook" Margin="0,0,0,50" HorizontalAlignment="Center" Padding="0,0,0,10">
-                            <TextBlock Text="Login" HorizontalAlignment="Center" Style="{ThemeResource SubheaderTextBlockStyle}" TextAlignment="Center" Margin="0,0,0,0"/>
-                        </Button>
-
-                        <TextBlock Text="Facebook" Style="{StaticResource HeaderTextBlockStyle}" Margin="90,0,0,80" TextAlignment="Center" VerticalAlignment="Bottom"/>
-                    </Grid>
-                </DataTemplate>
-            </HubSection>
-        </Hub>
+            </Pivot>
+            
+        </StackPanel>
+        <TextBlock Text="no Account?" VerticalAlignment="Bottom" Margin="20,0,0,20" x:Name="accountQ"/>
     </Grid>
 
 
 </Page>
+    
+    

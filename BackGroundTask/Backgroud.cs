@@ -19,7 +19,8 @@ namespace BackGroundTask
             await api.getTracker();
             await api.store();
 
-            Tile s = new Tile();
+            //TODO set to correct amount
+            Tile.setTile(99);
 
         }
     }

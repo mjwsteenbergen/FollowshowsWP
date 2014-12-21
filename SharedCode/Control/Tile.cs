@@ -11,27 +11,35 @@ namespace SharedCode
 {
     public class Tile
     {
-        public Tile()
+        public static void setTile(int amount)
         {
-            string tileText = "YOLO";
-            string mediumTileImage = "nope";
-            string wideTileImage = "nope";
+            if(amount == 0)
+            {
+                BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+                TileUpdateManager.CreateTileUpdaterForApplication().Clear();
+                return;
+            }
 
-            string xml = 
+            string xml =
                 "<tile>" +
                     "<visual version=\"2\">" +
-                        "<binding template=\"TileSquare150x150PeekImageAndText04\" fallback=\"TileSquarePeekImageAndText04\">" +
-                            "<image id=\"1\" src=\"" + mediumTileImage + "\" alt=\"alt text\"/>" +
-                            "<text id=\"1\">" + tileText + "</text>" +
+                        "<binding template=\"TileSquare71x71IconWithBadge\">" +
+                            "<image id=\"1\" src=\"Assets/Logo/square71x71logoBadge.scale-100.png\" alt=\"alt text\"/>" +
                         "</binding>" +
-                        "<binding template=\"TileWide310x150ImageAndText01\" fallback=\"TileWideImageAndText01\">" +
-                            "<image id=\"1\" src=\"" + wideTileImage + "\" alt=\"alt text\"/>" +
-                            "<text id=\"1\">" + tileText + "</text>" +
+                        "<binding template=\"TileSquare150x150IconWithBadge\" fallback=\"TileSquarePeekImageAndText04\">" +
+                            "<image id=\"1\" src=\"Assets/Logo/square71x71logoBadge.scale-240.png\" alt=\"alt text\"/>" +
                         "</binding>" +
+                        //"<binding template=\"TileWide310x150ImageAndText01\" fallback=\"TileWideImageAndText01\">" +
+                        //    "<image id=\"1\" src=\"" + wideTileImage + "\" alt=\"alt text\"/>" +
+                        //    "<text id=\"1\">" + tileText + "</text>" +
+                        //"</binding>" +
                     "</visual>" +
                 "</tile>";
+            
 
-            XmlDocument tileXML = new XmlDocument();
+            XmlDocument tileXML = TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare71x71IconWithBadge);
+            tileXML.LoadXml(tileXML.GetXml().Replace("src=\"\"", "src=\"Assets/Logo/square71x71logoBadge.scale-100.png\""));
+
             tileXML.LoadXml(xml);
 
             // Create tile notification
@@ -39,11 +47,17 @@ namespace SharedCode
 
             // Send the XML notifications to tile updater
             TileUpdater updateTiler = TileUpdateManager.CreateTileUpdaterForApplication();
-            updateTiler.EnableNotificationQueue(false);
+            String str = updateTiler.GetType().FullName;
             updateTiler.Update(newTile);
 
-            MessageDialog dialog = new MessageDialog("hoi");
-            dialog.ShowAsync();
+
+
+            //Create badgeUpdate
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml("<badge version='1' value='" + amount + "'/>");
+
+            // Send the notification to the application’s tile.
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(new BadgeNotification(doc));
         }
     }
 }

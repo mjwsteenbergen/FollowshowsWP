@@ -49,12 +49,24 @@ namespace Followshows
 
         List<Episode> q;
 
-        private int selectedPivot;
-
         public MainPage()
         {
             this.InitializeComponent();
 
+            initiateCommandBar();
+            
+            
+            
+
+            this.navigationHelper = new NavigationHelper(this);
+            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
+            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            //http://followshowswp.uservoice.com/forums/255100-general
+        }
+
+        private void initiateCommandBar()
+        {
             CommandBar bar = new CommandBar();
             AppBarButton logou = new AppBarButton() { Icon = new SymbolIcon(Symbol.Cancel), Label = "Log out" };
             logou.Click += logout;
@@ -81,14 +93,6 @@ namespace Followshows
             bar.ClosedDisplayMode = AppBarClosedDisplayMode.Minimal;
 
             BottomAppBar = bar;
-
-            this.navigationHelper = new NavigationHelper(this);
-            this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
-            this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
-
-            selectedPivot = 0;
-
-            //http://followshowswp.uservoice.com/forums/255100-general
         }
 
         /// <summary>
@@ -179,8 +183,7 @@ namespace Followshows
             }
 
 
-
-            //lijst.SelectionMode = ListViewSelectionMode.Multiple;
+            Tile.setTile(0);
 
 
         }
@@ -287,7 +290,7 @@ namespace Followshows
         #region MarkAsWatched
 
 
-        private void Item_Tapped(object sender, DoubleTappedRoutedEventArgs e)
+        private async void Item_Tapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             item = sender as Grid;
             ep = item.DataContext as Episode;
@@ -338,7 +341,7 @@ namespace Followshows
 
                 if (api.hasInternet())
                 {
-                    api.markNotAsWatched(ep);
+                    await ep.markNotAsWatched();
                 }
                 else
                 {
@@ -357,11 +360,11 @@ namespace Followshows
 
         }
 
-        void board_Completed(object sender, object e)
+        async void board_Completed(object sender, object e)
         {
             if (api.hasInternet())
             {
-                api.markAsWatched(ep);
+                await ep.markAsWatched();
             }
             else
             {

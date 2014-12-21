@@ -141,10 +141,16 @@
     <Content Include="Assets\Logo\square71x71logo.scale-100.png" />
     <Content Include="Assets\Logo\square71x71logo.scale-140.png" />
     <Content Include="Assets\Logo\square71x71logo.scale-240.png" />
+    <Content Include="Assets\Logo\square71x71logoBadge.scale-100.png" />
+    <Content Include="Assets\Logo\square71x71logoBadge.scale-240.png" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\Square44x44Logo.scale-100.png" />
     <Content Include="Assets\Square44x44Logo.scale-140.png" />
     <Content Include="Assets\Square44x44Logo.scale-240.png" />
+    <Content Include="Assets\StartUp\email.png" />
+    <Content Include="Assets\StartUp\Arrow.png" />
+    <Content Include="Assets\StartUp\facebook-50.png" />
+    <Content Include="Assets\StartUp\GOT.jpg" />
     <Content Include="Assets\StoreLogo.scale-240.png" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
