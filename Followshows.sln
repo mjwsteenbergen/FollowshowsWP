@@ -2,13 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedCode", "SharedCode\SharedCode.csproj", "{23272C59-EA46-45A2-A6B1-F3252B8DE952}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackGroundTask", "BackGroundTask\BackGroundTask.csproj", "{871B1B67-4576-41F6-BA89-D26E9D861B3B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Followshows", "Followshows\Followshows.csproj", "{132E9ED8-D706-4496-AEF1-E5ADBF8B10B8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{53B35CAE-D03C-4B24-AE2B-18106D622643}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
