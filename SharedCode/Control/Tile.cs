@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
+using Windows.Storage;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 
@@ -58,6 +59,33 @@ namespace SharedCode
 
             // Send the notification to the application’s tile.
             BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(new BadgeNotification(doc));
+        }
+
+        public async static Task add(int amount)
+        {
+            try
+            {
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
+                StorageFile fil = await temp.GetFileAsync("tile.txt");
+                amount += int.Parse(await Windows.Storage.FileIO.ReadTextAsync(fil));
+            }
+            catch
+            {
+                Tile.setTile(93);
+            }
+
+            Tile.setTile(amount);
+
+            try
+            {
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
+                StorageFile fil = await temp.CreateFileAsync("tile.txt", CreationCollisionOption.ReplaceExisting);
+                await Windows.Storage.FileIO.WriteTextAsync(fil, amount.ToString());
+            }
+            catch
+            {
+                Tile.setTile(92);
+            }
         }
     }
 }

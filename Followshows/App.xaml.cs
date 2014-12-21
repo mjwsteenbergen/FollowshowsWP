@@ -224,12 +224,18 @@ namespace Followshows
 
         public async Task registerBackgroundTask()
         {
+
             await BackgroundExecutionManager.RequestAccessAsync();
+
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                task.Value.Unregister(true);
+            }
 
             BackgroundTaskBuilder builder = new BackgroundTaskBuilder();
             builder.Name = "BackGroundTask";
 
-            SystemTrigger trig = new SystemTrigger(SystemTriggerType.InternetAvailable, false);
+            TimeTrigger trig = new TimeTrigger(120, false);
             builder.SetTrigger(trig);
             builder.AddCondition(new SystemCondition(SystemConditionType.FreeNetworkAvailable));
 

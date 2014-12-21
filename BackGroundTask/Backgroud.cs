@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SharedCode;
 using Windows.ApplicationModel.Background;
+using Windows.Web.Http;
+using Windows.Storage;
 
 namespace BackGroundTask
 {
@@ -12,16 +14,38 @@ namespace BackGroundTask
     {
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
+            BackgroundTaskDeferral def = taskInstance.GetDeferral();
+            int tileCount = 0;
  	        API api = API.getAPI();
-            await api.login();
-            await api.getQueue();
-            await api.getCalendar();
-            await api.getTracker();
+            try
+            {
+
+                if (await api.login())
+                {
+                        List<Episode> ep = await api.getQueue();
+                        foreach (Episode epi in ep)
+                        {
+                            if (epi.New)
+                            {
+                                tileCount=tileCount++;
+                            }
+                        }
+                    
+                }
+                //bool b = await api.login();
+                tileCount++;
+            }
+            catch
+            {
+                Tile.setTile(91);
+                return;
+            }
+
+            await Tile.add(tileCount);
+
             await api.store();
 
-            //TODO set to correct amount
-            Tile.setTile(99);
-
+            def.Complete();
         }
     }
 }

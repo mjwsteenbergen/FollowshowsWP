@@ -22,7 +22,7 @@ namespace SharedCode
 
         public string ShowName { get; set; }
 
-
+        public String imageUrl { get; set; }
         public BitmapImage Image { get; set; }
 
         public string EpisodePos { get; set; }
@@ -38,6 +38,8 @@ namespace SharedCode
         public double Opacity { get; set; }
 
         public bool Aired { get; set; }
+
+        public bool New { get; set; }
 
         private bool seen;
         public bool Seen
@@ -64,6 +66,7 @@ namespace SharedCode
         {
             Aired = AiredOnTV;
             Seen = SeenSomewhere;
+            New = false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -103,16 +106,25 @@ namespace SharedCode
         public static Episode getQueueEpisode(HtmlNode node)
         {
             Episode res = new Episode(true, false);
+            if (HTML.getChild(node.ChildNodes, "class", "label label-warning") != null)
+            {
+                res.New = true;
+            }
 
             HtmlNode netDate =  HTML.getChild(node);
             res.network = HTML.getAttribute(netDate.ChildNodes, "network");
             
             HtmlNode posterNode = HTML.getChild(node, "class", "column_poster");
 
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.UriSource = new Uri(HTML.getAttribute(HTML.getChild(HTML.getChild(posterNode)),"src").Replace("180", "360").Replace("104", "207"));
-            bitmapImage.CreateOptions = BitmapCreateOptions.None;
-            res.Image = bitmapImage;
+            res.imageUrl = HTML.getAttribute(HTML.getChild(HTML.getChild(posterNode)), "src").Replace("180", "360").Replace("104", "207");
+            try
+            {
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.UriSource = new Uri(res.imageUrl);
+                bitmapImage.CreateOptions = BitmapCreateOptions.None;
+                res.Image = bitmapImage;
+            }
+            catch { }
 
             HtmlNode rest = HTML.getChild(node.ChildNodes, "class", "column_infos");
 

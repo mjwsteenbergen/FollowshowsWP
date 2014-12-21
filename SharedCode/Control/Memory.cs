@@ -8,7 +8,7 @@ namespace Followshows.Memory
 {
     class Memory
     {
-        public static void Store()
+        public static void Store(String s)
         {
 
         }

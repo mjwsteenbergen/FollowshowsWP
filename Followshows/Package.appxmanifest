@@ -30,7 +30,7 @@
       <Extensions>
         <Extension Category="windows.backgroundTasks" EntryPoint="BackGroundTask.Backgroud">
           <BackgroundTasks>
-            <Task Type="systemEvent" />
+            <Task Type="timer" />
           </BackgroundTasks>
         </Extension>
       </Extensions>

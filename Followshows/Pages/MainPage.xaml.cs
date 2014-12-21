@@ -317,6 +317,21 @@ namespace Followshows
 
                 board.Begin();
 
+                if (api.hasInternet())
+                {
+                    await ep.markAsWatched();
+                }
+                else
+                {
+                    api.addCommand(new Command() { episode = ep, watched = true });
+                }
+
+
+                ep.Seen = true;
+
+                ep.OnPropertyChanged("redo");
+  
+
             }
             else
             {
@@ -360,21 +375,8 @@ namespace Followshows
 
         }
 
-        async void board_Completed(object sender, object e)
+        void board_Completed(object sender, object e)
         {
-            if (api.hasInternet())
-            {
-                await ep.markAsWatched();
-            }
-            else
-            {
-                api.addCommand(new Command() { episode = ep, watched = true });
-            }
-
-
-            ep.Seen = true;
-
-            ep.OnPropertyChanged("redo");
             ep.OnPropertyChanged("Opacity");
         }
 
