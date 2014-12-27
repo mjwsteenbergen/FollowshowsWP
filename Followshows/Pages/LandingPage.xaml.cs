@@ -151,9 +151,17 @@ namespace Followshows
                 TryLoginOrRegister();
         }
 
-        private void LoginAndRegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
+        private void LoginButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            TryLoginOrRegister();
+            if (Register.Visibility == Windows.UI.Xaml.Visibility.Visible)
+            {
+                Register.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+            else
+            {
+                TryLoginOrRegister();
+            }
+           
         }
 
         private async void RegisterButton_Tapped(object sender, TappedRoutedEventArgs e)

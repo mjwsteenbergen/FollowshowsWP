@@ -156,7 +156,7 @@
                                     HorizontalAlignment="Right" 
                                     Margin="0,0,0,0" 
                                     VerticalAlignment="Top" 
-                                    Tapped="LoginAndRegisterButton_Tapped"
+                                    Tapped="LoginButton_Tapped"
                                     Background="Transparent"
                                         Width="50"
                                         />
