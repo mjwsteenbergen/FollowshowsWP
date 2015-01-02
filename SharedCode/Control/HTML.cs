@@ -53,7 +53,7 @@ namespace SharedCode
             {
                 if (child.Attributes[attribute] != null)
                 {
-                    if (child.Attributes[attribute].Value == value)
+                    if (child.Attributes[attribute].Value.Contains(value))
                         return child;
                 }
             }

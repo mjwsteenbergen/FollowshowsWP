@@ -116,7 +116,7 @@ namespace SharedCode
             
             HtmlNode posterNode = HTML.getChild(node, "class", "column_poster");
 
-            res.imageUrl = HTML.getAttribute(HTML.getChild(HTML.getChild(posterNode)), "src").Replace("180", "360").Replace("104", "207");
+            res.imageUrl = HTML.getAttribute(posterNode.ChildNodes, "src").Replace("180", "360").Replace("104", "207");
             try
             {
                 BitmapImage bitmapImage = new BitmapImage();
@@ -147,9 +147,14 @@ namespace SharedCode
 
             res.EpisodeName = split[1].Remove(0,1);
 
-            HtmlNode dateNode = HTML.getChild(locDateSum, 1);
+            HtmlNode dateNode = HTML.getChild(locDateSum.ChildNodes, "class", "visible-xs visible-sm xs-infos");
             split = dateNode.InnerText.Split(' ');
-            res.airdate = DateTime.Parse(split[0]);
+            try
+            {
+                res.airdate = DateTime.Parse(split[0]);
+            }
+            catch { }
+            
 
             res.summary = HTML.getChild(locDateSum, 2).InnerText;
 

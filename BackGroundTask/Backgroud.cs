@@ -16,34 +16,35 @@ namespace BackGroundTask
         {
             BackgroundTaskDeferral def = taskInstance.GetDeferral();
             int tileCount = 0;
- 	        API api = API.getAPI();
+
+            API api = API.getAPI();
             try
             {
-
+                
                 if (await api.login())
                 {
+                    DateTime.Parse("asfjlhadlfjkhakjdhf");
                         List<Episode> ep = await api.getQueue();
                         foreach (Episode epi in ep)
                         {
                             if (epi.New)
                             {
-                                tileCount=tileCount++;
+                                tileCount++;
                             }
                         }
                     
                 }
                 //bool b = await api.login();
-                tileCount++;
             }
-            catch
+            catch(Exception e)
             {
-                Tile.setTile(91);
+                api.writeErrorToFile(this, e);
                 return;
             }
 
-            await Tile.add(tileCount);
+            Tile.add(tileCount);
 
-            await api.store();
+            //api.store();
 
             def.Complete();
         }
