@@ -200,7 +200,7 @@ namespace Followshows
             await api.executeCommands();
 
             //Load Queue
-            List<Episode> queueList = await api.getQueue();
+            List<Episode> queueList = await (new Queue()).getQueue();
             if (queueList != null)
             {
                 queue.ItemsSource = queueList;

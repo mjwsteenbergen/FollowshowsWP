@@ -20,18 +20,48 @@ namespace BackGroundTask
             API api = API.getAPI();
             try
             {
-                
                 if (await api.login())
                 {
-                    DateTime.Parse("asfjlhadlfjkhakjdhf");
-                        List<Episode> ep = await api.getQueue();
-                        foreach (Episode epi in ep)
+
+                    StorageFolder temp = ApplicationData.Current.LocalFolder;
+                    StorageFile fil = null;
+                    foreach(StorageFile fil2 in await temp.GetFilesAsync())
+                    {
+                        string name = fil2.DisplayName;
+                        if(name == "lastQueueEpisode")
                         {
-                            if (epi.New)
-                            {
-                                tileCount++;
-                            }
+                            fil = fil2;
                         }
+                    }
+                    if (fil == null)
+                    {
+                        fil = await temp.CreateFileAsync("lastQueueEpisode.txt", CreationCollisionOption.ReplaceExisting);
+                    }
+
+
+                    string previous = await Windows.Storage.FileIO.ReadTextAsync(fil);
+
+
+
+                    Queue q = new Queue();
+                    List<Episode> ep = await q.getQueue();
+                    foreach (Episode epi in ep)
+                    {
+                        if (epi.New)
+                        {
+                            tileCount++;
+                        }
+                    }
+                    foreach (Episode epi in ep)
+                    {
+                        if (epi.EpisodeName == previous || previous == "")
+                            break;
+                        tileCount++;
+                    }
+
+                    
+
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, ep[0].EpisodeName);
                     
                 }
                 //bool b = await api.login();
@@ -44,7 +74,7 @@ namespace BackGroundTask
 
             Tile.add(tileCount);
 
-            //api.store();
+            api.store();
 
             def.Complete();
         }
