@@ -317,8 +317,26 @@ namespace Followshows
 
                 board.Begin();
 
+                //Update the last new queue item
+
+                StorageFolder temp = ApplicationData.Current.LocalFolder;
+                StorageFile fil = null;
+                foreach (StorageFile fil2 in await temp.GetFilesAsync())
+                {
+                    string name = fil2.DisplayName;
+                    if (name == "lastQueueEpisode")
+                    {
+                        fil = fil2;
+                    }
+                }
+                if (fil == null)
+                {
+                    fil = await temp.CreateFileAsync("lastQueueEpisode.txt", CreationCollisionOption.ReplaceExisting);
+                }
+
                 if (api.hasInternet())
                 {
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, (queue.ItemsSource as List<Episode>)[0].EpisodeName);
                     await ep.markAsWatched();
                 }
                 else
@@ -365,7 +383,6 @@ namespace Followshows
                     com.watched = false;
 
                     api.addCommand(com);
-
                 }
 
 
