@@ -231,7 +231,7 @@ namespace SharedCode
         public void RegisterWithFacebook()
         {
             // Activate the broker to authenticate 
-            WebAuthenticationBroker.AuthenticateAndContinue(new Uri("https://www.facebook.com/login.php?skip_api_login=1&api_key=287824544623545&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv1.0%2Fdialog%2Foauth%3Fredirect_uri%3Dhttp%253A%252F%252Ffollowshows.com%252Ffacebook%252Flogin%26scope%3Demail%252Cpublish_actions%26client_id%3D287824544623545%26ret%3Dlogin&cancel_uri=http%3A%2F%2Ffollowshows.com%2Ffacebook%2Flogin%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%23_%3D_&display=page"), new Uri("http://followshows.com/facebook/login"));
+            WebAuthenticationBroker.AuthenticateAndContinue(new Uri("https://followshows.com/facebook/authenticate"), new Uri("http://followshows.com/facebook/login"));
         }
 
         /// <summary>
