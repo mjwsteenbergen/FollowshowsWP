@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -122,6 +123,7 @@ namespace SharedCode
                 BitmapImage bitmapImage = new BitmapImage();
                 bitmapImage.UriSource = new Uri(res.imageUrl);
                 bitmapImage.CreateOptions = BitmapCreateOptions.None;
+                //await bitmapImage.SetSourceAsync(await RandomAccessStreamReference.CreateFromUri(new Uri(res.imageUrl)).OpenReadAsync());
                 res.Image = bitmapImage;
             }
             catch { }

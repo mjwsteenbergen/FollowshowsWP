@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharedCode;
 using Windows.ApplicationModel.Background;
 using Windows.Web.Http;
 using Windows.Storage;
+using Windows.UI.Xaml.Controls;
+using SharedCode;
+using System.Collections.ObjectModel;
 
 namespace BackGroundTask
 {
@@ -44,7 +46,8 @@ namespace BackGroundTask
 
 
                     Queue q = new Queue();
-                    List<Episode> ep = await q.getQueue();
+                    ObservableCollection<Episode> ep = q.getQueue();
+                    await q.downloadQueue();
                     foreach (Episode epi in ep)
                     {
                         if (epi.New)
@@ -59,9 +62,14 @@ namespace BackGroundTask
                         tileCount++;
                     }
 
-                    
-
                     await Windows.Storage.FileIO.WriteTextAsync(fil, ep[0].EpisodeName);
+
+                    Tracker track = new Tracker();
+
+                    track.trackEvent += Memory.StoreTracker;
+
+                    Memory.store(q);
+                    
                     
                 }
                 //bool b = await api.login();
@@ -74,7 +82,7 @@ namespace BackGroundTask
 
             Tile.add(tileCount);
 
-            api.store();
+            
 
             def.Complete();
         }

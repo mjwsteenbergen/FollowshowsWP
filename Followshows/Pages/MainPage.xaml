@@ -28,36 +28,38 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="Queue" Style="{ThemeResource HeaderTextBlockStyle}" Grid.Row="0"/>
-                        <GridView Name="queue" Grid.Row="1" Margin="0,20,0,0" ItemsSource="{Binding queue}" Loaded="Register">
-                            <GridView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414" Background="{ThemeResource PhoneAccentBrush}">
-                                        <Grid>
-                                            <Image x:Name="ima" Source="{Binding Image}" Opacity="{Binding Opacity}" ImageFailed="Image_ImageFailed" Stretch="UniformToFill"/>
-                                            <TextBlock Text="{Binding ShowName}"
+                        <ScrollViewer Grid.Row="1" ViewChanging="scrollViewChanging">
+                            <GridView Name="queue"  Margin="0,20,0,0" ItemsSource="{Binding queue}" Loaded="Register" ManipulationStarted="queueScrolling">
+                                <GridView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414" Background="{ThemeResource PhoneAccentBrush}">
+                                            <Grid>
+                                                <Image x:Name="ima" Source="{Binding Image}" Opacity="{Binding Opacity}" ImageFailed="Image_ImageFailed" Stretch="UniformToFill"/>
+                                                <TextBlock Text="{Binding ShowName}"
 								                    Margin="12,10,12,0"
                                                     FontWeight="ExtraBold"
                                                     FontFamily="{ThemeResource PhoneFontFamilySemiBold}"
                                                     FontSize="{ThemeResource TextStyleExtraLargePlusFontSize}"
                                                     TextWrapping="NoWrap"
 							                           />
-                                            <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,35,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
+                                                <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,35,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
+                                            </Grid>
+                                            <Grid  Visibility="{Binding redo}">
+                                                <Image Source="ms-appx:///Assets/Buttons/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
+                                                <TextBlock Text="NOT WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,0,0,0"/>
+                                            </Grid>
                                         </Grid>
-                                        <Grid  Visibility="{Binding redo}">
-                                            <Image Source="ms-appx:///Assets/Buttons/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
-                                            <TextBlock Text="NOT WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,0,0,0"/>
-                                        </Grid>
-                                    </Grid>
-                                </DataTemplate>
+                                    </DataTemplate>
 
-                            </GridView.ItemTemplate>
-                            <ItemsControl.ItemContainerTransitions>
-                                <TransitionCollection>
-                                    <EntranceThemeTransition/>
-                                </TransitionCollection>
-                            </ItemsControl.ItemContainerTransitions>
-                        </GridView>
+                                </GridView.ItemTemplate>
+                                <ItemsControl.ItemContainerTransitions>
+                                    <TransitionCollection>
+                                        <EntranceThemeTransition/>
+                                    </TransitionCollection>
+                                </ItemsControl.ItemContainerTransitions>
+                            </GridView>
+                        </ScrollViewer>
                     </Grid>
                 </DataTemplate>
             </HubSection>

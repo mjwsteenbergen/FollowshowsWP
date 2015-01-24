@@ -24,6 +24,8 @@ using Windows.ApplicationModel.Email;
 using Windows.UI.Notifications;
 using Windows.Data.Xml.Dom;
 using SharedCode;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -47,7 +49,7 @@ namespace Followshows
         private ListView tracker;
         private GridView cale;
 
-        List<Episode> q;
+        private Queue q;
 
         public MainPage()
         {
@@ -144,9 +146,9 @@ namespace Followshows
             {
 
 
-                List<Episode> list = await api.recoverQueue();
-                List<TvShow> listTV = await api.recoverTracker();
-                List<Episode> cal = await api.recoverCalendar();
+                List<Episode> list = await Memory.recoverQueue();
+                List<TvShow> listTV = await Memory.recoverTracker();
+                List<Episode> cal = await Memory.recoverCalendar();
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     if (list.Count > 0)
@@ -200,11 +202,17 @@ namespace Followshows
             await api.executeCommands();
 
             //Load Queue
-            List<Episode> queueList = await (new Queue()).getQueue();
-            if (queueList != null)
+            q = new Queue();
+
+            while (queue == null)
             {
-                queue.ItemsSource = queueList;
+                await Task.Delay(1);
             }
+
+            queue.ItemsSource = q.getQueue();
+
+
+            await q.downloadQueue();
 
             bar.ProgressIndicator.Text = "Getting Calendar";
 
@@ -224,7 +232,9 @@ namespace Followshows
             bar.ProgressIndicator.Text = "Getting Tracker";
 
             //Load Tracker
-            List<TvShow> track = await api.getTracker();
+            Tracker trackerO = new Tracker();
+            List<TvShow> track = await trackerO.getTracker();
+            trackerO.trackEvent += Memory.StoreTracker;
             if (track != null)
             {
                 tracker.ItemsSource = track;
@@ -235,7 +245,15 @@ namespace Followshows
             bar.ProgressIndicator.Text = "Done";
             await bar.HideAsync();
 
-            api.store();
+            Memory.store(cal);
+            Memory.store(q);
+
+            //await q.downloadMoreEpisodes();
+
+            //queue.ItemsSource = null;
+            //queue.ItemsSource = q.getQueue();
+
+            
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -336,7 +354,7 @@ namespace Followshows
 
                 if (api.hasInternet())
                 {
-                    await Windows.Storage.FileIO.WriteTextAsync(fil, (queue.ItemsSource as List<Episode>)[0].EpisodeName);
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, (queue.ItemsSource as ObservableCollection<Episode>)[0].EpisodeName);
                     await ep.markAsWatched();
                 }
                 else
@@ -510,10 +528,6 @@ namespace Followshows
             {
                 case "queue":
                     queue = sender as GridView;
-                    if (q != null)
-                    {
-                        queue.ItemsSource = q;
-                    }
                     break;
                 case "tracker":
                     tracker = sender as ListView;
@@ -523,5 +537,30 @@ namespace Followshows
                     break;
             }
         }
+
+        private void queueScrolling(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            double d = e.Delta.Translation.X;
+        }
+
+        private void queueScrolling(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+
+        }
+
+        private async void scrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            ScrollViewer scroll = sender as ScrollViewer;
+            double d = scroll.ExtentHeight;
+            double efgh = e.FinalView.VerticalOffset;
+            if (scroll.ExtentHeight - e.FinalView.VerticalOffset < 1500)
+            {
+                await q.downloadMoreEpisodes();
+            }
+
+
+
+        }
+        
     }
 }
