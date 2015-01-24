@@ -68,7 +68,6 @@ namespace SharedCode
             pageCouldNotBeFound = true;
             somethingWentWrong = true;
 
-
             if (testInternet())
             {
                 return;
@@ -115,7 +114,7 @@ namespace SharedCode
                     response = await client.GetAsync(uri);
                 }            
                 if (!response.IsSuccessStatusCode)
-                { 
+                {
                     return true;
                 }
                 page = Regex.Replace(((await response.Content.ReadAsStringAsync()).Replace("\n", "").Replace("\\\"", "").Replace("\t", "")), " {2,}", "");                

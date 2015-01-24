@@ -42,15 +42,6 @@ namespace SharedCode
             return Name.ToString();
         }
 
-        public string NameCaps
-        {
-            get
-            {
-                return Name.ToUpper();
-            }
-
-        }
-
         public int numberOfSeasons { get; set; }
 
         public async Task expand()
@@ -63,8 +54,8 @@ namespace SharedCode
 
             HtmlNode summaryid = resp.htmldoc.GetElementbyId("summary");
 
-            string extendedPart = HTML.getChild(summaryid.DescendantNodes(), "class", "details").InnerText;
-            SummaryExtended = HTML.getChild(summaryid.DescendantNodes(), "class", "summary-text").InnerText.Replace("...&nbsp;(more)", "");
+            string extendedPart = HTML.getChild(summaryid.ChildNodes, "class", "details").InnerText;
+            SummaryExtended = HTML.getChild(summaryid.ChildNodes, "class", "summary-text").InnerText.Replace("...&nbsp;(more)", "");
 
             Summary = SummaryExtended.Replace(extendedPart, "") + "...";
 
@@ -72,7 +63,7 @@ namespace SharedCode
 
             HtmlNode showSummary = resp.htmldoc.GetElementbyId("content-about");
             Genre = HTML.getChild(showSummary.ChildNodes, "class", "genres").InnerText.Replace("GENRES:", "");
-            Airs = HTML.getChild(showSummary.DescendantNodes(), "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
+            Airs = HTML.getChild(showSummary.ChildNodes, "class", "infos col-xs-12 col-sm-6").InnerText.Replace("AIRS:", "");
 
             HtmlNode forFollowandName = HTML.getChild(showSummary.ChildNodes, "class", "summary");
             Followers = HTML.getChild(forFollowandName.ChildNodes, "class", "followers").InnerText.Replace(" followers)", "").Replace("( ","");
@@ -139,6 +130,22 @@ namespace SharedCode
             {
                 handler(this, new PropertyChangedEventArgs(name));
             }
+        }
+    }
+
+    public class ShowTvShow : TvShow
+    {
+        public ShowTvShow(bool follow)
+            : base(follow)
+        { }
+
+        public string NameCaps
+        {
+            get
+            {
+                return Name.ToUpper();
+            }
+
         }
     }
 }

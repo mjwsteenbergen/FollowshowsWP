@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -22,7 +23,7 @@ namespace SharedCode
 
         public string ShowName { get; set; }
 
-
+        public String imageUrl { get; set; }
         public BitmapImage Image { get; set; }
 
         public string EpisodePos { get; set; }
@@ -38,6 +39,8 @@ namespace SharedCode
         public double Opacity { get; set; }
 
         public bool Aired { get; set; }
+
+        public bool New { get; set; }
 
         private bool seen;
         public bool Seen
@@ -64,6 +67,7 @@ namespace SharedCode
         {
             Aired = AiredOnTV;
             Seen = SeenSomewhere;
+            New = false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -103,16 +107,26 @@ namespace SharedCode
         public static Episode getQueueEpisode(HtmlNode node)
         {
             Episode res = new Episode(true, false);
+            if (HTML.getChild(node.ChildNodes, "class", "label label-warning") != null)
+            {
+                res.New = true;
+            }
 
             HtmlNode netDate =  HTML.getChild(node);
             res.network = HTML.getAttribute(netDate.ChildNodes, "network");
             
             HtmlNode posterNode = HTML.getChild(node, "class", "column_poster");
 
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.UriSource = new Uri(HTML.getAttribute(HTML.getChild(HTML.getChild(posterNode)),"src").Replace("180", "360").Replace("104", "207"));
-            bitmapImage.CreateOptions = BitmapCreateOptions.None;
-            res.Image = bitmapImage;
+            res.imageUrl = HTML.getAttribute(posterNode.ChildNodes, "src").Replace("180", "360").Replace("104", "207");
+            try
+            {
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.UriSource = new Uri(res.imageUrl);
+                bitmapImage.CreateOptions = BitmapCreateOptions.None;
+                //await bitmapImage.SetSourceAsync(await RandomAccessStreamReference.CreateFromUri(new Uri(res.imageUrl)).OpenReadAsync());
+                res.Image = bitmapImage;
+            }
+            catch { }
 
             HtmlNode rest = HTML.getChild(node.ChildNodes, "class", "column_infos");
 
@@ -135,9 +149,14 @@ namespace SharedCode
 
             res.EpisodeName = split[1].Remove(0,1);
 
-            HtmlNode dateNode = HTML.getChild(locDateSum, 1);
+            HtmlNode dateNode = HTML.getChild(locDateSum.ChildNodes, "class", "visible-xs visible-sm xs-infos");
             split = dateNode.InnerText.Split(' ');
-            res.airdate = DateTime.Parse(split[0]);
+            try
+            {
+                res.airdate = DateTime.Parse(split[0]);
+            }
+            catch { }
+            
 
             res.summary = HTML.getChild(locDateSum, 2).InnerText;
 

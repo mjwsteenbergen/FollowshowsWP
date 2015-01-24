@@ -84,6 +84,7 @@
     <Compile Include="Control\Memory.cs" />
     <Compile Include="Control\Queue.cs" />
     <Compile Include="Control\Response.cs" />
+    <Compile Include="Control\Tracker.cs" />
     <Compile Include="Control\TvShow.cs" />
     <Compile Include="Control\API.cs" />
     <Compile Include="Control\Tile.cs" />

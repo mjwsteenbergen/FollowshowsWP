@@ -41,6 +41,8 @@ namespace SharedCode
         private List<Episode> watchList;
         private List<Episode> calendar;
 
+        private StorageFolder sdFolder;
+
         #region BASIC
 
         private static API api;
@@ -55,6 +57,7 @@ namespace SharedCode
 
         public HttpClient getClient()
         {
+            
             return client;
         }
 
@@ -72,6 +75,8 @@ namespace SharedCode
             //debug = true;
 
             network = new NetworkChanged();
+
+            setUp();
 
             Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += NetworkStatusChanged;
         }
@@ -97,10 +102,29 @@ namespace SharedCode
 
         #endregion
 
+        public async void setUp()
+        {
+            IReadOnlyList<StorageFolder> temp = await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync();
+            sdFolder = temp.FirstOrDefault();
+
+            
+        }
+
+        public void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            writeErrorToFile(sender, e.Exception);
+        }
+
+        public async void writeErrorToFile(object sender, Exception e)
+        {
+            StorageFolder fsFolder = await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists);
+            StorageFile fil = await fsFolder.CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
+
+            await Windows.Storage.FileIO.AppendTextAsync(fil, "\n== At" + DateTime.Now.Date + " " + sender.ToString() + " had error: == \n" + e.Message + "\n====  Full Stacktrace: ====\n" + e.StackTrace + "\n==== End ====");
+        }
+
         public async Task<bool> login()
         {
-            Frame rootFrame = Window.Current.Content as Frame;
-
             PasswordVault vault = new PasswordVault();
             PasswordCredential cred = null;
             try
@@ -281,73 +305,9 @@ namespace SharedCode
 
         }
 
-        public async Task<List<Episode>> getQueue()
-        {
-            if (!hasInternet() && queue != null)
-                return queue;
-            queue = new List<Episode>();
+        
 
-            Response resp = await (new Response("http://followshows.com/api/queue?from=0")).call();
-
-            if (resp.somethingWentWrong)
-            {
-                return queue;
-            }
-
-
-            foreach (HtmlNode episode in resp.firstNode.ChildNodes)
-            {
-                if (episode.Name != "li") { continue; }
-
-                queue.Add(Episode.getQueueEpisode(episode));
-            }
-            return queue;
-        }
-
-        public async Task<List<TvShow>> getTracker()
-        {
-            if (!hasInternet() && tracker != null)
-                return tracker;
-            tracker = new List<TvShow>();
-
-            Response resp = await (new Response("http://followshows.com/viewStyleTracker?viewStyle=expanded")).call();
-            if (resp.somethingWentWrong)
-            {
-                return tracker;
-            }
-
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(resp.page);
-
-            HtmlNode tbody = doc.GetElementbyId("tracker");
-            HtmlNode head = HTML.getChild(tbody);
-
-            if (head == null)
-            {
-                return tracker;
-            }
-
-            foreach (HtmlNode tvshow in head.ChildNodes)
-            {
-                try
-                {
-                    TvShow show = new TvShow(true);
-                    HtmlNode title = HTML.getChild(tvshow);
-                    show.Name = System.Net.WebUtility.HtmlDecode(title.InnerText);
-                    show.Image = new BitmapImage() { UriSource = new Uri(HTML.getAttribute(title.ChildNodes, "src")) };
-                    show.showUrl = HTML.getAttribute(title.ChildNodes, "href").Replace("/show/", "");
-                    show.stillToWatch = HTML.getChild(tvshow.ChildNodes, "class", "towatch").InnerHtml;
-                    string perc = HTML.getChild(tvshow.ChildNodes, "role", "progressbar").InnerText.Replace("%", "");
-                    show.percentageWatched = float.Parse(perc) / 100 * 150;
-                    tracker.Add(show);
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-            return tracker;
-        }
+        
 
         public async Task<List<Episode>> getWatchList()
         {
@@ -538,107 +498,7 @@ namespace SharedCode
 
         #region Offline Storage
 
-        public async Task store()
-        {
-            try
-            {
-                if (queue != null && queue.Count != 0)
-                {
-                    StorageFolder temp = ApplicationData.Current.LocalFolder;
-                    StorageFile fil = await temp.CreateFileAsync("queue.txt", CreationCollisionOption.ReplaceExisting);
-
-                    await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
-                }
-
-                if (calendar != null && calendar.Count != 0)
-                {
-                    StorageFolder temp = ApplicationData.Current.LocalFolder;
-                    StorageFile fil = await temp.CreateFileAsync("calendar.txt", CreationCollisionOption.ReplaceExisting);
-
-                    await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(calendar));
-                }
-
-                if (tracker != null && tracker.Count != 0)
-                {
-                    StorageFolder temp = ApplicationData.Current.LocalFolder;
-                    StorageFile fil = await temp.CreateFileAsync("tracker.txt", CreationCollisionOption.ReplaceExisting);
-
-                    await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(tracker));
-                }
-            }
-            catch (Exception)
-            { }
-        }
-
-        public async Task<List<Episode>> recoverQueue()
-        {
-            queue = new List<Episode>();
-
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-
-            IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
-            if (tempItems.Count > 0)
-            {
-                StorageFile fil = await temp.GetFileAsync("queue.txt");
-
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-
-                text.ToString();
-
-                queue = JsonConvert.DeserializeObject<List<Episode>>(text.ToString());
-
-                List<Command> comList = await getCommands();
-
-                foreach (Command com in comList)
-                {
-                    foreach (Episode ep in queue)
-                    {
-                        if (com.episode.EpisodePos == ep.EpisodePos && com.episode.ShowName == ep.ShowName)
-                        {
-                            ep.Seen = com.watched;
-                        }
-                    }
-                }
-            }
-            return queue;
-        }
-
-        public async Task<List<TvShow>> recoverTracker()
-        {
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-
-            IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
-            if (tempItems.Count > 0)
-            {
-                StorageFile fil = await temp.GetFileAsync("tracker.txt");
-
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                tracker = new List<TvShow>();
-
-                tracker = JsonConvert.DeserializeObject<List<TvShow>>(text.ToString());
-            }
-
-            return tracker;
-        }
-
-        public async Task<List<Episode>> recoverCalendar()
-        {
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-
-            IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
-            if (tempItems.Count > 0)
-            {
-                StorageFile fil = await temp.GetFileAsync("calendar.txt");
-                calendar = new List<Episode>();
-
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-
-                calendar = JsonConvert.DeserializeObject<List<Episode>>(text.ToString());
-
-            }
-
-            return calendar;
-        }
+        
 
         public async void addCommand(Command com)
         {
@@ -765,5 +625,4 @@ public class Helper
     {
         await new MessageDialog(message).ShowAsync();
     }
-
 }

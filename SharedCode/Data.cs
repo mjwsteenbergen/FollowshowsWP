@@ -17,21 +17,7 @@ public class Season
     public List<Episode> season;
 }
 
-public class ShowTvShow : TvShow
-{
-    public ShowTvShow(bool follow)
-        : base(follow)
-    { }
 
-    public string NameCaps
-    {
-        get
-        {
-            return Name.ToUpper();
-        }
-       
-    }
-}
 
 public class NetworkChanged : INotifyPropertyChanged
 {

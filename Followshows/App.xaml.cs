@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Navigation;
 using BackGroundTask;
 using SharedCode;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -32,15 +33,18 @@ namespace Followshows
     {
         private TransitionCollection transitions;
 
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
-            this.Suspending += this.OnSuspending;
+                this.InitializeComponent();
+                this.Suspending += this.OnSuspending;
         }
+
+        
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
@@ -56,9 +60,12 @@ namespace Followshows
                 //this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+            
+
             try
             {
                 await registerBackgroundTask();
+                
             }
             catch(Exception)
             { }
@@ -101,6 +108,9 @@ namespace Followshows
 
 
                 API ap = API.getAPI();
+                
+
+                Application.Current.UnhandledException += ap.App_UnhandledException;
 
                 if(ap.hasLoginCreds()) {
                     if (await ap.login())
@@ -204,9 +214,7 @@ namespace Followshows
                         throw new Exception("Failed to create initial page");
                     }
                 }
-
-
-                //Store the cookies
+                    //Store the cookies
                 await api.RegisterWithFacebook2((WebAuthenticationBrokerContinuationEventArgs)args);
 
                 //Login
@@ -219,17 +227,28 @@ namespace Followshows
                 }
 
                 Window.Current.Activate();
+
+                
             }
         }
 
+        
+
+
         public async Task registerBackgroundTask()
         {
+
             await BackgroundExecutionManager.RequestAccessAsync();
+
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                task.Value.Unregister(true);
+            }
 
             BackgroundTaskBuilder builder = new BackgroundTaskBuilder();
             builder.Name = "BackGroundTask";
 
-            SystemTrigger trig = new SystemTrigger(SystemTriggerType.InternetAvailable, false);
+            TimeTrigger trig = new TimeTrigger(120, false);
             builder.SetTrigger(trig);
             builder.AddCondition(new SystemCondition(SystemConditionType.FreeNetworkAvailable));
 

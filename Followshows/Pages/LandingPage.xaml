@@ -176,18 +176,23 @@
                     </ScrollViewer>
                     </PivotItem>
                     <PivotItem>
-                        <StackPanel HorizontalAlignment="Center" Margin="-20,0,0,0">
-                            <StackPanel Orientation="Horizontal" Tapped="buttonTapped" Name="zero">
-                                <Image Source="/Assets/StartUp/email.png" Height="110" Margin="0,0,10,0"/>
-                                <TextBlock Text="Email" VerticalAlignment="Center" Style="{StaticResource MessageDialogTitleStyle}"/>
+                        <StackPanel Margin="0,0,0,0">
+                        <Border Width="180" Margin="0,75,0,0" BorderBrush="#22B5FF" BorderThickness="3">
+                            <StackPanel Orientation="Horizontal" Tapped="buttonTapped" Name="zero" Width="180" >
+                                <!--<Image Source="/Assets/StartUp/email.png" Height="110" Margin="0,0,10,0"/> #22B5FF-->
+                                <TextBlock Text="Email" VerticalAlignment="Center" FontFamily="{StaticResource PhoneFontFamilyNormal}" FontSize="30" Foreground="White" Width="180" TextAlignment="Center" Margin="0,15"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Tapped="buttonTapped" Name="two">
-                                <Image Source="/Assets/StartUp/facebook-50.png" Height="60"  Margin="25,0,30,0" />
-                                <TextBlock Text="Facebook" VerticalAlignment="Center" Style="{StaticResource MessageDialogTitleStyle}"/>
+                        </Border>
+                        <Border Width="180" Margin="0,20,0,0" BorderBrush="#22B5FF" BorderThickness="3">
+                            <StackPanel Orientation="Horizontal" Tapped="buttonTapped" Name="two" Width="180">
+                                <!--<Image Source="/Assets/StartUp/facebook-50.png" Height="60"  Margin="25,0,30,0" />-->
+                                <TextBlock Text="Facebook" VerticalAlignment="Center" FontFamily="{StaticResource PhoneFontFamilyNormal}" FontSize="30" Foreground="White" Width="180" TextAlignment="Center" Margin="0,15"/>
                             </StackPanel>
-                        </StackPanel>
+                         </Border>
+                         </StackPanel>
+                   
 
-                    </PivotItem>
+                </PivotItem>
                     <PivotItem>
                         <StackPanel>
                             <TextBlock Text="Trying to contact facebook" Style="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" Margin="0,50,0,0"/>

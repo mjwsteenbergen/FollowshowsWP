@@ -40,7 +40,6 @@ namespace Followshows
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         private API api;
         private List<BitmapImage> list;
-        private int index;
 
         public LandingPage()
         {
