@@ -16,10 +16,6 @@ namespace SharedCode
 {
     public class Tracker
     {
-        public event TrackerComplete trackEvent;
-        public delegate void TrackerComplete(Tracker t, EventArgs e);
-        private int completed = 0;
-
         public List<TvShow> tracker = new List<TvShow>();
         API api;
 
@@ -63,7 +59,6 @@ namespace SharedCode
                     {
                         BitmapImage bimp = new BitmapImage() { UriSource = new Uri(HTML.getAttribute(title.ChildNodes, "src")) };
                         bimp.CreateOptions = BitmapCreateOptions.None;
-                        bimp.ImageOpened += bimp_ImageOpened;
                         show.Image = bimp;
                     }
                     catch { }
@@ -80,16 +75,5 @@ namespace SharedCode
             }
             return tracker;
         }
-
-        public void bimp_ImageOpened(object sender, RoutedEventArgs e)
-        {
-            completed++;
-            if (completed == tracker.Count -1 )
-            {
-                trackEvent(this, null);
-            }
-        }
-
-
     }
 }

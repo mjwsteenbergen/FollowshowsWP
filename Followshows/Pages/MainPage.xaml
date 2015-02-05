@@ -29,7 +29,7 @@
                         </Grid.RowDefinitions>
                         <TextBlock Text="Queue" Style="{ThemeResource HeaderTextBlockStyle}" Grid.Row="0"/>
                         <ScrollViewer Grid.Row="1" ViewChanging="scrollViewChanging">
-                            <GridView Name="queue"  Margin="0,20,0,0" ItemsSource="{Binding queue}" Loaded="Register" ManipulationStarted="queueScrolling">
+                            <GridView Name="queue"  Margin="0,20,0,0" ItemsSource="{Binding queue}" Loaded="Register">
                                 <GridView.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="0,0,0,20" DoubleTapped="Item_Tapped" Width="361.66665649414" Height="209.16665649414" Background="{ThemeResource PhoneAccentBrush}">
@@ -47,7 +47,7 @@
                                             </Grid>
                                             <Grid  Visibility="{Binding redo}">
                                                 <Image Source="ms-appx:///Assets/Buttons/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
-                                                <TextBlock Text="NOT WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,0,0,0"/>
+                                                <TextBlock Text="WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="18,0,0,0"/>
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>
@@ -130,6 +130,8 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
+                        <Image Name="Imageloader" Loaded="Register" Visibility="Collapsed"/>
+                        
                     </Grid>
                 </DataTemplate>
             </HubSection>

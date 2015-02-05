@@ -48,6 +48,7 @@ namespace BackGroundTask
                     Queue q = new Queue();
                     ObservableCollection<Episode> ep = q.getQueue();
                     await q.downloadQueue();
+                    List<Episode> qFromStorage = await Memory.recoverQueue();
                     foreach (Episode epi in ep)
                     {
                         if (epi.New)
@@ -60,15 +61,12 @@ namespace BackGroundTask
                         if (epi.EpisodeName == previous || previous == "")
                             break;
                         tileCount++;
+                        qFromStorage.Insert(0, epi);
                     }
 
                     await Windows.Storage.FileIO.WriteTextAsync(fil, ep[0].EpisodeName);
 
-                    Tracker track = new Tracker();
-
-                    track.trackEvent += Memory.StoreTracker;
-
-                    Memory.store(q);
+                    Memory.store(qFromStorage);
                     
                     
                 }

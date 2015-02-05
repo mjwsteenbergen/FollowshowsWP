@@ -42,6 +42,8 @@ namespace SharedCode
             return Name.ToString();
         }
 
+        //public string NameToCaps
+
         public int numberOfSeasons { get; set; }
 
         public async Task expand()

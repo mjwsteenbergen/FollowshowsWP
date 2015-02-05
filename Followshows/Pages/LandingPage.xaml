@@ -90,7 +90,7 @@
         </Grid>
         <StackPanel Grid.Column="1">
             <TextBlock Style="{StaticResource HeaderTextBlockStyle}" TextAlignment="Center" Margin="0,80,0,0" FontWeight="ExtraBold" FontSize="40"><Run Foreground="#22B5FF">follow</Run>shows</TextBlock>
-                <Pivot Margin="0,30,0,0" SelectedIndex="1" x:Name="Pivo" ManipulationCompleted="PivotChanged" IsLocked="True" SelectionChanged="selChange">
+                <Pivot Margin="0,30,0,0" SelectedIndex="1" x:Name="Pivo" ManipulationCompleted="PivotChanged" IsTabStop="True" IsTapEnabled="False" SelectionChanged="selChange">
                     <PivotItem >
                         <!--Background="#22B5FF"-->
                     <ScrollViewer Height="400">
