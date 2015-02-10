@@ -149,7 +149,7 @@ namespace Followshows
                 return;
             }
 
-            if (api.hasInternet())
+            if (await api.hasInternet())
             {
                     LoadLists();
             }
@@ -338,7 +338,7 @@ namespace Followshows
 
                 
 
-                if (api.hasInternet())
+                if (await api.hasInternet())
                 {
                     
                     await ep.markAsWatched();
@@ -371,7 +371,7 @@ namespace Followshows
                 ep.OnPropertyChanged("redo");
                 ep.OnPropertyChanged("Opacity");
 
-                if (api.hasInternet())
+                if (await api.hasInternet())
                 {
                     await ep.markNotAsWatched();
                 }
@@ -438,9 +438,9 @@ namespace Followshows
             }
         }
 
-        public void refresh(object sender, RoutedEventArgs e)
+        public async void refresh(object sender, RoutedEventArgs e)
         {
-            if (!api.hasInternet())
+            if (! await api.hasInternet())
             {
                 return;
             }
@@ -498,9 +498,9 @@ namespace Followshows
 
         }
 
-        private void trackerItem_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void trackerItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (!api.hasInternet())
+            if (! await api.hasInternet())
             {
                 Helper.message("This feature is currently unavailable");
                 return;
@@ -543,7 +543,7 @@ namespace Followshows
             ScrollViewer scroll = sender as ScrollViewer;
             if (scroll.ExtentHeight - e.FinalView.VerticalOffset < 1500)
             {
-                if(api.hasInternet())
+                if(await api.hasInternet())
                 {
                     await q.downloadMoreEpisodes();
                 }

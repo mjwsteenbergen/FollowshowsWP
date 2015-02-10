@@ -155,19 +155,25 @@ namespace SharedCode
 
         }
 
-        public bool hasInternet()
+        public async Task<Boolean> hasInternet()
         {
-            if (gotInternet)
-                return true;
-            else
+            var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+            if (connectionP == null)
             {
-                var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
-                if (connectionP == null)
-                    return false;
+                gotInternet = false;
+                return false;
+            }    
 
-                this.gotInternet = true;
+            if(gotInternet == true)
+            {
+                return true;
             }
-            return true;
+
+            Response res =  await (new Response("google.com")).call();
+
+            gotInternet = true;
+
+            return !res.noInternet;
         }
 
         public async Task<bool> RegisterWithEmail(string firstname, string lastname, string email, string password, string timezone)

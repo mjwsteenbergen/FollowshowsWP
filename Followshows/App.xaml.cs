@@ -122,8 +122,7 @@ namespace Followshows
                     }
                     else
                     {
-                        var connectionP = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
-                        if (connectionP == null)
+                        if (await ap.hasInternet())
                         {
                             Helper.message("You don't have internet. Some features won't be enabled");
 

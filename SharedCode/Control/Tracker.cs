@@ -26,7 +26,7 @@ namespace SharedCode
 
         public async Task<List<TvShow>> getTracker()
         {
-            if (!api.hasInternet())
+            if (! await api.hasInternet())
                 return tracker;
             tracker = new List<TvShow>();
 

@@ -36,7 +36,7 @@ namespace SharedCode
 
         public async Task downloadQueue()
         {
-            if (!api.hasInternet() && items != null)
+            if (! await api.hasInternet() && items != null)
                 return;
             while(items.Count != 0)
             {

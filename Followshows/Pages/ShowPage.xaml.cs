@@ -377,7 +377,7 @@ namespace Followshows
                 ep.OnPropertyChanged("redo");
                 ep.OnPropertyChanged("Opacity");
 
-                if (api.hasInternet())
+                if (await api.hasInternet())
                 {
                     await ep.markNotAsWatched();
                 }
@@ -400,7 +400,7 @@ namespace Followshows
 
         async void board_Completed(object sender, object e)
         {
-            if (api.hasInternet())
+            if (await api.hasInternet())
             {
                 await ep.markAsWatched();
             }
