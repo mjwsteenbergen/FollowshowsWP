@@ -11,7 +11,7 @@ namespace SharedCode
     public class Queue
     {
 
-        ObservableCollection<Episode> items = new ObservableCollection<Episode>();
+        private ObservableCollection<Episode> items = new ObservableCollection<Episode>();
         API api;
         int count = 0;
 
@@ -89,6 +89,10 @@ namespace SharedCode
             downloading = false;
         }
         
+        public void setQueue(ObservableCollection<Episode> newQ)
+        {
+            items = newQ;
+        }
 
     }
 }

@@ -60,31 +60,6 @@ namespace Testing
     [TestClass]
     public class MainMenu
     {
-        public Task<API> getApi()
-        {
-            //TODO create fake followshows account to test on
-            return new API();
-        }
 
-        [TestMethod]
-        public async Task testQueue()
-        {
-            API api = new API();
-            await api.getQueue();
-        }
-
-        [TestMethod]
-        public async Task testCalendar()
-        {
-            API api = new API();
-            await api.getCalendar();
-        }
-
-        [TestMethod]
-        public async Task testTracker()
-        {
-            API api = await getApi();
-            await api.getTracker();
-        }
     }
 }

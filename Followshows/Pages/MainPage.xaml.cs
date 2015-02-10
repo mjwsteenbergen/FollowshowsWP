@@ -156,7 +156,7 @@ namespace Followshows
             else
             {
                 //Get shows from storage
-                List<Episode> queueList    = await Memory.recoverQueue();
+                ObservableCollection<Episode> queueList = await Memory.recoverQueue();
                 List<TvShow> trackerList   = await Memory.recoverTracker();
                 List<Episode> calendarList = await Memory.recoverCalendar();
 

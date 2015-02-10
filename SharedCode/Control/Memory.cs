@@ -51,9 +51,9 @@ namespace SharedCode
             }
         }
 
-        public static async Task<List<Episode>> recoverQueue()
+        public static async Task<ObservableCollection<Episode>> recoverQueue()
         {
-            List<Episode> queue = new List<Episode>();
+            ObservableCollection<Episode> queue = new ObservableCollection<Episode>();
 
             StorageFolder temp = ApplicationData.Current.LocalFolder;
 
@@ -66,7 +66,7 @@ namespace SharedCode
 
                 text.ToString();
 
-                queue = JsonConvert.DeserializeObject<List<Episode>>(text.ToString());
+                queue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(text.ToString());
 
                 List<Command> comList = await (API.getAPI()).getCommands();
 
