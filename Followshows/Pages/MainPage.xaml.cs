@@ -48,6 +48,7 @@ namespace Followshows
         private GridView queue;
         private ListView tracker;
         private GridView cale;
+        private Image imageLoader;
 
         private Queue q;
 
@@ -138,35 +139,45 @@ namespace Followshows
             TvShow show = new TvShow(false);
             api.passed = show;
 
-            if (api.hasInternet())
+            while (queue == null)
+            {
+                await Task.Delay(1);
+            }
+            
+            if (queue.ItemsSource != null)
+            {
+                return;
+            }
+
+            if (await api.hasInternet())
             {
                     LoadLists();
             }
             else
             {
+                //Get shows from storage
+                List<Episode> queueList    = await Memory.recoverQueue();
+                List<TvShow> trackerList   = await Memory.recoverTracker();
+                List<Episode> calendarList = await Memory.recoverCalendar();
 
-
-                List<Episode> list = await Memory.recoverQueue();
-                List<TvShow> listTV = await Memory.recoverTracker();
-                List<Episode> cal = await Memory.recoverCalendar();
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    if (list.Count > 0)
+                    if (queueList.Count > 0)
                     {
-                        queue.ItemsSource = list;
+                        queue.ItemsSource = queueList;
                     }
 
-                    if (listTV.Count > 0)
+                    if (trackerList.Count > 0)
                     {
-                        tracker.ItemsSource = listTV;
+                        tracker.ItemsSource = trackerList;
                     }
 
-                    if (cal.Count > 0)
+                    if (calendarList.Count > 0)
                     {
-                        if (cal != null)
+                        if (calendarList != null)
                         {
                             var result =
-                                from ep in cal
+                                from ep in calendarList
                                 group ep by ep.airdate
                                     into grp
                                     orderby grp.Key
@@ -174,9 +185,6 @@ namespace Followshows
                             calendar.Source = result;
                         }
                     }
-
-
-                    //q = list;
                 });
 
 
@@ -204,11 +212,6 @@ namespace Followshows
             //Load Queue
             q = new Queue();
 
-            while (queue == null)
-            {
-                await Task.Delay(1);
-            }
-
             queue.ItemsSource = q.getQueue();
 
 
@@ -222,9 +225,9 @@ namespace Followshows
                 var result =
                     from ep in cal
                     group ep by ep.airdate
-                        into grp
-                        orderby grp.Key
-                        select grp;
+                    into grp
+                    orderby grp.Key
+                    select grp;
                 calendar.Source = result;
             }
 
@@ -233,27 +236,23 @@ namespace Followshows
 
             //Load Tracker
             Tracker trackerO = new Tracker();
-            List<TvShow> track = await trackerO.getTracker();
-            trackerO.trackEvent += Memory.StoreTracker;
-            if (track != null)
+            List<TvShow> trackerList = await trackerO.getTracker();
+            if (trackerList != null)
             {
-                tracker.ItemsSource = track;
+                tracker.ItemsSource = trackerList;
             }
 
-            
+            foreach(TvShow show in trackerList)
+            {
+                imageLoader.Source = show.Image;
+            }
 
             bar.ProgressIndicator.Text = "Done";
             await bar.HideAsync();
 
+            Memory.store(trackerO);
             Memory.store(cal);
-            Memory.store(q);
-
-            //await q.downloadMoreEpisodes();
-
-            //queue.ItemsSource = null;
-            //queue.ItemsSource = q.getQueue();
-
-            
+            Memory.store(q);            
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -333,28 +332,15 @@ namespace Followshows
                 board.Duration = new Duration(TimeSpan.FromSeconds(1));
                 board.Children.Add(ani);
 
+                ep.Seen = true;
+
                 board.Begin();
 
-                //Update the last new queue item
+                
 
-                StorageFolder temp = ApplicationData.Current.LocalFolder;
-                StorageFile fil = null;
-                foreach (StorageFile fil2 in await temp.GetFilesAsync())
+                if (await api.hasInternet())
                 {
-                    string name = fil2.DisplayName;
-                    if (name == "lastQueueEpisode")
-                    {
-                        fil = fil2;
-                    }
-                }
-                if (fil == null)
-                {
-                    fil = await temp.CreateFileAsync("lastQueueEpisode.txt", CreationCollisionOption.ReplaceExisting);
-                }
-
-                if (api.hasInternet())
-                {
-                    await Windows.Storage.FileIO.WriteTextAsync(fil, (queue.ItemsSource as ObservableCollection<Episode>)[0].EpisodeName);
+                    
                     await ep.markAsWatched();
                 }
                 else
@@ -362,12 +348,7 @@ namespace Followshows
                     api.addCommand(new Command() { episode = ep, watched = true });
                 }
 
-
-                ep.Seen = true;
-
                 ep.OnPropertyChanged("redo");
-  
-
             }
             else
             {
@@ -390,7 +371,7 @@ namespace Followshows
                 ep.OnPropertyChanged("redo");
                 ep.OnPropertyChanged("Opacity");
 
-                if (api.hasInternet())
+                if (await api.hasInternet())
                 {
                     await ep.markNotAsWatched();
                 }
@@ -406,8 +387,23 @@ namespace Followshows
 
             }
 
+            //Update the last new queue item
 
-
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            StorageFile fil = null;
+            foreach (StorageFile fil2 in await temp.GetFilesAsync())
+            {
+                string name = fil2.DisplayName;
+                if (name == "lastQueueEpisode")
+                {
+                    fil = fil2;
+                }
+            }
+            if (fil == null)
+            {
+                fil = await temp.CreateFileAsync("lastQueueEpisode.txt", CreationCollisionOption.ReplaceExisting);
+            }
+            await Windows.Storage.FileIO.WriteTextAsync(fil, (queue.ItemsSource as ObservableCollection<Episode>)[0].EpisodeName);
         }
 
         void board_Completed(object sender, object e)
@@ -442,9 +438,9 @@ namespace Followshows
             }
         }
 
-        public void refresh(object sender, RoutedEventArgs e)
+        public async void refresh(object sender, RoutedEventArgs e)
         {
-            if (!api.hasInternet())
+            if (! await api.hasInternet())
             {
                 return;
             }
@@ -502,9 +498,9 @@ namespace Followshows
 
         }
 
-        private void trackerItem_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void trackerItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (!api.hasInternet())
+            if (! await api.hasInternet())
             {
                 Helper.message("This feature is currently unavailable");
                 return;
@@ -523,7 +519,11 @@ namespace Followshows
         private void Register(object sender, RoutedEventArgs e)
         {
             Control c = sender as Control;
-
+            if(c == null)
+            {
+                imageLoader = sender as Image;
+                return;
+            }
             switch (c.Name)
             {
                 case "queue":
@@ -538,28 +538,17 @@ namespace Followshows
             }
         }
 
-        private void queueScrolling(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            double d = e.Delta.Translation.X;
-        }
-
-        private void queueScrolling(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-
-        }
-
         private async void scrollViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
             ScrollViewer scroll = sender as ScrollViewer;
-            double d = scroll.ExtentHeight;
-            double efgh = e.FinalView.VerticalOffset;
             if (scroll.ExtentHeight - e.FinalView.VerticalOffset < 1500)
             {
-                await q.downloadMoreEpisodes();
+                if(await api.hasInternet())
+                {
+                    await q.downloadMoreEpisodes();
+                }
+                
             }
-
-
-
         }
         
     }

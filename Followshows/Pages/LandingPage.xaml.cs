@@ -24,6 +24,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using System.ComponentModel;
+using Windows.Phone.UI.Input;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -84,7 +86,17 @@ namespace Followshows
             api = API.getAPI();
 
             startTimer();
+            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
 
+        }
+
+        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            if (Pivo.SelectedIndex != 1)
+            {
+                Pivo.SelectedIndex = 1;
+                e.Handled = true;
+            }   
         }
 
         /// <summary>
@@ -138,9 +150,17 @@ namespace Followshows
                 TryLoginOrRegister();
         }
 
-        private void LoginAndRegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
+        private void LoginButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            TryLoginOrRegister();
+            if (Register.Visibility == Windows.UI.Xaml.Visibility.Visible)
+            {
+                Register.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+            else
+            {
+                TryLoginOrRegister();
+            }
+           
         }
 
         private async void RegisterButton_Tapped(object sender, TappedRoutedEventArgs e)
@@ -235,22 +255,6 @@ namespace Followshows
             
         }
 
-
-        #region focus
-
-        private void gotFocus(object sender, RoutedEventArgs e)
-        {
-            (sender as Control).Foreground = new SolidColorBrush(Colors.Black);
-        }
-
-        private void lostFocus(object sender, RoutedEventArgs e)
-        {  
-            (sender as Control).Foreground = new SolidColorBrush(Colors.White);
-            (sender as Control).BorderBrush = new SolidColorBrush(Colors.White);
-        }
-
-        #endregion
-
         private void buttonTapped(object sender, TappedRoutedEventArgs e)
         {
             Pivo.SelectedIndex = (sender as StackPanel).Name == "zero" ? 0 : 2;
@@ -264,7 +268,11 @@ namespace Followshows
                     "http://img2.wikia.nocookie.net/__cb20141026203433/agentsofshield/images/1/17/Agents_of_S.H.I.E.L.D._Season_1_Poster.jpg",
                     "http://fc05.deviantart.net/fs70/i/2010/180/5/1/Doctor_Who_Season_5_Poster_by_JKop360.jpg",
                     "http://www.xnds.de/wp-content/uploads/2014/06/The-Blacklist-poster.jpg",
-                    "http://www.moviesonline.ca/wp-content/uploads/2010/09/TWD_1-SHEET_WEB.jpg"
+                    "http://www.moviesonline.ca/wp-content/uploads/2010/09/TWD_1-SHEET_WEB.jpg",
+                    "http://ia.media-imdb.com/images/M/MV5BMTQ5MzY5ODE5M15BMl5BanBnXkFtZTgwNzU4OTM1MjE@._V1_SX214_AL_.jpg", //Flash
+                    "http://ia.media-imdb.com/images/M/MV5BMTU5MTczNTkxNl5BMl5BanBnXkFtZTgwNTM5NDc1MTE@._V1_SX214_AL_.jpg", //The 100
+                    "http://ia.media-imdb.com/images/M/MV5BMjA1ODMzNDM5Ml5BMl5BanBnXkFtZTgwNDU0NjQ5MTE@._V1_SY317_CR0,0,214,317_AL_.jpg", //Orange is the new Black
+                    "http://ia.media-imdb.com/images/M/MV5BMjMzNTU3MDY3OF5BMl5BanBnXkFtZTgwMjY1Nzg3MTE@._V1_SY317_CR104,0,214,317_AL_.jpg" //Gotham
                         };
 
             list = new List<BitmapImage>();
@@ -281,7 +289,8 @@ namespace Followshows
             //bak.ItemsSource = list;
             
             while(true){
-                await Task.Delay(5000);
+
+                await Task.Delay(20);
 
                 if (list.Count < wallpaper.Count)
                 {
@@ -296,12 +305,36 @@ namespace Followshows
                     continue;
                 }
 
-                //bak.ScrollIntoView(bak.Items[new Random().Next(0, 3)],ScrollIntoViewAlignment.Leading);
-                Background.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                Background.Source = list[new Random().Next(0, wallpaper.Count)];
-                Background.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                List<BitmapImage> shuffledList = new List<BitmapImage>();
+                foreach (BitmapImage im in list)
+                {
+                    int i = (int)((new Random().NextDouble() * shuffledList.Count));
+                    shuffledList.Insert(i, im);
+                }
 
+                Background1.Source = shuffledList[0];
+                //Background1.Margin = new Thickness(0, 0, 0, 0);
+                SB.Begin();
+                await Task.Delay(2500);
+                if (shuffledList.Count > 1)
+                {
+                    Background2.Source = shuffledList[1];
+                }
+                SB2.Begin();
+                await Task.Delay(2500);
+                if (shuffledList.Count > 2)
+                {
+                    Background3.Source = shuffledList[2];
+                }
+                SB3.Begin();
+                await Task.Delay(2500);
+                if (shuffledList.Count > 3)
+                {
+                    Background4.Source = shuffledList[3];
+                }
+                SB4.Begin();
 
+                await Task.Delay(2480);
                 
 
                 //HttpClient http = new HttpClient();
@@ -326,9 +359,37 @@ namespace Followshows
         void image_ImageOpened(object sender, RoutedEventArgs e)
         {
             list.Add(sender as BitmapImage);
+            if(Background1.Source == null)
+            {
+                Background1.Source = sender as BitmapImage;
+                return;
+            }
+
+            if (Background2.Source == null)
+            {
+                Background2.Source = sender as BitmapImage;
+                return;
+            }
+
+            if (Background3.Source == null)
+            {
+                Background3.Source = sender as BitmapImage;
+                return;
+            }
+
+            if (Background4.Source == null)
+            {
+                Background4.Source = sender as BitmapImage;
+                return;
+            }
         }
 
         private void PivotChanged(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            
+        }
+
+        private void selChange(object sender, SelectionChangedEventArgs e)
         {
             Pivot piv = sender as Pivot;
             if (piv.SelectedIndex == 2)

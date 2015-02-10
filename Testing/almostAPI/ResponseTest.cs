@@ -60,7 +60,7 @@ namespace Testing
     [TestClass]
     public class MainMenu
     {
-        public async Task<API> getApi()
+        public Task<API> getApi()
         {
             //TODO create fake followshows account to test on
             return new API();

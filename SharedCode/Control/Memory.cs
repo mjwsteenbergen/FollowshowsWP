@@ -11,10 +11,9 @@ namespace SharedCode
 {
     public class Memory
     {
-
-        public static async void StoreTracker(Tracker track, EventArgs e)
+        public static async void store(Tracker originalTracker)
         {
-            List<TvShow> tracker = track.tracker;
+            List<TvShow> tracker = originalTracker.tracker;
             if (tracker != null && tracker.Count != 0)
             {
                 StorageFolder temp = ApplicationData.Current.LocalFolder;

@@ -158,7 +158,7 @@ namespace Followshows
                     view.ItemsSource = episodelist;
                     item.Content = view;
                     item.ApplyTemplate();
-                    Pivot.Items.Add(item);
+                    pivo.Items.Add(item);
                 }
             }
             
@@ -227,12 +227,12 @@ namespace Followshows
             ScrollViewer view = sender as ScrollViewer;
             if (e.FinalView.VerticalOffset > 20)
             {
-                view.Padding = new Thickness(0,0,0,0.5);
+                //view.Padding = new Thickness(0,0,0,0.5);
                 BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             else
             {
-                view.Padding = new Thickness(0, 0, 0, 0);
+                //view.Padding = new Thickness(0, 0, 0, 0);
                 BottomAppBar.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
         }
@@ -247,7 +247,7 @@ namespace Followshows
             //if ok pressed
             if (res.Label == "Ok")
             {
-                PivotItem pivoi = Pivot.Items[currentPivot] as PivotItem;
+                PivotItem pivoi = pivo.Items[currentPivot] as PivotItem;
                 string seasonnr = pivoi.Header.ToString().Replace("Season ", "");
 
                 foreach (Episode epi in season[Int32.Parse(seasonnr)])
@@ -377,7 +377,7 @@ namespace Followshows
                 ep.OnPropertyChanged("redo");
                 ep.OnPropertyChanged("Opacity");
 
-                if (api.hasInternet())
+                if (await api.hasInternet())
                 {
                     await ep.markNotAsWatched();
                 }
@@ -400,7 +400,7 @@ namespace Followshows
 
         async void board_Completed(object sender, object e)
         {
-            if (api.hasInternet())
+            if (await api.hasInternet())
             {
                 await ep.markAsWatched();
             }
@@ -434,6 +434,14 @@ namespace Followshows
                 //followColor.Fill = ((SolidColorBrush)App.Current.Resources["PhoneAccentBrush"]);
             }
             setFollowingAppButton();
+        }
+
+        private void ButtonRightPressed(object sender, TappedRoutedEventArgs e)
+        {
+            if (pivo != null && pivo.Items.Count > 0)
+            {
+                pivo.SelectedIndex = 1;
+            }
         }
 
         
