@@ -208,14 +208,12 @@ namespace Followshows
 
             //Execute commands before loading
             await api.executeCommands();
-
+            
             //Load Queue
             q = new Queue();
-
             queue.ItemsSource = q.getQueue();
-
-
-            await q.downloadQueue();
+            await q.download();
+            
 
             bar.ProgressIndicator.Text = "Getting Calendar";
 
@@ -236,13 +234,10 @@ namespace Followshows
 
             //Load Tracker
             Tracker trackerO = new Tracker();
-            List<TvShow> trackerList = await trackerO.getTracker();
-            if (trackerList != null)
-            {
-                tracker.ItemsSource = trackerList;
-            }
+            tracker.ItemsSource = trackerO.getTracker();
+            await trackerO.load();
 
-            foreach(TvShow show in trackerList)
+            foreach (TvShow show in trackerO.getTracker())
             {
                 imageLoader.Source = show.Image;
             }
@@ -250,9 +245,9 @@ namespace Followshows
             bar.ProgressIndicator.Text = "Done";
             await bar.HideAsync();
 
-            Memory.store(trackerO);
-            Memory.store(cal);
-            Memory.store(q);            
+            SharedCode.Memory.store(q);
+            SharedCode.Memory.store(trackerO);
+            SharedCode.Memory.store(cal);
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -312,6 +307,16 @@ namespace Followshows
             item = sender as Grid;
             ep = item.DataContext as Episode;
 
+            if (await api.hasInternet())
+            {
+
+                await ep.markAsWatched();
+            }
+            else
+            {
+                api.addCommand(new Command() { episode = ep, watched = true });
+            }
+
             Image ima = item.FindName("ima") as Image;
             if (ima.Opacity > 0.5)
             {
@@ -338,15 +343,7 @@ namespace Followshows
 
                 
 
-                if (await api.hasInternet())
-                {
-                    
-                    await ep.markAsWatched();
-                }
-                else
-                {
-                    api.addCommand(new Command() { episode = ep, watched = true });
-                }
+                
 
                 ep.OnPropertyChanged("redo");
             }

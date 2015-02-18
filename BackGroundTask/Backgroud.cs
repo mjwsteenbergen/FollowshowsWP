@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
-using Windows.Web.Http;
 using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using SharedCode;
 using System.Collections.ObjectModel;
+using Windows.UI.Core;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Collections;
+using System.IO;
 
 namespace BackGroundTask
 {
@@ -16,7 +19,8 @@ namespace BackGroundTask
     {
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
-            BackgroundTaskDeferral def = taskInstance.GetDeferral();
+            var def = taskInstance.GetDeferral();
+            await Memory.setSdFolder();
             int tileCount = 0;
 
             API api = API.getAPI();
@@ -24,68 +28,50 @@ namespace BackGroundTask
             {
                 if (await api.login())
                 {
-
+                    
                     StorageFolder temp = ApplicationData.Current.LocalFolder;
-                    StorageFile fil = null;
-                    foreach(StorageFile fil2 in await temp.GetFilesAsync())
-                    {
-                        string name = fil2.DisplayName;
-                        if(name == "lastQueueEpisode")
-                        {
-                            fil = fil2;
-                        }
-                    }
-                    if (fil == null)
-                    {
-                        fil = await temp.CreateFileAsync("lastQueueEpisode.txt", CreationCollisionOption.ReplaceExisting);
-                    }
-
+                    StorageFile fil = await temp.CreateFileAsync("lastQueueEpisode",CreationCollisionOption.OpenIfExists);
 
                     string previous = await Windows.Storage.FileIO.ReadTextAsync(fil);
 
-
-
                     Queue q = new Queue();
                     ObservableCollection<Episode> ep = q.getQueue();
-                    await q.downloadQueue();
-                    ObservableCollection<Episode> qFromStorage = await Memory.recoverQueue();
+                    ObservableCollection<Episode> newEpisodes = new ObservableCollection<Episode>();
+                    await q.download();
+                    //foreach (Episode epi in ep)
+                    //{
+                        //if (epi.New)
+                        //{
+                            //tileCount++;
+                            //newEpisodes.Add(epi);
+                        //}
+
+                    //}
+
+                    
+
                     foreach (Episode epi in ep)
                     {
-                        if (epi.New)
-                        {
-                            tileCount++;
-                        }
-                    }
-
-                    Tile.add(tileCount);
-
-                    foreach (Episode epi in ep)
-                    {
-                        if (epi.EpisodeName == previous || previous == "")
+                        if (epi.EpisodeName == previous)
                             break;
                         tileCount++;
-                        qFromStorage.Insert(0, epi);
+                        newEpisodes.Add(epi);
+                        await Memory.logToFile(this, "I found a new episode " + epi.EpisodeName + " replaces " + previous);
                     }
 
-                    q.setQueue(qFromStorage);
 
                     await Windows.Storage.FileIO.WriteTextAsync(fil, ep[0].EpisodeName);
-
-                    Memory.store(q);
-                    
-                    
+                    Memory.storeOffline(newEpisodes);
                 }
-                //bool b = await api.login();
             }
             catch(Exception e)
             {
-                api.writeErrorToFile(this, e);
-                return;
+                Memory.writeErrorToFile(this, e).RunSynchronously();
             }
 
-            
 
-            
+
+            Tile.add(tileCount);
 
             def.Complete();
         }

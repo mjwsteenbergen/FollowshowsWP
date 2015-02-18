@@ -41,7 +41,7 @@ namespace SharedCode
         private List<Episode> watchList;
         private List<Episode> calendar;
 
-        private StorageFolder sdFolder;
+
 
         #region BASIC
 
@@ -76,8 +76,6 @@ namespace SharedCode
 
             network = new NetworkChanged();
 
-            setUp();
-
             Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += NetworkStatusChanged;
         }
 
@@ -102,26 +100,9 @@ namespace SharedCode
 
         #endregion
 
-        public async void setUp()
-        {
-            IReadOnlyList<StorageFolder> temp = await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync();
-            sdFolder = temp.FirstOrDefault();
+        
 
-            
-        }
-
-        public void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            writeErrorToFile(sender, e.Exception);
-        }
-
-        public async void writeErrorToFile(object sender, Exception e)
-        {
-            StorageFolder fsFolder = await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists);
-            StorageFile fil = await fsFolder.CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
-
-            await Windows.Storage.FileIO.AppendTextAsync(fil, "\n== At" + DateTime.Now.Date + " " + sender.ToString() + " had error: == \n" + e.Message + "\n====  Full Stacktrace: ====\n" + e.StackTrace + "\n==== End ====");
-        }
+        
 
         public async Task<bool> login()
         {
@@ -576,8 +557,10 @@ namespace SharedCode
                     StorageFile fil = await temp.GetFileAsync("commands");
                     await fil.DeleteAsync();
                 }
-                catch (Exception)
-                { }
+                catch (Exception e)
+                {
+                    Memory.writeErrorToFile(this, e);
+                }
             }
 
         }

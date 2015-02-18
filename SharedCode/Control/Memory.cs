@@ -13,7 +13,7 @@ namespace SharedCode
     {
         public static async void store(Tracker originalTracker)
         {
-            List<TvShow> tracker = originalTracker.tracker;
+            ObservableCollection<TvShow> tracker = originalTracker.tracker;
             if (tracker != null && tracker.Count != 0)
             {
                 StorageFolder temp = ApplicationData.Current.LocalFolder;
@@ -36,8 +36,28 @@ namespace SharedCode
                     await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
                 }
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Memory.writeErrorToFile("Memory.Store", e).RunSynchronously();
+            }
+        }
+
+        public static async void storeOffline(ObservableCollection<Episode> queue)
+        {
+            try
+            {
+                if (queue != null && queue.Count != 0)
+                {
+                    StorageFolder temp = ApplicationData.Current.LocalFolder;
+                    StorageFile fil = await temp.CreateFileAsync("queueOffline.txt", CreationCollisionOption.ReplaceExisting);
+
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
+                }
+            }
+            catch (Exception e)
+            {
+                Memory.writeErrorToFile("Memory.Queue.StoreOffline", e).RunSynchronously();
+            }
         }
 
         public static async void store(List<Episode> calendar)
@@ -55,18 +75,38 @@ namespace SharedCode
         {
             ObservableCollection<Episode> queue = new ObservableCollection<Episode>();
 
+
             StorageFolder temp = ApplicationData.Current.LocalFolder;
 
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
             {
-                StorageFile fil = await temp.GetFileAsync("queue.txt");
+                StorageFile fil              =  await temp.CreateFileAsync("queue.txt",        CreationCollisionOption.OpenIfExists);
+                StorageFile offlineQueueFile =  await temp.CreateFileAsync("queueOffline.txt", CreationCollisionOption.OpenIfExists);
 
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                string text        = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                string offlineQuee = await Windows.Storage.FileIO.ReadTextAsync(offlineQueueFile);
 
-                text.ToString();
+                ObservableCollection<Episode> OriginalQueue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(text.ToString());
+                ObservableCollection<Episode> offlineQueue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(offlineQuee.ToString());
 
-                queue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(text.ToString());
+                if (offlineQueue != null)
+                {
+                    queue = offlineQueue;
+                    foreach (Episode e in OriginalQueue)
+                    {
+                        queue.Add(e);
+                    }
+                }
+                else
+                {
+                    if (OriginalQueue != null)
+                    {
+                        queue = OriginalQueue;
+                    }
+                }
+
+                
 
                 List<Command> comList = await (API.getAPI()).getCommands();
 
@@ -93,7 +133,7 @@ namespace SharedCode
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
             {
-                StorageFile fil = await temp.GetFileAsync("tracker.txt");
+                StorageFile fil = await temp.CreateFileAsync("tracker.txt",CreationCollisionOption.OpenIfExists);
 
                 string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
                 tracker = new List<TvShow>();
@@ -113,7 +153,7 @@ namespace SharedCode
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
             {
-                StorageFile fil = await temp.GetFileAsync("calendar.txt");
+                StorageFile fil = await temp.CreateFileAsync("calendar.txt",CreationCollisionOption.OpenIfExists);
                 calendar = new List<Episode>();
 
                 string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
@@ -123,6 +163,46 @@ namespace SharedCode
             }
 
             return calendar;
+        }
+
+
+        public static StorageFolder sdFolder;
+        public static StorageFile fil;
+
+
+        public static async Task setSdFolder()
+        {
+            sdFolder = (await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync() as IReadOnlyList<StorageFolder>).FirstOrDefault();
+            fil = await (await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists)).CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
+        }
+
+        public static async Task writeErrorToFile(object sender, Exception e)
+        {
+            string s = "Type: " + e.GetType().Name + "\n"
+                    + "Message: " + e.Message + "\n" 
+                    + "====  Full Stacktrace: ====\n" 
+                    + e.StackTrace + "\n" 
+                    + "==== End ====";
+            await logToFile(sender, s);
+            
+        }
+
+        public static async Task logToFile(object sender, String message)
+        {
+            try {
+                await Windows.Storage.FileIO.AppendTextAsync(fil, "\n"
+                    + "== " + DateTime.Now.ToString() + " ==\n"
+                    + "Location: " + sender.ToString() + "\n"
+                    + "== Message ==" + "\n" + message);
+            } catch {
+                
+            }
+             
+        }
+
+        public async static Task App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            await writeErrorToFile(sender, e.Exception);
         }
     }
 }

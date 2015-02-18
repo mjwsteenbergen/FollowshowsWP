@@ -191,7 +191,10 @@ namespace SharedCode
                 ep.airtime = DateTime.Parse(air);
                 ep.airdate = DateTime.Parse(air).Date;
             }
-            catch (Exception) { }
+            catch (Exception e) 
+            {
+                Memory.writeErrorToFile("getCalendarEpisode", e);
+            }
             
             ep.url = HTML.getAttribute(HTML.getChild(HTML.getChild(data.DocumentNode, 2)), "href");
 

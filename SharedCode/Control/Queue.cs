@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace SharedCode
 {
@@ -34,7 +35,7 @@ namespace SharedCode
             return items;
         }
 
-        public async Task downloadQueue()
+        public async Task download()
         {
             if (! await api.hasInternet() && items != null)
                 return;

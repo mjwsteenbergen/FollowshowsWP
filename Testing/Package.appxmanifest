@@ -23,13 +23,6 @@
         <m3:ApplicationView MinWidth="width320" />
         <!--Used in XAML Designer. DO NOT REMOVE-->
       </m3:VisualElements>
-      <Extensions>
-        <Extension Category="windows.backgroundTasks">
-          <BackgroundTasks>
-            <Task Type="timer" />
-          </BackgroundTasks>
-        </Extension>
-      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
