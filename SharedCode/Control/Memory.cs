@@ -131,7 +131,7 @@ namespace SharedCode
 
                 
 
-                List<Command> comList = await (API.getAPI()).getCommands();
+                List<Command> comList = await Memory.getCommands();
 
                 foreach (Command com in comList)
                 {
@@ -234,5 +234,59 @@ namespace SharedCode
         {
             writeErrorToFile(sender, e.Exception).RunSynchronously();
         }
+
+
+        #region commands
+
+
+        public static async void addCommand(Command com)
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            StorageFile fil = null;
+            string text = null;
+            List<Command> comList = new List<Command>();
+
+            try
+            {
+                fil = await temp.GetFileAsync("commands");
+                text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
+            }
+            catch { }
+
+            if (fil == null)
+            {
+                fil = await temp.CreateFileAsync("commands");
+            }
+
+
+            comList.Add(com);
+
+            await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(comList));
+
+
+        }
+
+        public static async Task<List<Command>> getCommands()
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            List<Command> res = new List<Command>();
+            StorageFile fil;
+
+            try
+            {
+                fil = await temp.GetFileAsync("commands");
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
+
+                return res;
+            }
+            catch
+            {
+                return res;
+            }
+        }
+
+        #endregion
     }
 }

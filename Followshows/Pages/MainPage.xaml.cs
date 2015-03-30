@@ -325,7 +325,7 @@ namespace Followshows
                 }
                 else
                 {
-                    api.addCommand(new Command() { episode = ep, watched = true });
+                    Memory.addCommand(new Command() { episode = ep, watched = true });
                 }
 
                 DoubleAnimation ani = new DoubleAnimation();
@@ -376,7 +376,7 @@ namespace Followshows
                     com.episode = ep;
                     com.watched = false;
 
-                    api.addCommand(com);
+                    Memory.addCommand(com);
                 }
 
 

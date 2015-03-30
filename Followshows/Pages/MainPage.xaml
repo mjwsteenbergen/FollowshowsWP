@@ -46,8 +46,7 @@
                                                 <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,35,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
                                             </Grid>
                                             <Grid  Visibility="{Binding redo}">
-                                                <Image Source="ms-appx:///Assets/Buttons/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
-                                                <TextBlock Text="WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="18,0,0,0"/>
+                                                <TextBlock Text="WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                             </Grid>
                                         </Grid>
                                     </DataTemplate>

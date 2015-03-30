@@ -93,23 +93,15 @@
                     <TextBlock Text="{Binding ShowName}"
 								                    Margin="12,10,12,0"
                                                     FontWeight="ExtraBold"
-							                           >
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontWeight" Value="ExtraBold"/>
-                                <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilySemiBold}" />
-                                <Setter Property="FontSize" Value="{ThemeResource TextStyleExtraLargePlusFontSize}" />
-                                <Setter Property="TextWrapping" Value="NoWrap" />
-                                <Setter Property="LineHeight" Value="33.5" />
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                                                    FontFamily="{ThemeResource PhoneFontFamilySemiBold}"
+                                                    FontSize="{ThemeResource TextStyleExtraLargePlusFontSize}"
+                                                    TextWrapping="NoWrap"
+							                           />
                     <TextBlock Text="{Binding EpisodeName}" VerticalAlignment="Bottom" Margin="10,0,0,10" FontSize="11" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,10,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
+                    <TextBlock Text="{Binding EpisodePos}"  VerticalAlignment="Bottom" Margin="0,0,35,10" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right"  />
                 </Grid>
                 <Grid  Visibility="{Binding redo}">
-                    <Image Source="ms-appx:///Assets/Buttons/appbar.undo.png" Height="30" Width="30" Margin="0,0,120,0"/>
-                    <TextBlock Text="NOT WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,0,0,0"/>
+                    <TextBlock Text="WATCHED" Style="{StaticResource BodyTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Grid>
             </Grid>
         </DataTemplate>

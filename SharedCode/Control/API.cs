@@ -487,57 +487,11 @@ namespace SharedCode
 
         
 
-        public async void addCommand(Command com)
-        {
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-            StorageFile fil = null;
-            string text = null;
-            List<Command> comList = new List<Command>();
-
-            try
-            {
-                fil = await temp.GetFileAsync("commands");
-                text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
-            }
-            catch { }
-
-            if (fil == null)
-            {
-                fil = await temp.CreateFileAsync("commands");
-            }
-
-
-            comList.Add(com);
-
-            await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(comList));
-
-
-        }
-
-        public async Task<List<Command>> getCommands()
-        {
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-            List<Command> res = new List<Command>();
-            StorageFile fil;
-
-            try
-            {
-                fil = await temp.GetFileAsync("commands");
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
-
-                return res;
-            }
-            catch
-            {
-                return res;
-            }
-        }
+        
 
         public async Task executeCommands()
         {
-            List<Command> commands = await getCommands();
+            List<Command> commands = await Memory.getCommands();
             if (commands.Count > 0)
             {
                 foreach (Command com in commands)
