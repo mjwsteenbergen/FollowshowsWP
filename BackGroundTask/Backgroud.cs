@@ -28,14 +28,11 @@ namespace BackGroundTask
             {
                 if (await api.login())
                 {
-                    
-                    StorageFolder temp = ApplicationData.Current.LocalFolder;
-                    StorageFile fil = await temp.CreateFileAsync("lastQueueEpisode",CreationCollisionOption.OpenIfExists);
 
-                    string previous = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                    string previous = await Memory.getMostRecentQueueEpisode();
 
                     Queue q = new Queue();
-                    ObservableCollection<Episode> ep = q.getQueue();
+                    ObservableCollection<Episode> ep = q;
                     ObservableCollection<Episode> newEpisodes = new ObservableCollection<Episode>();
                     await q.download();
                     //foreach (Episode epi in ep)
@@ -60,7 +57,8 @@ namespace BackGroundTask
                     }
 
 
-                    await Windows.Storage.FileIO.WriteTextAsync(fil, ep[0].EpisodeName);
+                    
+                    await Memory.storeMostRecentQueueEpisode(q);
                     Memory.storeOffline(newEpisodes);
                 }
             }

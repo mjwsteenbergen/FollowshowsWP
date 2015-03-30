@@ -193,7 +193,7 @@ namespace SharedCode
             }
             catch (Exception e) 
             {
-                Memory.writeErrorToFile("getCalendarEpisode", e);
+                Memory.writeErrorToFile("getCalendarEpisode", e).RunSynchronously();
             }
             
             ep.url = HTML.getAttribute(HTML.getChild(HTML.getChild(data.DocumentNode, 2)), "href");

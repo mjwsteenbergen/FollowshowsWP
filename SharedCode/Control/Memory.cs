@@ -23,11 +23,10 @@ namespace SharedCode
             }
         }
 
-        public static async void store(Queue q)
+        public static async void store(Queue queue)
         {
             try
             {
-                ObservableCollection<Episode> queue = q.getQueue();
                 if (queue != null && queue.Count != 0)
                 {
                     StorageFolder temp = ApplicationData.Current.LocalFolder;
@@ -69,6 +68,30 @@ namespace SharedCode
 
                 await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(calendar));
             }
+        }
+
+        public static async Task storeMostRecentQueueEpisode(Queue q)
+        {
+
+            foreach(Episode ep in q)
+            {
+                if(!ep.Seen)
+                {
+                    StorageFolder temp = ApplicationData.Current.LocalFolder;
+                    StorageFile fil = await temp.CreateFileAsync("lastQueueEpisode", CreationCollisionOption.ReplaceExisting);
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, ep.EpisodeName);
+                    return;
+                }
+            }
+            
+        }
+
+        public static async Task<string> getMostRecentQueueEpisode()
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            StorageFile fil = await temp.CreateFileAsync("lastQueueEpisode", CreationCollisionOption.OpenIfExists);
+
+            return await Windows.Storage.FileIO.ReadTextAsync(fil);
         }
 
         public static async Task<ObservableCollection<Episode>> recoverQueue()
@@ -168,11 +191,17 @@ namespace SharedCode
 
         public static StorageFolder sdFolder;
         public static StorageFile fil;
+        public static bool debug = false;
 
 
         public static async Task setSdFolder()
         {
+            if(debug)
+            {
+
+            }
             sdFolder = (await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync() as IReadOnlyList<StorageFolder>).FirstOrDefault();
+            if (sdFolder == null) return;
             fil = await (await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists)).CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
         }
 
@@ -189,6 +218,7 @@ namespace SharedCode
 
         public static async Task logToFile(object sender, String message)
         {
+            if (sdFolder == null) return;
             try {
                 await Windows.Storage.FileIO.AppendTextAsync(fil, "\n"
                     + "== " + DateTime.Now.ToString() + " ==\n"
@@ -200,9 +230,9 @@ namespace SharedCode
              
         }
 
-        public async static Task App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        public static void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            await writeErrorToFile(sender, e.Exception);
+            writeErrorToFile(sender, e.Exception).RunSynchronously();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace SharedCode
                 }
                 catch (Exception e)
                 {
-                    Memory.writeErrorToFile(this, e);
+                    Memory.writeErrorToFile(this, e).RunSynchronously();
                 }
             }
             return tracker;

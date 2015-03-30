@@ -84,7 +84,7 @@ namespace Followshows
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
                 //Loading
-
+            cover.Height = Window.Current.Bounds.Height;
             //Create a fake show, which isn't visible to decrease uglyness
             //NTW.DataContext = new Episode(false, true) { redo = Windows.UI.Xaml.Visibility.Collapsed };
 
