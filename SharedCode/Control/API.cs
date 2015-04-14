@@ -339,18 +339,27 @@ namespace SharedCode
             bool check = false;
             foreach (HtmlNode day in tableRow.ChildNodes)
             {
-                if (!HTML.getAttribute(day, "class").Contains("today") && check == false)
-                    continue;
-                check = true;
-
-                HtmlNode ul = HTML.getChild(day);
-                if (ul != null)
+                try
                 {
-                    foreach (HtmlNode li in ul.ChildNodes)
+                    if (!HTML.getAttribute(day, "class").Contains("today") && check == false)
+                        continue;
+                    check = true;
+
+                    HtmlNode ul = HTML.getChild(day);
+                    if (ul != null)
                     {
-                        calendar.Add(Episode.getCalendarEpisode(li));
+                        foreach (HtmlNode li in ul.ChildNodes)
+                        {
+                            calendar.Add(Episode.getCalendarEpisode(li));
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Memory.addToErrorQueue(this, e);   
+                }
+
+                await Memory.writeAllErrorsToFile();
 
             }
 
@@ -513,8 +522,10 @@ namespace SharedCode
                 }
                 catch (Exception e)
                 {
-                    Memory.writeErrorToFile(this, e).RunSynchronously();
+                    Memory.addToErrorQueue(this, e);
                 }
+
+                await Memory.writeAllErrorsToFile();
             }
 
         }

@@ -11,6 +11,14 @@ namespace SharedCode
 {
     public class Memory
     {
+
+
+        //Variables
+
+        private static List<object> errorObject = new List<object>();
+        private static List<Exception> errorException = new List<Exception>();
+
+
         public static async void store(Tracker originalTracker)
         {
             ObservableCollection<TvShow> tracker = originalTracker.tracker;
@@ -203,6 +211,26 @@ namespace SharedCode
             sdFolder = (await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync() as IReadOnlyList<StorageFolder>).FirstOrDefault();
             if (sdFolder == null) return;
             fil = await (await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists)).CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
+        }
+
+        public static void addToErrorQueue(object sender, Exception e)
+        {
+            errorObject.Add(sender);
+            errorException.Add(e);
+        }
+
+        public static async Task writeAllErrorsToFile()
+        {
+            for(int i=0; i < errorObject.Count; i++)
+            {
+                Exception newExc = errorException[i];
+                if (newExc == null) break;
+                await writeErrorToFile(errorObject[i], newExc);
+            }
+
+            errorObject.Clear();
+            errorException.Clear();
+
         }
 
         public static async Task writeErrorToFile(object sender, Exception e)
