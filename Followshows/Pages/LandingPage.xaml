@@ -12,81 +12,18 @@
     
     <!--LayoutRoot is the root grid where all page content is placed.-->
     <Grid x:Name="LayoutRoot">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0" Margin="0,-20,0,0" Background="#22B5FF">
-            <Grid.Resources>
-                <Storyboard x:Name="SB" >
-                    <DoubleAnimation
-                        Storyboard.TargetName="trans1"
-                        Storyboard.TargetProperty="Y"
-                        Duration="0:0:10"
-                        From="0" To="900">
-                    </DoubleAnimation>
-                </Storyboard>
-                <Storyboard x:Name="SB2" >
-                    <DoubleAnimation
-                        Storyboard.TargetName="trans2"
-                        Storyboard.TargetProperty="Y"
-                        Duration="0:0:10"
-                        From="0" To="900">
-                    </DoubleAnimation>
-                </Storyboard>
-                <Storyboard x:Name="SB3" >
-                    <DoubleAnimation
-                        Storyboard.TargetName="trans3"
-                        Storyboard.TargetProperty="Y"
-                        Duration="0:0:10"
-                        From="0" To="900">
-                    </DoubleAnimation>
-                </Storyboard>
-                <Storyboard x:Name="SB4" >
-                    <DoubleAnimation
-                        Storyboard.TargetName="trans4"
-                        Storyboard.TargetProperty="Y"
-                        Duration="0:0:10"
-                        From="0" To="900">
-                    </DoubleAnimation>
-                </Storyboard>
-            </Grid.Resources>
-            <!--<GridView x:Name="bak">
-                <GridView.ItemTemplate>
-                    <DataTemplate>-->
-            <Image x:Name="Background1" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="1,-200,1,0">
-                <Image.RenderTransform>
-                    <TranslateTransform x:Name="trans1" Y="0"/>
-                </Image.RenderTransform>
+        <Image x:Name="Tester" Visibility="Collapsed" />        
+        
+        <Grid>
+            <Image x:Name="ImageBack" Stretch="UniformToFill"/>
+            <Image x:Name="ImageFron" Stretch="UniformToFill">
+                <Image.Resources>
+                    <Storyboard x:Name="fadeIn">
+                        <DoubleAnimation Storyboard.TargetName="ImageFron" Storyboard.TargetProperty="Opacity" From="0" To="1.0" Duration="0:0:3" />
+                    </Storyboard>
+                </Image.Resources>
             </Image>
-            <Image x:Name="Background2" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="1,-200,1,0">
-                <Image.RenderTransform>
-                    <TranslateTransform x:Name="trans2" Y="0"/>
-                </Image.RenderTransform>
-            </Image>
-            <Image x:Name="Background3" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="1,-200,1,0">
-                <Image.RenderTransform>
-                    <TranslateTransform x:Name="trans3" Y="0"/>
-                </Image.RenderTransform>
-            </Image>
-            <Image x:Name="Background4" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="1,-200,1,0">
-                <Image.RenderTransform>
-                    <TranslateTransform x:Name="trans4" Y="0"/>
-                </Image.RenderTransform>
-            </Image>
-            <!--<Image x:Name="Background2" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-            <Image x:Name="Background3" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-            <Image x:Name="Background4" Opacity="1" HorizontalAlignment="Right" VerticalAlignment="Top"/>-->
-            <Image x:Name="Tester" Visibility="Collapsed" />
-
-            <!--<Grid>
-                            <Image Source="{Binding}" Opacity="0.4" Stretch="UniformToFill" HorizontalAlignment="Center" />    
-                        </Grid>
-                    </DataTemplate>
-                    
-                </GridView.ItemTemplate>
-            </GridView>-->
-            
+            <Rectangle Height="900" Opacity="0.65" Fill="Black"/>
         </Grid>
         <StackPanel Grid.Column="1">
             <TextBlock Style="{StaticResource HeaderTextBlockStyle}" TextAlignment="Center" Margin="0,80,0,0" FontWeight="ExtraBold" FontSize="40"><Run Foreground="#22B5FF">follow</Run>shows</TextBlock>
@@ -196,7 +133,8 @@
                     <PivotItem>
                         <StackPanel>
                             <TextBlock Text="Trying to contact facebook" Style="{StaticResource TitleTextBlockStyle}" TextAlignment="Center" Margin="0,50,0,0"/>
-                            <ProgressRing  Margin="0,20,0,0" Height="2" IsActive="True"/>
+                        <ProgressRing  Margin="0,20,0,0" Height="2" IsActive="True" x:Name="fuProgressRing">
+                        </ProgressRing>
                         </StackPanel>
 
                     </PivotItem>
