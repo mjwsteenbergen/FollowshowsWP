@@ -57,7 +57,7 @@ namespace SharedCode
                         return child;
                 }
             }
-            throw new Exception("The class,value combination was not found");
+            throw new Exception("The class : "+ attribute +" with value: " + value + " combination was not found");
             //return null;
         }
 

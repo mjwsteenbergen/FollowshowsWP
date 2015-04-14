@@ -90,15 +90,6 @@ namespace Followshows
 
         }
 
-        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
-        {
-            if (Pivo.SelectedIndex != 1)
-            {
-                Pivo.SelectedIndex = 1;
-                e.Handled = true;
-            }   
-        }
-
         /// <summary>
         /// Preserves state associated with this page in case the application is suspended or the
         /// page is discarded from the navigation cache.  Values must conform to the serialization
@@ -255,9 +246,30 @@ namespace Followshows
             
         }
 
-        private void buttonTapped(object sender, TappedRoutedEventArgs e)
+        private async void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
         {
-            Pivo.SelectedIndex = (sender as StackPanel).Name == "zero" ? 0 : 2;
+            if (Pivo.SelectedIndex != 1)
+            {
+                Pivo.IsLocked = false;
+                Pivo.SelectedIndex = 1;
+                e.Handled = true;
+                await Task.Delay(500);
+                Pivo.IsLocked = true;
+            }
+        }
+
+        private async void buttonTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Pivo.IsLocked = false;
+            Pivo.SelectedIndex = (sender as Button).Name == "zero" ? 0 : 2;
+            await Task.Delay(500);
+            Pivo.IsLocked = true;
+        }
+
+        private void layoutUpdate(object sender, object e)
+        {
+            Pivo.IsLocked = true;
+            Pivo.SelectionChanged -= layoutUpdate;
         }
 
         private async void startTimer()

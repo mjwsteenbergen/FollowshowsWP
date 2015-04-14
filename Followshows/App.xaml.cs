@@ -110,7 +110,10 @@ namespace Followshows
                 API ap = API.getAPI();
                 
 
-                Application.Current.UnhandledException += ap.App_UnhandledException;
+                Application.Current.UnhandledException += Memory.App_UnhandledException;
+                await Memory.setSdFolder();
+
+
 
                 if(ap.hasLoginCreds()) {
                     if (await ap.login())
@@ -124,16 +127,16 @@ namespace Followshows
                     {
                         if (await ap.hasInternet())
                         {
-                            Helper.message("You don't have internet. Some features won't be enabled");
-
-                            if (!rootFrame.Navigate(typeof(MainPage), ap))
+                            if (!rootFrame.Navigate(typeof(LandingPage)))
                             {
                                 throw new Exception("Failed to create initial page");
                             }
                         }
                         else
                         {
-                            if (!rootFrame.Navigate(typeof(LandingPage)))
+                            Helper.message("You don't have internet. Some features won't be enabled");
+
+                            if (!rootFrame.Navigate(typeof(MainPage), ap))
                             {
                                 throw new Exception("Failed to create initial page");
                             }

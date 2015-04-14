@@ -11,9 +11,17 @@ namespace SharedCode
 {
     public class Memory
     {
+
+
+        //Variables
+
+        private static List<object> errorObject = new List<object>();
+        private static List<Exception> errorException = new List<Exception>();
+
+
         public static async void store(Tracker originalTracker)
         {
-            List<TvShow> tracker = originalTracker.tracker;
+            ObservableCollection<TvShow> tracker = originalTracker.tracker;
             if (tracker != null && tracker.Count != 0)
             {
                 StorageFolder temp = ApplicationData.Current.LocalFolder;
@@ -23,11 +31,10 @@ namespace SharedCode
             }
         }
 
-        public static async void store(Queue q)
+        public static async void store(Queue queue)
         {
             try
             {
-                ObservableCollection<Episode> queue = q.getQueue();
                 if (queue != null && queue.Count != 0)
                 {
                     StorageFolder temp = ApplicationData.Current.LocalFolder;
@@ -36,8 +43,28 @@ namespace SharedCode
                     await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
                 }
             }
-            catch (Exception)
-            { }
+            catch (Exception e)
+            {
+                Memory.writeErrorToFile("Memory.Store", e).RunSynchronously();
+            }
+        }
+
+        public static async void storeOffline(ObservableCollection<Episode> queue)
+        {
+            try
+            {
+                if (queue != null && queue.Count != 0)
+                {
+                    StorageFolder temp = ApplicationData.Current.LocalFolder;
+                    StorageFile fil = await temp.CreateFileAsync("queueOffline.txt", CreationCollisionOption.ReplaceExisting);
+
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(queue));
+                }
+            }
+            catch (Exception e)
+            {
+                Memory.writeErrorToFile("Memory.Queue.StoreOffline", e).RunSynchronously();
+            }
         }
 
         public static async void store(List<Episode> calendar)
@@ -51,24 +78,68 @@ namespace SharedCode
             }
         }
 
+        public static async Task storeMostRecentQueueEpisode(Queue q)
+        {
+
+            foreach(Episode ep in q)
+            {
+                if(!ep.Seen)
+                {
+                    StorageFolder temp = ApplicationData.Current.LocalFolder;
+                    StorageFile fil = await temp.CreateFileAsync("lastQueueEpisode", CreationCollisionOption.ReplaceExisting);
+                    await Windows.Storage.FileIO.WriteTextAsync(fil, ep.EpisodeName);
+                    return;
+                }
+            }
+            
+        }
+
+        public static async Task<string> getMostRecentQueueEpisode()
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            StorageFile fil = await temp.CreateFileAsync("lastQueueEpisode", CreationCollisionOption.OpenIfExists);
+
+            return await Windows.Storage.FileIO.ReadTextAsync(fil);
+        }
+
         public static async Task<ObservableCollection<Episode>> recoverQueue()
         {
             ObservableCollection<Episode> queue = new ObservableCollection<Episode>();
+
 
             StorageFolder temp = ApplicationData.Current.LocalFolder;
 
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
             {
-                StorageFile fil = await temp.GetFileAsync("queue.txt");
+                StorageFile fil              =  await temp.CreateFileAsync("queue.txt",        CreationCollisionOption.OpenIfExists);
+                StorageFile offlineQueueFile =  await temp.CreateFileAsync("queueOffline.txt", CreationCollisionOption.OpenIfExists);
 
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                string text        = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                string offlineQuee = await Windows.Storage.FileIO.ReadTextAsync(offlineQueueFile);
 
-                text.ToString();
+                ObservableCollection<Episode> OriginalQueue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(text.ToString());
+                ObservableCollection<Episode> offlineQueue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(offlineQuee.ToString());
 
-                queue = JsonConvert.DeserializeObject<ObservableCollection<Episode>>(text.ToString());
+                if (offlineQueue != null)
+                {
+                    queue = offlineQueue;
+                    foreach (Episode e in OriginalQueue)
+                    {
+                        queue.Add(e);
+                    }
+                }
+                else
+                {
+                    if (OriginalQueue != null)
+                    {
+                        queue = OriginalQueue;
+                    }
+                }
 
-                List<Command> comList = await (API.getAPI()).getCommands();
+                
+
+                List<Command> comList = await Memory.getCommands();
 
                 foreach (Command com in comList)
                 {
@@ -93,7 +164,7 @@ namespace SharedCode
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
             {
-                StorageFile fil = await temp.GetFileAsync("tracker.txt");
+                StorageFile fil = await temp.CreateFileAsync("tracker.txt",CreationCollisionOption.OpenIfExists);
 
                 string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
                 tracker = new List<TvShow>();
@@ -113,7 +184,7 @@ namespace SharedCode
             IReadOnlyList<IStorageItem> tempItems = await temp.GetItemsAsync();
             if (tempItems.Count > 0)
             {
-                StorageFile fil = await temp.GetFileAsync("calendar.txt");
+                StorageFile fil = await temp.CreateFileAsync("calendar.txt",CreationCollisionOption.OpenIfExists);
                 calendar = new List<Episode>();
 
                 string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
@@ -124,5 +195,126 @@ namespace SharedCode
 
             return calendar;
         }
+
+
+        public static StorageFolder sdFolder;
+        public static StorageFile fil;
+        public static bool debug = false;
+
+
+        public static async Task setSdFolder()
+        {
+            if(debug)
+            {
+
+            }
+            sdFolder = (await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync() as IReadOnlyList<StorageFolder>).FirstOrDefault();
+            if (sdFolder == null) return;
+            fil = await (await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists)).CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
+        }
+
+        public static void addToErrorQueue(object sender, Exception e)
+        {
+            errorObject.Add(sender);
+            errorException.Add(e);
+        }
+
+        public static async Task writeAllErrorsToFile()
+        {
+            for(int i=0; i < errorObject.Count; i++)
+            {
+                Exception newExc = errorException[i];
+                if (newExc == null) break;
+                await writeErrorToFile(errorObject[i], newExc);
+            }
+
+            errorObject.Clear();
+            errorException.Clear();
+
+        }
+
+        public static async Task writeErrorToFile(object sender, Exception e)
+        {
+            string s = "Type: " + e.GetType().Name + "\n"
+                    + "Message: " + e.Message + "\n" 
+                    + "====  Full Stacktrace: ====\n" 
+                    + e.StackTrace + "\n" 
+                    + "==== End ====";
+            await logToFile(sender, s);
+            
+        }
+
+        public static async Task logToFile(object sender, String message)
+        {
+            if (sdFolder == null) return;
+            try {
+                await Windows.Storage.FileIO.AppendTextAsync(fil, "\n"
+                    + "== " + DateTime.Now.ToString() + " ==\n"
+                    + "Location: " + sender.ToString() + "\n"
+                    + "== Message ==" + "\n" + message);
+            } catch {
+                
+            }
+             
+        }
+
+        public static void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            writeErrorToFile(sender, e.Exception).RunSynchronously();
+        }
+
+
+        #region commands
+
+
+        public static async void addCommand(Command com)
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            StorageFile fil = null;
+            string text = null;
+            List<Command> comList = new List<Command>();
+
+            try
+            {
+                fil = await temp.GetFileAsync("commands");
+                text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
+            }
+            catch { }
+
+            if (fil == null)
+            {
+                fil = await temp.CreateFileAsync("commands");
+            }
+
+
+            comList.Add(com);
+
+            await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(comList));
+
+
+        }
+
+        public static async Task<List<Command>> getCommands()
+        {
+            StorageFolder temp = ApplicationData.Current.LocalFolder;
+            List<Command> res = new List<Command>();
+            StorageFile fil;
+
+            try
+            {
+                fil = await temp.GetFileAsync("commands");
+                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
+                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
+
+                return res;
+            }
+            catch
+            {
+                return res;
+            }
+        }
+
+        #endregion
     }
 }

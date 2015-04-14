@@ -133,6 +133,7 @@
     <Content Include="Assets\Buttons\appbar.star.png" />
     <Content Include="Assets\Buttons\appbar.undo.png" />
     <Content Include="Assets\Buttons\back.png" />
+    <Content Include="Assets\Buttons\eye.png" />
     <Content Include="Assets\Buttons\forward.png" />
     <Content Include="Assets\Buttons\refresh.png" />
     <Content Include="Assets\Logo\Logo.scale-100.png" />

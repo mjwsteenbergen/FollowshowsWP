@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace SharedCode
 {
     public class Tracker
     {
-        public List<TvShow> tracker = new List<TvShow>();
+        public ObservableCollection<TvShow> tracker = new ObservableCollection<TvShow>();
         API api;
 
         public Tracker()
@@ -24,11 +25,15 @@ namespace SharedCode
             api = API.getAPI();
         }
 
-        public async Task<List<TvShow>> getTracker()
+        public ObservableCollection<TvShow> getTracker()
+        {
+            return tracker;
+        }
+
+        public async Task<ObservableCollection<TvShow>> load()
         {
             if (! await api.hasInternet())
                 return tracker;
-            tracker = new List<TvShow>();
 
             Response resp = await (new Response("http://followshows.com/viewStyleTracker?viewStyle=expanded")).call();
             if (resp.somethingWentWrong)
@@ -68,10 +73,12 @@ namespace SharedCode
                     show.percentageWatched = float.Parse(perc) / 100 * 150;
                     tracker.Add(show);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    Memory.addToErrorQueue(this, e);
                 }
+
+                await Memory.writeAllErrorsToFile();
             }
             return tracker;
         }

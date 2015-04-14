@@ -41,7 +41,7 @@ namespace SharedCode
         private List<Episode> watchList;
         private List<Episode> calendar;
 
-        private StorageFolder sdFolder;
+
 
         #region BASIC
 
@@ -76,8 +76,6 @@ namespace SharedCode
 
             network = new NetworkChanged();
 
-            setUp();
-
             Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += NetworkStatusChanged;
         }
 
@@ -102,26 +100,9 @@ namespace SharedCode
 
         #endregion
 
-        public async void setUp()
-        {
-            IReadOnlyList<StorageFolder> temp = await Windows.Storage.KnownFolders.RemovableDevices.GetFoldersAsync();
-            sdFolder = temp.FirstOrDefault();
+        
 
-            
-        }
-
-        public void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            writeErrorToFile(sender, e.Exception);
-        }
-
-        public async void writeErrorToFile(object sender, Exception e)
-        {
-            StorageFolder fsFolder = await sdFolder.CreateFolderAsync("Followshows", CreationCollisionOption.OpenIfExists);
-            StorageFile fil = await fsFolder.CreateFileAsync("FollowshowsCrash.txt", CreationCollisionOption.OpenIfExists);
-
-            await Windows.Storage.FileIO.AppendTextAsync(fil, "\n== At" + DateTime.Now.Date + " " + sender.ToString() + " had error: == \n" + e.Message + "\n====  Full Stacktrace: ====\n" + e.StackTrace + "\n==== End ====");
-        }
+        
 
         public async Task<bool> login()
         {
@@ -358,18 +339,27 @@ namespace SharedCode
             bool check = false;
             foreach (HtmlNode day in tableRow.ChildNodes)
             {
-                if (!HTML.getAttribute(day, "class").Contains("today") && check == false)
-                    continue;
-                check = true;
-
-                HtmlNode ul = HTML.getChild(day);
-                if (ul != null)
+                try
                 {
-                    foreach (HtmlNode li in ul.ChildNodes)
+                    if (!HTML.getAttribute(day, "class").Contains("today") && check == false)
+                        continue;
+                    check = true;
+
+                    HtmlNode ul = HTML.getChild(day);
+                    if (ul != null)
                     {
-                        calendar.Add(Episode.getCalendarEpisode(li));
+                        foreach (HtmlNode li in ul.ChildNodes)
+                        {
+                            calendar.Add(Episode.getCalendarEpisode(li));
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Memory.addToErrorQueue(this, e);   
+                }
+
+                await Memory.writeAllErrorsToFile();
 
             }
 
@@ -506,57 +496,11 @@ namespace SharedCode
 
         
 
-        public async void addCommand(Command com)
-        {
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-            StorageFile fil = null;
-            string text = null;
-            List<Command> comList = new List<Command>();
-
-            try
-            {
-                fil = await temp.GetFileAsync("commands");
-                text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                comList = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
-            }
-            catch { }
-
-            if (fil == null)
-            {
-                fil = await temp.CreateFileAsync("commands");
-            }
-
-
-            comList.Add(com);
-
-            await Windows.Storage.FileIO.WriteTextAsync(fil, JsonConvert.SerializeObject(comList));
-
-
-        }
-
-        public async Task<List<Command>> getCommands()
-        {
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-            List<Command> res = new List<Command>();
-            StorageFile fil;
-
-            try
-            {
-                fil = await temp.GetFileAsync("commands");
-                string text = await Windows.Storage.FileIO.ReadTextAsync(fil);
-                res = JsonConvert.DeserializeObject<List<Command>>(text.ToString());
-
-                return res;
-            }
-            catch
-            {
-                return res;
-            }
-        }
+        
 
         public async Task executeCommands()
         {
-            List<Command> commands = await getCommands();
+            List<Command> commands = await Memory.getCommands();
             if (commands.Count > 0)
             {
                 foreach (Command com in commands)
@@ -576,8 +520,12 @@ namespace SharedCode
                     StorageFile fil = await temp.GetFileAsync("commands");
                     await fil.DeleteAsync();
                 }
-                catch (Exception)
-                { }
+                catch (Exception e)
+                {
+                    Memory.addToErrorQueue(this, e);
+                }
+
+                await Memory.writeAllErrorsToFile();
             }
 
         }

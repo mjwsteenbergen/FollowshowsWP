@@ -208,14 +208,12 @@ namespace Followshows
 
             //Execute commands before loading
             await api.executeCommands();
-
+            
             //Load Queue
             q = new Queue();
-
-            queue.ItemsSource = q.getQueue();
-
-
-            await q.downloadQueue();
+            queue.ItemsSource = q;
+            await q.download();
+            
 
             bar.ProgressIndicator.Text = "Getting Calendar";
 
@@ -236,13 +234,10 @@ namespace Followshows
 
             //Load Tracker
             Tracker trackerO = new Tracker();
-            List<TvShow> trackerList = await trackerO.getTracker();
-            if (trackerList != null)
-            {
-                tracker.ItemsSource = trackerList;
-            }
+            tracker.ItemsSource = trackerO.getTracker();
+            await trackerO.load();
 
-            foreach(TvShow show in trackerList)
+            foreach (TvShow show in trackerO.getTracker())
             {
                 imageLoader.Source = show.Image;
             }
@@ -250,9 +245,9 @@ namespace Followshows
             bar.ProgressIndicator.Text = "Done";
             await bar.HideAsync();
 
-            Memory.store(trackerO);
-            Memory.store(cal);
-            Memory.store(q);            
+            SharedCode.Memory.store(q);
+            SharedCode.Memory.store(trackerO);
+            SharedCode.Memory.store(cal);
         }
 
         async void NetworkStatus_Changed(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -312,6 +307,8 @@ namespace Followshows
             item = sender as Grid;
             ep = item.DataContext as Episode;
 
+            
+
             Image ima = item.FindName("ima") as Image;
             if (ima.Opacity > 0.5)
             {
@@ -319,6 +316,16 @@ namespace Followshows
                 {
                     Helper.message("This episode hasn't aired yet. You cannot mark it as watched", "EPISODE NOT AIRED");
                     return;
+                }
+
+                if (await api.hasInternet())
+                {
+                    await ep.markAsWatched();
+                    await Memory.storeMostRecentQueueEpisode(q);
+                }
+                else
+                {
+                    Memory.addCommand(new Command() { episode = ep, watched = true });
                 }
 
                 DoubleAnimation ani = new DoubleAnimation();
@@ -335,18 +342,6 @@ namespace Followshows
                 ep.Seen = true;
 
                 board.Begin();
-
-                
-
-                if (await api.hasInternet())
-                {
-                    
-                    await ep.markAsWatched();
-                }
-                else
-                {
-                    api.addCommand(new Command() { episode = ep, watched = true });
-                }
 
                 ep.OnPropertyChanged("redo");
             }
@@ -381,29 +376,14 @@ namespace Followshows
                     com.episode = ep;
                     com.watched = false;
 
-                    api.addCommand(com);
+                    Memory.addCommand(com);
                 }
 
 
             }
 
             //Update the last new queue item
-
-            StorageFolder temp = ApplicationData.Current.LocalFolder;
-            StorageFile fil = null;
-            foreach (StorageFile fil2 in await temp.GetFilesAsync())
-            {
-                string name = fil2.DisplayName;
-                if (name == "lastQueueEpisode")
-                {
-                    fil = fil2;
-                }
-            }
-            if (fil == null)
-            {
-                fil = await temp.CreateFileAsync("lastQueueEpisode.txt", CreationCollisionOption.ReplaceExisting);
-            }
-            await Windows.Storage.FileIO.WriteTextAsync(fil, (queue.ItemsSource as ObservableCollection<Episode>)[0].EpisodeName);
+            await Memory.storeMostRecentQueueEpisode((queue.ItemsSource as Queue));
         }
 
         void board_Completed(object sender, object e)
@@ -413,7 +393,7 @@ namespace Followshows
 
         #endregion
 
-        private void logout(object sender, RoutedEventArgs e)
+        private async void logout(object sender, RoutedEventArgs e)
         {
             PasswordVault vault = new PasswordVault();
             try
@@ -431,11 +411,13 @@ namespace Followshows
             { }
             
             api.refresh();
+            Response s = await (new Response("http://followshows.com/j_spring_security_logout").call());
             Frame rootFrame = Window.Current.Content as Frame;
             if (!rootFrame.Navigate(typeof(LandingPage), api))
             {
                 throw new Exception("Failed to create initial page");
             }
+            rootFrame.BackStack.Clear();
         }
 
         public async void refresh(object sender, RoutedEventArgs e)

@@ -5,13 +5,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace SharedCode
 {
-    public class Queue
+    public class Queue : ObservableCollection<Episode>
     {
-
-        private ObservableCollection<Episode> items = new ObservableCollection<Episode>();
         API api;
         int count = 0;
 
@@ -20,27 +19,27 @@ namespace SharedCode
         public Queue()
         {
             api = API.getAPI();
-            items = new ObservableCollection<Episode>();
+            //items = new ObservableCollection<Episode>();
             downloading = false;
         }
 
-        public ObservableCollection<Episode> getQueue()
-        {
-            if(items == null || items.Count == 0)
-            {
-                return items;
-            }
+        //public ObservableCollection<Episode> getQueue()
+        //{
+        //    if(items == null || items.Count == 0)
+        //    {
+        //        return items;
+        //    }
 
-            return items;
-        }
+        //    return items;
+        //}
 
-        public async Task downloadQueue()
+        public async Task download()
         {
-            if (! await api.hasInternet() && items != null)
+            if (! await api.hasInternet() || this == null)
                 return;
-            while(items.Count != 0)
+            while(Count != 0)
             {
-                items.RemoveAt(0);
+                RemoveAt(0);
             }
             
 
@@ -58,7 +57,7 @@ namespace SharedCode
             {
                 if (episode.Name != "li") { continue; }
 
-                items.Add(Episode.getQueueEpisode(episode));
+                Add(Episode.getQueueEpisode(episode));
             }
 
             return;
@@ -84,15 +83,15 @@ namespace SharedCode
             {
                 if (episode.Name != "li") { continue; }
 
-                items.Add(Episode.getQueueEpisode(episode));
+                Add(Episode.getQueueEpisode(episode));
             }
             downloading = false;
         }
         
-        public void setQueue(ObservableCollection<Episode> newQ)
-        {
-            items = newQ;
-        }
+        //public void setQueue(ObservableCollection<Episode> newQ)
+        //{
+        //    items = newQ;
+        //}
 
     }
 }
