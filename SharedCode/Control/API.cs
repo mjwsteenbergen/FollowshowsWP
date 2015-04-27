@@ -501,7 +501,7 @@ namespace SharedCode
         public async Task executeCommands()
         {
             List<Command> commands = await Memory.getCommands();
-            if (commands.Count > 0)
+            if (commands != null)
             {
                 foreach (Command com in commands)
                 {
@@ -514,6 +514,7 @@ namespace SharedCode
                         await com.episode.markNotAsWatched();
                     }
                 }
+
                 try
                 {
                     StorageFolder temp = ApplicationData.Current.LocalFolder;
@@ -547,7 +548,19 @@ namespace SharedCode
             }
             catch (Exception)
             {
-                return false;
+                try
+                {
+                    if (vault.FindAllByResource("facebook").ToString() != null)
+                    {
+                        cred = vault.FindAllByResource("facebook")[0];
+                        cred.RetrievePassword();
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
             return false;
         }

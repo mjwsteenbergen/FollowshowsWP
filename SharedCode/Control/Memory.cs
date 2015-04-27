@@ -298,7 +298,7 @@ namespace SharedCode
         public static async Task<List<Command>> getCommands()
         {
             StorageFolder temp = ApplicationData.Current.LocalFolder;
-            List<Command> res = new List<Command>();
+            List<Command> res = null;
             StorageFile fil;
 
             try
@@ -310,9 +310,8 @@ namespace SharedCode
                 return res;
             }
             catch
-            {
-                return res;
-            }
+            { }
+            return res;
         }
 
         #endregion

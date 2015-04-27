@@ -257,6 +257,7 @@ namespace Followshows
                 e.Handled = true;
                 await Task.Delay(500);
                 Pivo.IsLocked = true;
+                Pivo.SelectedIndex = 1;
             }
         }
 
@@ -266,6 +267,7 @@ namespace Followshows
             Pivo.SelectedIndex = (sender as Button).Name == "zero" ? 0 : 2;
             await Task.Delay(500);
             Pivo.IsLocked = true;
+            Pivo.SelectedIndex = (sender as Button).Name == "zero" ? 0 : 2;
         }
 
         private void layoutUpdate(object sender, object e)
