@@ -404,7 +404,13 @@ namespace SharedCode
                     ep.Image = new BitmapImage(new Uri("ms-appx:Assets/basicQueueItem.png"));
                     string[] build = episode.InnerText.Split(new char[] { ',' });
                     ep.EpisodeName = build[0];
-                    string[] seasonThing = build[1].Split(new char[] { ' ' });
+                    int i = 1;
+                    while (!build[i].Contains("Season"))
+                    {
+                        ep.EpisodeName += "," + build[i];
+                        i++;
+                    }
+                    string[] seasonThing = build[i].Split(new char[] { ' ' });
                     ep.ISeason = int.Parse(seasonThing[1]);
                     ep.IEpisode = int.Parse(seasonThing[3]);
                     ep.EpisodePos = "S" + ep.ISeason + "E" + ep.IEpisode;
