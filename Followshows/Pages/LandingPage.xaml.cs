@@ -85,6 +85,8 @@ namespace Followshows
             await statusBar.HideAsync();
             api = API.getAPI();
 
+            fuProgressRing.Background = new SolidColorBrush();
+
             startTimer();
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
 
@@ -278,13 +280,19 @@ namespace Followshows
                     "http://www.pagepulp.com/wp-content/gotseas2.jpg",
                     "http://i.fokzine.net/upload/14/09/140905_725_arrow_ver3_xlg.jpg",
                     "http://img2.wikia.nocookie.net/__cb20141026203433/agentsofshield/images/1/17/Agents_of_S.H.I.E.L.D._Season_1_Poster.jpg",
-                    "http://fc05.deviantart.net/fs70/i/2010/180/5/1/Doctor_Who_Season_5_Poster_by_JKop360.jpg",
+                    "http://d2spmqy4pos7su.cloudfront.net/Doctor_Who/Doctor_Who_357x500.jpg",
                     "http://www.xnds.de/wp-content/uploads/2014/06/The-Blacklist-poster.jpg",
                     "http://www.moviesonline.ca/wp-content/uploads/2010/09/TWD_1-SHEET_WEB.jpg",
                     "http://ia.media-imdb.com/images/M/MV5BMTQ5MzY5ODE5M15BMl5BanBnXkFtZTgwNzU4OTM1MjE@._V1_SX214_AL_.jpg", //Flash
                     "http://ia.media-imdb.com/images/M/MV5BMTU5MTczNTkxNl5BMl5BanBnXkFtZTgwNTM5NDc1MTE@._V1_SX214_AL_.jpg", //The 100
                     "http://ia.media-imdb.com/images/M/MV5BMjA1ODMzNDM5Ml5BMl5BanBnXkFtZTgwNDU0NjQ5MTE@._V1_SY317_CR0,0,214,317_AL_.jpg", //Orange is the new Black
-                    "http://ia.media-imdb.com/images/M/MV5BMjMzNTU3MDY3OF5BMl5BanBnXkFtZTgwMjY1Nzg3MTE@._V1_SY317_CR104,0,214,317_AL_.jpg" //Gotham
+                    "http://ia.media-imdb.com/images/M/MV5BMjMzNTU3MDY3OF5BMl5BanBnXkFtZTgwMjY1Nzg3MTE@._V1_SY317_CR104,0,214,317_AL_.jpg", //Gotham
+                    "http://d2spmqy4pos7su.cloudfront.net/Modern_Family/Modern_Family_357x500.jpg",
+                    "http://d2spmqy4pos7su.cloudfront.net/Elementary/Elementary_357x500.jpg",
+                    "http://d2spmqy4pos7su.cloudfront.net/Grimm/Grimm_357x500.jpg",
+                    "http://d2spmqy4pos7su.cloudfront.net/person-of-interest/person-of-interest_357x500.jpg",
+                    "http://d2spmqy4pos7su.cloudfront.net/Better-Call-Saul/Better-Call-Saul_357x500.jpg",
+                    "http://d2spmqy4pos7su.cloudfront.net/The_Big_Bang_Theory/The_Big_Bang_Theory_357x500.jpg"
                         };
 
             list = new List<BitmapImage>();
@@ -300,6 +308,8 @@ namespace Followshows
             }
             //bak.ItemsSource = list;
             
+            BitmapImage current = null;
+
             while(true){
 
                 await Task.Delay(20);
@@ -311,6 +321,9 @@ namespace Followshows
                         Tester.Source = image;
                     }
                 }
+
+                ImageBack.Source = current;
+                ImageFron.Opacity = 1.0;
                 
                 if(list.Count == 0)
                 {
@@ -324,46 +337,24 @@ namespace Followshows
                     shuffledList.Insert(i, im);
                 }
 
-                Background1.Source = shuffledList[0];
-                //Background1.Margin = new Thickness(0, 0, 0, 0);
-                SB.Begin();
-                await Task.Delay(2500);
-                if (shuffledList.Count > 1)
-                {
-                    Background2.Source = shuffledList[1];
-                }
-                SB2.Begin();
-                await Task.Delay(2500);
-                if (shuffledList.Count > 2)
-                {
-                    Background3.Source = shuffledList[2];
-                }
-                SB3.Begin();
-                await Task.Delay(2500);
-                if (shuffledList.Count > 3)
-                {
-                    Background4.Source = shuffledList[3];
-                }
-                SB4.Begin();
+                list = shuffledList;
 
-                await Task.Delay(2480);
+                if (current == shuffledList[0] && shuffledList.Count > 2)
+                {
+                    current = shuffledList[1];
+                }
+                else
+                {
+                    current = shuffledList[0];
+                }
+
                 
 
-                //HttpClient http = new HttpClient();
-                //Stream resp = await http.GetStreamAsync(wallpaper[1]);
-                
+                ImageFron.Source = current;
+                fadeIn.Begin();
 
-                //var ras = new Windows.Storage.Streams.InMemoryRandomAccessStream();
-                //await resp.CopyToAsync(ras.AsStreamForWrite());
-                //bi.SetSource(ras);
-
-                
-                //bi.ImageOpened += (object sener, RoutedEventArgs f) =>
-                //{
-                //    LayoutRoot.Background = new ImageBrush() { ImageSource = sener as BitmapImage, Opacity = 0.4 };
-                //};
-                //bi.UriSource = new Uri(wallpaper[1]);
-                //Background.Source = bi;
+                await Task.Delay(6000);
+              
             }
             
         }
@@ -371,29 +362,6 @@ namespace Followshows
         void image_ImageOpened(object sender, RoutedEventArgs e)
         {
             list.Add(sender as BitmapImage);
-            if(Background1.Source == null)
-            {
-                Background1.Source = sender as BitmapImage;
-                return;
-            }
-
-            if (Background2.Source == null)
-            {
-                Background2.Source = sender as BitmapImage;
-                return;
-            }
-
-            if (Background3.Source == null)
-            {
-                Background3.Source = sender as BitmapImage;
-                return;
-            }
-
-            if (Background4.Source == null)
-            {
-                Background4.Source = sender as BitmapImage;
-                return;
-            }
         }
 
         private void PivotChanged(object sender, ManipulationCompletedRoutedEventArgs e)
