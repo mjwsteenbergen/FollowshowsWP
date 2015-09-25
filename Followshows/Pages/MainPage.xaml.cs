@@ -212,12 +212,23 @@ namespace Followshows
             //Load Queue
             q = new Queue();
             queue.ItemsSource = q;
-            await q.download();
+            try
+            {
+                await q.download();
+            }
+            catch
+            { }
+            
             
 
             bar.ProgressIndicator.Text = "Getting Calendar";
-
-            List<Episode> cal = await api.getCalendar();
+            List<Episode> cal = null;
+            try
+            {
+                cal = await api.getCalendar();
+            }
+            catch { }
+            
             if (cal != null)
             {
                 var result =

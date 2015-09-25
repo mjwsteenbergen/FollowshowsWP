@@ -79,6 +79,6 @@
                 </ListView>
             </PivotItem>
         </Pivot>
-        <TextBox Name="searchBox" Margin="20,140,20,0" IsReadOnly="False" PlaceholderText="What do you want to search for today" TextChanged="searchTextChanged" Grid.Row="2" IsTextPredictionEnabled="False" Loaded="searchBox_Loaded"/>
+        <TextBox Name="searchBox" Margin="20,140,20,0" IsReadOnly="False" PlaceholderText="What do you want to search for today" TextChanged="searchTextChanged" Grid.Row="2" Loaded="searchBox_Loaded"/>
     </Grid>
 </Page>

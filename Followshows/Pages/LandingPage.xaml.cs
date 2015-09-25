@@ -209,6 +209,11 @@ namespace Followshows
                         }
                     }
                 }
+                else
+                {
+                    await new MessageDialog("Something went wrong while registering. Please check your input").ShowAsync();
+                    await bar.HideAsync();
+                }
             }
         }
 
